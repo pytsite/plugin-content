@@ -1,0 +1,19 @@
+{
+  "description": {
+    "en": "Content",
+    "ru": "Контент",
+    "uk": "Контент"
+  },
+  "url": "https://github.com/pytsite/plugin-content",
+  "author": {
+    "name": "Alexander Shepetko",
+    "email": "a@shepetko.com",
+    "url": "https://shepetko.com"
+  },
+  "requires": {
+    "packages": [],
+    "plugins": [
+      "comments"
+    ]
+  }
+}

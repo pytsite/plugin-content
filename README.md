@@ -2,6 +2,9 @@
 
 ## Changelog
 
+### 0.1.2 (2017-01-08)
+Removed non existent widget usage.
+
 ### 0.1.1 (2017-01-08)
 - plugin.json updated.
 - Unnecessary widgets moved to the `tag` plugin.

@@ -3,9 +3,8 @@
 from datetime import datetime as _datetime
 from pytsite import odm_ui as _odm_ui, auth as _auth, http as _http, \
     router as _router, metatag as _metatag, assetman as _assetman, odm as _odm,  lang as _lang, tpl as _tpl, \
-    logger as _logger, hreflang as _hreflang, browser as _browser
+    logger as _logger, hreflang as _hreflang
 from plugins import taxonomy as _taxonomy, comments as _comments
-from . import _widget as _content_widget
 
 __author__ = 'Alexander Shepetko'
 __email__ = 'a@shepetko.com'
@@ -151,7 +150,6 @@ def view(args: dict, inp: dict):
 
     args.update({
         'entity': entity,
-        'entity_tag_cloud': _content_widget.EntityTagCloud('entity-tag-cloud', entity=entity)
     })
 
     return _router.call_ep('$theme@content_' + model + '_view', args, inp)

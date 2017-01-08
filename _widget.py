@@ -2,7 +2,6 @@
 """
 from pytsite import auth as _auth, widget as _widget, html as _html, lang as _lang, router as _router, tpl as _tpl, \
     odm as _odm, http_api as _http_api
-from plugins import taxonomy as _taxonomy
 from . import _model, _api
 
 __author__ = 'Alexander Shepetko'
@@ -83,34 +82,6 @@ class EntitySelect(_widget.select.Select2):
             self._items.append((self._value, _odm.get_by_ref(self._value).f_get('title')))
 
         return super().get_html_em()
-
-
-class TagCloud(_taxonomy.widget.Cloud):
-    """Tags Cloud.
-    """
-
-    def __init__(self, uid: str, **kwargs):
-        """Init.
-        """
-        super().__init__(uid, model='tag', **kwargs)
-
-
-class EntityTagCloud(_taxonomy.widget.Cloud):
-    """Tag Cloud of the Entity.
-    """
-
-    def __init__(self, uid: str, **kwargs):
-        """Init.
-        """
-        super().__init__(uid, model='tag', **kwargs)
-
-        self._entity = kwargs.get('entity')
-        if not self._entity:
-            raise ValueError('Entity is not specified.')
-
-    @property
-    def terms(self) -> tuple:
-        return self._entity.tags
 
 
 class Search(_widget.Abstract):

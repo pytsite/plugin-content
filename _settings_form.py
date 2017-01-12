@@ -9,7 +9,7 @@ __license__ = 'MIT'
 
 
 class Form(_settings.Form):
-    def _setup_widgets(self):
+    def _on_setup_widgets(self):
         i = 10
         for l in _lang.langs():
             self.add_widget(_widget.input.Text(
@@ -56,4 +56,4 @@ class Form(_settings.Form):
                 items=model_items,
             ))
 
-        super()._setup_widgets()
+        super()._on_setup_widgets()

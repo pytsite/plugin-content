@@ -25,7 +25,7 @@ def _init():
 
     # Permission groups
     permissions.define_group('content', 'content@content')
-    permissions.define_permission('content.settings.manage', 'content@@manage_content_settings_permission', 'content')
+    permissions.define_permission('content.settings.manage', 'content@manage_content_settings_permission', 'content')
 
     # Assets
     assetman.register_package(__name__, alias='content')

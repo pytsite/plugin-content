@@ -206,6 +206,7 @@ class Content(_odm_ui.model.UIEntity):
         """
         self.define_field(_odm.field.String('status', required=True, default='waiting'))
         self.define_field(_odm.field.String('title', required=True, strip_html=True))
+        self.define_field(_odm.field.String('description', strip_html=True))
         self.define_field(_odm.field.String('body', tidyfy_html=True))
         self.define_field(_file_storage_odm.field.Images('images'))
         self.define_field(_odm.field.StringList('video_links', unique=True))
@@ -219,13 +220,19 @@ class Content(_odm_ui.model.UIEntity):
         """
         self.define_index([('_created', _odm.I_DESC)])
         self.define_index([('_modified', _odm.I_DESC)])
-        self.define_index([('title', _odm.I_ASC)])
 
-        if self.has_field('author'):
-            self.define_index([('author', _odm.I_ASC)])
+        # Ordinary indexes
+        for f in 'status', 'language', 'author', 'options':
+            if self.has_field(f):
+                self.define_index([(f, _odm.I_ASC)])
 
-        if self.has_field('video_links'):
-            self.define_index([('video_links', _odm.I_ASC)])
+        # Text index
+        text_index_parts = []
+        for f in 'title', 'description', 'body':
+            if self.has_field(f):
+                text_index_parts.append((f, _odm.I_TEXT))
+        if text_index_parts:
+            self.define_index(text_index_parts)
 
     @property
     def status(self) -> str:
@@ -236,6 +243,12 @@ class Content(_odm_ui.model.UIEntity):
         """Title getter.
         """
         return self.f_get('title')
+
+    @property
+    def description(self) -> str:
+        """Description getter.
+        """
+        return self.f_get('description')
 
     @property
     def body(self) -> str:
@@ -433,19 +446,30 @@ class Content(_odm_ui.model.UIEntity):
         current_user = _auth.get_current_user()
 
         # Title
-        frm.add_widget(_widget.input.Text(
-            uid='title',
-            weight=200,
-            label=self.t('title'),
-            value=self.title,
-            required=self.get_field('title').required,
-        ))
+        if self.has_field('title'):
+            frm.add_widget(_widget.input.Text(
+                uid='title',
+                weight=200,
+                label=self.t('title'),
+                value=self.title,
+                required=self.get_field('title').required,
+            ))
+
+        # Description
+        if self.has_field('description'):
+            frm.add_widget(_widget.input.Text(
+                uid='description',
+                weight=400,
+                label=self.t('description'),
+                value=self.description,
+                required=self.get_field('description').required,
+            ))
 
         # Images
         if self.has_field('images'):
             frm.add_widget(_file.widget.ImagesUpload(
                 uid='images',
-                weight=400,
+                weight=600,
                 label=self.t('images'),
                 value=self.f_get('images'),
                 max_file_size=5,
@@ -458,7 +482,7 @@ class Content(_odm_ui.model.UIEntity):
         if self.has_field('video_links'):
             frm.add_widget(_widget.input.StringList(
                 uid='video_links',
-                weight=600,
+                weight=800,
                 label=self.t('video'),
                 add_btn_label=self.t('add_link'),
                 value=self.video_links,
@@ -470,7 +494,7 @@ class Content(_odm_ui.model.UIEntity):
         if self.has_field('body'):
             frm.add_widget(_ckeditor.widget.CKEditor(
                 uid='body',
-                weight=800,
+                weight=1000,
                 label=self.t('body'),
                 value=self.f_get('body', process_tags=False),
             ))
@@ -482,7 +506,7 @@ class Content(_odm_ui.model.UIEntity):
             from . import _widget as _content_widget
             frm.add_widget(_content_widget.StatusSelect(
                 uid='status',
-                weight=1000,
+                weight=1200,
                 label=self.t('status'),
                 value='published' if self.is_new else self.status,
                 h_size='col-sm-4 col-md-3 col-lg-2',
@@ -493,7 +517,7 @@ class Content(_odm_ui.model.UIEntity):
         lng = _lang.get_current() if self.is_new else self.language
         frm.add_widget(_widget.static.Text(
             uid='language',
-            weight=1200,
+            weight=1400,
             label=self.t('language'),
             title=_lang.lang_title(lng),
             value=lng,
@@ -508,7 +532,7 @@ class Content(_odm_ui.model.UIEntity):
                 for i, lng in enumerate(_lang.langs(False)):
                     frm.add_widget(_content_widget.EntitySelect(
                         uid='localization_' + lng,
-                        weight=1200 + i,
+                        weight=1600 + i,
                         label=self.t('localization', {'lang': _lang.lang_title(lng)}),
                         model=self.model,
                         language=lng,
@@ -521,7 +545,7 @@ class Content(_odm_ui.model.UIEntity):
             if self.has_field('author'):
                 frm.add_widget(_auth.widget.UserSelect(
                     uid='author',
-                    weight=1400,
+                    weight=1800,
                     label=self.t('author'),
                     value=_auth.get_current_user() if self.is_new else self.author,
                     h_size='col-sm-4',

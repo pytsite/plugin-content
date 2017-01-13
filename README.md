@@ -2,6 +2,12 @@
 
 ## Changelog
 
+
+### 0.2 (2017-01-13)
+- New field **description**.
+- Indexes reviewed.
+
+
 ### 0.1.3 (2017-01-12)
 - Support for latest PytSite `form`'s changes.
 - Translation usage fixed.

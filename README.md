@@ -3,6 +3,10 @@
 ## Changelog
 
 
+### 0.2.1 (2017-01-15)
+JS form helper moved from [Article](https://github.com/pytsite/plugin-article) plugin.
+
+
 ### 0.2 (2017-01-13)
 - New field **description**.
 - Indexes reviewed.

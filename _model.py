@@ -6,7 +6,8 @@ from frozendict import frozendict as _frozendict
 from pytsite import auth as _auth, odm_ui as _odm_ui, \
     file as _file, ckeditor as _ckeditor, odm as _odm, widget as _widget, validation as _validation, html as _html, \
     lang as _lang, events as _events, util as _util, form as _form, auth_storage_odm as _auth_storage_odm, \
-    file_storage_odm as _file_storage_odm, mail as _mail, tpl as _tpl, reg as _reg, permissions as _permissions
+    file_storage_odm as _file_storage_odm, mail as _mail, tpl as _tpl, reg as _reg, permissions as _permissions, \
+    assetman as _assetman
 
 __author__ = 'Alexander Shepetko'
 __email__ = 'a@shepetko.com'
@@ -439,6 +440,12 @@ class Content(_odm_ui.model.UIEntity):
                 r.append('&nbsp;')
 
         return r
+
+    def odm_ui_m_form_setup(self, frm: _form.Form):
+        """Hook.
+        """
+        frm.css += ' content-m-form'
+        _assetman.add('content@js/content.js')
 
     def odm_ui_m_form_setup_widgets(self, frm: _form.Form):
         """Hook.

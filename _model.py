@@ -3,11 +3,12 @@
 import re as _re
 from typing import Tuple as _Tuple
 from frozendict import frozendict as _frozendict
+from datetime import datetime as _datetime, timedelta as _timedelta
 from pytsite import auth as _auth, odm_ui as _odm_ui, \
     file as _file, ckeditor as _ckeditor, odm as _odm, widget as _widget, validation as _validation, html as _html, \
     lang as _lang, events as _events, util as _util, form as _form, auth_storage_odm as _auth_storage_odm, \
     file_storage_odm as _file_storage_odm, mail as _mail, tpl as _tpl, reg as _reg, permissions as _permissions, \
-    assetman as _assetman
+    assetman as _assetman, router as _router, route_alias as _route_alias
 
 __author__ = 'Alexander Shepetko'
 __email__ = 'a@shepetko.com'
@@ -567,11 +568,14 @@ class Content(_odm_ui.model.UIEntity):
     def as_jsonable(self, **kwargs) -> dict:
         r = super().as_jsonable()
 
-        r.update({
-            'title': self.title,
-            'language': self.language,
-            'options': dict(self.options),
-        })
+        if self.has_field('title'):
+            r['title'] = self.title
+
+        if self.has_field('options'):
+            r['options'] = self.options
+
+        if self.has_field('language'):
+            r['language'] = self.language
 
         if self.has_field('images'):
             img_jsonable_args = {
@@ -588,5 +592,132 @@ class Content(_odm_ui.model.UIEntity):
 
         if self.has_field('author'):
             r['author'] = self.author.as_jsonable()
+
+        return r
+
+
+class ContentWithURL(Content):
+    def _setup_fields(self):
+        super()._setup_fields()
+
+        self.define_field(_odm.field.Ref('route_alias', model='route_alias', required=True))
+
+    def _setup_indexes(self):
+        super()._setup_indexes()
+
+        self.define_index([('route_alias', _odm.I_ASC)])
+
+    @property
+    def route_alias(self) -> _route_alias.model.RouteAlias:
+        return self.f_get('route_alias')
+
+    def odm_ui_view_url(self) -> str:
+        if self.is_new:
+            raise RuntimeError("Cannot generate view URL for non-saved entity of model '{}'.".format(self.model))
+
+        target_path = _router.ep_path('content@view', {'model': self.model, 'id': str(self.id)})
+        r_alias = _route_alias.get_by_target(target_path, self.language)
+        value = r_alias.alias if r_alias else target_path
+
+        return _router.url(value, lang=self.language)
+
+    def _on_f_set(self, field_name: str, value, **kwargs):
+        """Hook.
+        """
+        if field_name == 'route_alias' and (isinstance(value, str) or value is None):
+            if value is None:
+                value = ''
+
+            # Delegate string generation to dedicated hook
+            route_alias_str = self._alter_route_alias_str(value.strip())
+
+            # No route alias is attached, so we need to create a new one
+            if not self.route_alias:
+                value = _route_alias.create(route_alias_str, 'NONE', self.language).save()
+
+            # Existing route alias is attached and its value needs to be changed
+            elif self.route_alias and self.route_alias.alias != route_alias_str:
+                with self.route_alias:
+                    self.route_alias.delete()
+                value = _route_alias.create(route_alias_str, 'NONE', self.language).save()
+
+            # Keep old route alias
+            else:
+                value = self.route_alias
+
+        return super()._on_f_set(field_name, value, **kwargs)
+
+    def _pre_save(self, **kwargs):
+        """Hook.
+        """
+        super()._pre_save(**kwargs)
+
+        # Route alias is required
+        if not self.route_alias:
+            # Setting None leads to route alias auto-generation
+            self.f_set('route_alias', None)
+
+    def _after_save(self, first_save: bool = False, **kwargs):
+        """Hook.
+        """
+        super()._after_save(first_save, **kwargs)
+
+        # Update route alias target which has been created in self._pre_save()
+        if self.route_alias.target == 'NONE':
+            with self.route_alias:
+                target = _router.ep_path('content@view', {'model': self.model, 'id': self.id})
+                self.route_alias.f_set('target', target).save()
+
+        if first_save:
+            # Clean up not fully filled route aliases
+            f = _route_alias.find()
+            f.eq('target', 'NONE').lt('_created', _datetime.now() - _timedelta(1))
+            for ra in f.get():
+                with ra:
+                    ra.delete()
+
+    def _after_delete(self, **kwargs):
+        """Hook.
+        """
+        super()._after_delete()
+
+        # Delete linked route alias
+        with self.route_alias:
+            self.route_alias.delete()
+
+    def odm_ui_m_form_setup_widgets(self, frm: _form.Form):
+        """Hook.
+        """
+        super().odm_ui_m_form_setup_widgets(frm)
+
+        # Visible only for admins
+        if _auth.get_current_user().is_admin:
+            # Route alias
+            frm.add_widget(_widget.input.Text(
+                uid='route_alias',
+                weight=2000,
+                label=self.t('path'),
+                value=self.route_alias.alias if self.route_alias else '',
+            ))
+
+    def _alter_route_alias_str(self, orig_str: str) -> str:
+        """Alter route alias string.
+        """
+        # Checking original string
+        if not orig_str:
+            # Route alias string generation is possible only if entity's title is not empty
+            if self.title:
+                orig_str = '{}/{}'.format(self.model, self.title)
+            else:
+                # Without entity's title we cannot construct route alias string
+                raise RuntimeError('Cannot generate route alias because title is empty.')
+
+        return orig_str
+
+    def as_jsonable(self, **kwargs):
+        r = super().as_jsonable(**kwargs)
+
+        if self.has_field('route_alias'):
+            r['route_alias'] = self.route_alias.as_jsonable()
 
         return r

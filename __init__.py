@@ -13,8 +13,7 @@ __license__ = 'MIT'
 def _init():
     """Module Init Wrapper.
     """
-    from pytsite import admin, settings, console, assetman, events, tpl, lang, router, robots, browser, \
-        http_api, permissions
+    from pytsite import admin, settings, assetman, events, tpl, lang, router, robots, browser, http_api, permissions
     from . import _eh, _settings_form
     from ._console_command import Generate as GenerateConsoleCommand
 

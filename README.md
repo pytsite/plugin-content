@@ -3,6 +3,10 @@
 ## Changelog
 
 
+### 0.2.3 (2017-01-16)
+Models JSON representations fixed.
+
+
 ### 0.2.2 (2017-01-15)
 `route_alias` field moved from [Article](https://github.com/pytsite/plugin-article) plugin's model.
 

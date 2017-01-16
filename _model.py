@@ -568,11 +568,23 @@ class Content(_odm_ui.model.UIEntity):
     def as_jsonable(self, **kwargs) -> dict:
         r = super().as_jsonable()
 
+        if self.has_field('status'):
+            r['status'] = self.status
+
         if self.has_field('title'):
             r['title'] = self.title
 
+        if self.has_field('description'):
+            r['description'] = self.description
+
+        if self.has_field('video_links'):
+            r['video_links'] = self.video_links
+
+        if self.has_field('body'):
+            r['body'] = self.body
+
         if self.has_field('options'):
-            r['options'] = self.options
+            r['options'] = dict(self.options)
 
         if self.has_field('language'):
             r['language'] = self.language
@@ -584,13 +596,7 @@ class Content(_odm_ui.model.UIEntity):
             }
             r['images'] = [img.as_jsonable(**img_jsonable_args) for img in self.images]
 
-        if self.has_field('video_links'):
-            r['video_links'] = self.video_links
-
-        if self.has_field('body'):
-            r['body'] = self.body
-
-        if self.has_field('author'):
+        if self.has_field('author') and self.author.profile_is_public:
             r['author'] = self.author.as_jsonable()
 
         return r
@@ -682,8 +688,9 @@ class ContentWithURL(Content):
         super()._after_delete()
 
         # Delete linked route alias
-        with self.route_alias:
-            self.route_alias.delete()
+        if self.has_field('route_alias') and self.route_alias:
+            with self.route_alias:
+                self.route_alias.delete()
 
     def odm_ui_m_form_setup_widgets(self, frm: _form.Form):
         """Hook.
@@ -713,11 +720,3 @@ class ContentWithURL(Content):
                 raise RuntimeError('Cannot generate route alias because title is empty.')
 
         return orig_str
-
-    def as_jsonable(self, **kwargs):
-        r = super().as_jsonable(**kwargs)
-
-        if self.has_field('route_alias'):
-            r['route_alias'] = self.route_alias.as_jsonable()
-
-        return r

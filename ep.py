@@ -93,9 +93,9 @@ def view(args: dict, inp: dict):
         if not entity.check_permissions('modify'):
             raise _http.error.NotFound()
 
-    if entity.has_field('route_alias'):
+    # Update entity's comments count
+    if entity.has_field('route_alias') and entity.has_field('comments_count'):
         with entity:
-            # Update entity's comments count
             _auth.switch_user_to_system()
             entity.f_set('comments_count', _comments.get_all_comments_count(entity.f_get('route_alias').alias)).save()
             _auth.restore_user()

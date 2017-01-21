@@ -1,6 +1,11 @@
 # PytSite Content Plugin
 
+
 ## Changelog
+
+
+### 0.2.5 (2017-01-21)
+Support latest PytSite `widget`'s changes.
 
 
 ### 0.2.4 (2017-01-16)

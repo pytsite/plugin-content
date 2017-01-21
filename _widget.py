@@ -75,13 +75,13 @@ class EntitySelect(_widget.select.Select2):
 
         return super().set_val(value, **kwargs)
 
-    def get_html_em(self, **kwargs):
+    def _get_element(self, **kwargs):
         # In AJAX-mode Select2 doesn't contain any items,
         # but if we have selected item, it is necessary to append it
         if self._ajax_url and self._value:
             self._items.append((self._value, _odm.get_by_ref(self._value).f_get('title')))
 
-        return super().get_html_em()
+        return super()._get_element()
 
 
 class Search(_widget.Abstract):
@@ -128,8 +128,8 @@ class Search(_widget.Abstract):
     def form(self) -> _html.Element:
         return self._form
 
-    def get_html_em(self, **kwargs) -> _html.Element:
+    def _get_element(self, **kwargs) -> _html.Element:
         """Render the widget.
         :param **kwargs:
         """
-        return self._group_wrap(_tpl.render('content@widget/search', {'widget': self}))
+        return _html.TagLessElement(_tpl.render('content@widget/search', {'widget': self}))

@@ -1,6 +1,6 @@
 """PytSite Content HTTP API.
 """
-from pytsite import http as _http, auth as _auth, lang as _lang, validation as _validation, odm as _odm
+from pytsite import http as _http, auth as _auth, lang as _lang, odm as _odm
 from . import _api
 
 __author__ = 'Alexander Shepetko'
@@ -8,20 +8,11 @@ __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
 
-def patch_view_count(**kwargs) -> int:
+def patch_view_count(inp: dict, model: str, uid: str) -> int:
     """Increase content entity views counter by one.
     """
-    model = kwargs.get('model')
-    eid = kwargs.get('id')
-
-    if not model:
-        raise RuntimeError('Model is not specified.')
-
-    if not eid:
-        raise RuntimeError('ID is not specified.')
-
-    if model and eid:
-        entity = _api.dispense(model, eid)
+    if model and uid:
+        entity = _api.dispense(model, uid)
         if entity:
             with entity:
                 _auth.switch_user_to_system()

@@ -14,13 +14,16 @@ def _init():
     """Module Init Wrapper.
     """
     from pytsite import admin, settings, assetman, events, tpl, lang, router, robots, browser, http_api, permissions
-    from . import _eh, _settings_form
+    from . import _eh, _settings_form, _http_api
     from ._console_command import Generate as GenerateConsoleCommand
 
     lang.register_package(__name__, alias='content')
     tpl.register_package(__name__, alias='content')
 
-    http_api.register_handler('content', __name__ + '.http_api')
+    http_api.handle('PATCH', 'content/view/<model>/<uid>', _http_api.patch_view_count,
+                    'content@patch_view_count')
+    http_api.handle('GET', 'content/widget_entity_select_search', _http_api.get_widget_entity_select_search,
+                    'content@get_widget_entity_select_search')
 
     # Permission groups
     permissions.define_group('content', 'content@content')

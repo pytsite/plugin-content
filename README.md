@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.2.6 (2017-01-26)
+HTTP API update.
+
+
 ### 0.2.5 (2017-01-21)
 Support latest PytSite `widget`'s changes.
 

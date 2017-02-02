@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.2.7 (2017-02-02)
+Fixed entity views count HTTP API request processing.
+
+
 ### 0.2.6 (2017-01-26)
 HTTP API update.
 

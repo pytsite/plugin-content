@@ -11,22 +11,21 @@ __license__ = 'MIT'
 def patch_view_count(inp: dict, model: str, uid: str) -> int:
     """Increase content entity views counter by one.
     """
-    if model and uid:
-        entity = _api.dispense(model, uid)
-        if entity:
-            with entity:
-                _auth.switch_user_to_system()
-                entity.f_inc('views_count').save(update_timestamp=False)
-                _auth.restore_user()
+    entity = _api.dispense(model, uid)
+    if entity and entity.has_field('views_count'):
+        with entity:
+            _auth.switch_user_to_system()
+            entity.f_inc('views_count').save(update_timestamp=False)
+            _auth.restore_user()
 
-            return entity.views_count
+        return entity.f_get('views_count')
 
     return 0
 
 
-def get_widget_entity_select_search(**kwargs) -> dict:
+def get_widget_entity_select_search(inp: dict) -> dict:
     # Query is mandatory parameter
-    query = kwargs.get('q')
+    query = inp.get('q')
     if not query:
         return {'results': ()}
 
@@ -35,8 +34,8 @@ def get_widget_entity_select_search(**kwargs) -> dict:
     if user.is_anonymous:
         raise _http.error.Forbidden()
 
-    model = kwargs.get('model')
-    language = kwargs.get('language', _lang.get_current())
+    model = inp.get('model')
+    language = inp.get('language', _lang.get_current())
 
     # User can browse ANY entities
     if user.has_permission('pytsite.odm_auth.view.' + model):

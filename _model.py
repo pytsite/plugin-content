@@ -221,7 +221,7 @@ class Content(_odm_ui.model.UIEntity):
         self.define_index([('_modified', _odm.I_DESC)])
 
         # Ordinary indexes
-        for f in 'status', 'language', 'author', 'options':
+        for f in 'status', 'language', 'author':
             if self.has_field(f):
                 self.define_index([(f, _odm.I_ASC)])
 

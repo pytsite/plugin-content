@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.2.9 (2017-02-07)
+Removed unnecessary database index.
+
+
 ### 0.2.8 (2017-02-07)
 - Added support for latest PytSite `odm_auth` changes.
 - Fixed HTTP API related issues.

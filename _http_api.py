@@ -23,7 +23,7 @@ def patch_view_count(inp: dict, model: str, uid: str) -> int:
     return 0
 
 
-def get_widget_entity_select_search(inp: dict) -> dict:
+def get_widget_entity_select_search(inp: dict, model: str, language: str) -> dict:
     # Query is mandatory parameter
     query = inp.get('q')
     if not query:
@@ -33,9 +33,6 @@ def get_widget_entity_select_search(inp: dict) -> dict:
     user = _auth.get_current_user()
     if user.is_anonymous:
         raise _http.error.Forbidden()
-
-    model = inp.get('model')
-    language = inp.get('language', _lang.get_current())
 
     # User can browse ANY entities
     if user.has_permission('pytsite.odm_auth.view.' + model):

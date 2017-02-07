@@ -125,9 +125,6 @@ def _extract_images(entity) -> tuple:
 
     :type entity: Base
     """
-    if not entity.author:
-        raise RuntimeError('Entity author must be set before ')
-
     # Existing images count
     img_index = len(entity.images)
 
@@ -212,7 +209,7 @@ class Content(_odm_ui.model.UIEntity):
         self.define_field(_odm.field.String('body', tidyfy_html=True))
         self.define_field(_file_storage_odm.field.Images('images'))
         self.define_field(_odm.field.StringList('video_links', unique=True))
-        self.define_field(_odm.field.String('language', required=True, default=_lang.get_current()))
+        self.define_field(_odm.field.String('language', default=_lang.get_current()))
         self.define_field(_odm.field.String('language_db', required=True))
         self.define_field(_auth_storage_odm.field.User('author', required=True))
         self.define_field(_odm.field.Dict('options'))
@@ -306,7 +303,7 @@ class Content(_odm_ui.model.UIEntity):
         """Hook.
         """
         if field_name == 'language':
-            if value not in _lang.langs():
+            if value != 'n' and value not in _lang.langs():
                 raise ValueError("Language '{}' is not supported.".format(value))
 
             if value == 'en':
@@ -365,7 +362,7 @@ class Content(_odm_ui.model.UIEntity):
     def _after_save(self, first_save: bool = False, **kwargs):
         """Hook.
         """
-        if first_save:
+        if first_save and self.has_field('status'):
             # Notify content moderators about waiting content
             if self.status == 'waiting' and _reg.get('content.send_waiting_notifications', True):
                 _send_waiting_status_notification(self)
@@ -385,7 +382,7 @@ class Content(_odm_ui.model.UIEntity):
     def odm_ui_browser_setup(cls, browser: _odm_ui.Browser):
         """Setup ODM UI browser hook.
         """
-        browser.finder_adjust = lambda f: f.eq('language', _lang.get_current())
+        browser.finder_adjust = lambda f: f.inc('language', (_lang.get_current(), 'n'))
         browser.default_sort_field = '_modified'
 
         mock = _odm.dispense(browser.model)
@@ -537,7 +534,7 @@ class Content(_odm_ui.model.UIEntity):
         if _permissions.is_permission_defined(localization_perm) and current_user.has_permission(localization_perm):
             if self.has_field('localization_' + lng):
                 from . import _widget as _content_widget
-                for i, lng in enumerate(_lang.langs(False)):
+                for i, lng in enumerate(_lang.langs(False, False)):
                     frm.add_widget(_content_widget.EntitySelect(
                         uid='localization_' + lng,
                         weight=1600 + i,

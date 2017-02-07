@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 0.2.8 (2017-02-07)
+- Added support for latest PytSite `odm_auth` changes.
+- Fixed HTTP API related issues.
+
+
 ### 0.2.7 (2017-02-02)
 Fixed entity views count HTTP API request processing.
 

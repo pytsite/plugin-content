@@ -63,6 +63,10 @@ def register_model(model: str, cls, title: str, menu_weight: int = 0, icon: str 
         perm_description = cls.resolve_msg_id('content_perm_set_starred_' + model)
         _permission.define_permission(perm_name, perm_description, perm_group)
 
+    sidebar_permissions = []
+    for p in mock.odm_auth_permissions():
+        sidebar_permissions.append('pytsite.odm_auth.{}.{}'.format(p, model))
+
     _admin.sidebar.add_menu(
         sid='content',
         mid=model,
@@ -70,13 +74,7 @@ def register_model(model: str, cls, title: str, menu_weight: int = 0, icon: str 
         href=_router.ep_path('pytsite.odm_ui@browse', {'model': model}),
         icon=icon,
         weight=menu_weight,
-        permissions=(
-            'pytsite.odm_auth.create.' + model,
-            'pytsite.odm_auth.modify.' + model,
-            'pytsite.odm_auth.modify_own.' + model,
-            'pytsite.odm_auth.delete.' + model,
-            'pytsite.odm_auth.delete_own.' + model,
-        ),
+        permissions=tuple(sidebar_permissions),
         replace=replace
     )
 
@@ -276,7 +274,7 @@ def paginate(finder: _odm.Finder, per_page: int = 10) -> dict:
 
     entities = []
     for entity in finder.skip(pager.skip).get(pager.limit):
-        if entity.check_permissions('view'):
+        if entity.odm_auth_check_permission('view') or entity.odm_auth_check_permission('view_own'):
             entities.append(entity)
 
     return {

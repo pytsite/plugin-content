@@ -82,15 +82,15 @@ def view(args: dict, inp: dict):
         raise _http.error.NotFound()
 
     # Check permissions
-    if not entity.check_permissions('view'):
+    if not (entity.odm_auth_check_permission('view') or entity.odm_auth_check_permission('view_own')):
         raise _http.error.Forbidden()
 
     # Show non published entities only to users who can edit them
     if entity.has_field('publish_time') and entity.f_get('publish_time') > _datetime.now():
-        if not entity.check_permissions('modify'):
+        if not (entity.odm_auth_check_permission('modify') or entity.odm_auth_check_permission('modify_own')):
             raise _http.error.NotFound()
     if entity.has_field('status') and entity.status != 'published':
-        if not entity.check_permissions('modify'):
+        if not (entity.odm_auth_check_permission('modify') or entity.odm_auth_check_permission('modify_own')):
             raise _http.error.NotFound()
 
     # Update entity's comments count

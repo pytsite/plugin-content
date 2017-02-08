@@ -65,7 +65,8 @@ def register_model(model: str, cls, title: str, menu_weight: int = 0, icon: str 
 
     sidebar_permissions = []
     for p in mock.odm_auth_permissions():
-        sidebar_permissions.append('pytsite.odm_auth.{}.{}'.format(p, model))
+        if p not in ('view', 'view_own'):
+            sidebar_permissions.append('pytsite.odm_auth.{}.{}'.format(p, model))
 
     _admin.sidebar.add_menu(
         sid='content',

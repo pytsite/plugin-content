@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.2.10 (2017-02-08)
+Fixed admin UI permissions issue. 
+
+
 ### 0.2.9 (2017-02-07)
 Removed unnecessary database index.
 

@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.2.11 (2017-02-13)
+Removed neutral language from settings form.
+
+
 ### 0.2.10 (2017-02-08)
 Fixed admin UI permissions issue. 
 

@@ -11,7 +11,7 @@ __license__ = 'MIT'
 class Form(_settings.Form):
     def _on_setup_widgets(self):
         i = 10
-        for l in _lang.langs():
+        for l in _lang.langs(include_neutral=False):
             self.add_widget(_widget.input.Text(
                 uid='setting_home_title_' + l,
                 label=_lang.t('content@home_page_title', {'lang_code': l.upper()}, language=l),

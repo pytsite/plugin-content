@@ -11,7 +11,7 @@ __license__ = 'MIT'
 class Form(_settings.Form):
     def _on_setup_widgets(self):
         i = 10
-        for l in _lang.langs(include_neutral=False):
+        for l in _lang.langs():
             self.add_widget(_widget.input.Text(
                 uid='setting_home_title_' + l,
                 label=_lang.t('content@home_page_title', {'lang_code': l.upper()}, language=l),
@@ -40,7 +40,11 @@ class Form(_settings.Form):
             rows=10,
         ))
 
-        model_items = [(k, _api.get_model_title(k)) for k in sorted(_api.get_models().keys())]
+        model_items = []
+        for k in sorted(_api.get_models().keys()):
+            if _api.dispense(k).has_field('route_alias'):
+                model_items.append((k, _api.get_model_title(k)))
+
         if model_items:
             self.add_widget(_widget.select.Checkboxes(
                 uid='setting_rss_models',

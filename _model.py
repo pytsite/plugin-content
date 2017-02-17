@@ -534,7 +534,7 @@ class Content(_odm_ui.model.UIEntity):
         if _permissions.is_permission_defined(localization_perm) and current_user.has_permission(localization_perm):
             if self.has_field('localization_' + lng):
                 from . import _widget as _content_widget
-                for i, lng in enumerate(_lang.langs(False, False)):
+                for i, lng in enumerate(_lang.langs(False)):
                     frm.add_widget(_content_widget.EntitySelect(
                         uid='localization_' + lng,
                         weight=1600 + i,

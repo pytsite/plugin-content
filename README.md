@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 0.2.12 (2017-02-17)
+- Sitemap generation improved.
+- Settings form fixed.
+
+
 ### 0.2.11 (2017-02-13)
 Removed neutral language from settings form.
 

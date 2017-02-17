@@ -5,13 +5,15 @@ from shutil import rmtree as _rmtree
 from datetime import datetime as _datetime
 from pytsite import settings as _settings, sitemap as _sitemap, reg as _reg, logger as _logger, tpl as _tpl, \
     mail as _mail, lang as _lang, router as _router, metatag as _metatag, assetman as _assetman, auth as _auth, \
-    errors as _errors
+    errors as _errors, db as _db
 from plugins import comments as _comments
 from . import _api
 
 __author__ = 'Alexander Shepetko'
 __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
+
+_sitemap_generation_works = False
 
 
 def setup():
@@ -106,6 +108,12 @@ def auth_user_delete(user: _auth.model.AbstractUser):
 def _generate_sitemap():
     """Generate content sitemap.
     """
+    global _sitemap_generation_works
+
+    if _sitemap_generation_works:
+        raise RuntimeError('Sitemap generation is still in progress')
+
+    _sitemap_generation_works = True
     _logger.info('Sitemap generation start.')
 
     output_dir = _path.join(_reg.get('paths.static'), 'sitemap')
@@ -124,8 +132,14 @@ def _generate_sitemap():
             _logger.info("Sitemap generation started for model '{}', language '{}'.".
                          format(model, _lang.lang_title(lang)))
 
-            for entity in _api.find(model, language=lang).get():
-                sitemap.add_url(entity.url, entity.publish_time)
+            for doc in _api.dispense(model).collection.find({'language': lang}):
+                if not doc.get('route_alias') or not doc.get('publish_time'):
+                    continue
+
+                entity_url = _router.url(_db.get_database().dereference(doc['route_alias'])['alias'])
+                entity_pub_time = doc['publish_time']
+
+                sitemap.add_url(entity_url, entity_pub_time)
                 loop_links += 1
 
                 # Flush sitemap
@@ -149,6 +163,7 @@ def _generate_sitemap():
         _logger.info("'{}' successfully written.".format(sitemap_index_path))
 
     _logger.info('Sitemap generation stop.')
+    _sitemap_generation_works = False
 
 
 def _generate_feeds():

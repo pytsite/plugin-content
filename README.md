@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.2.13 (2017-02-23)
+Route names updated.
+
+
 ### 0.2.12 (2017-02-17)
 - Sitemap generation improved.
 - Settings form fixed.

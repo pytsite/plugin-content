@@ -34,17 +34,11 @@ def _init():
     browser.include('responsive', True)
 
     # Common routes
-    router.add_rule('/content/index/<model>', 'content@index', 'plugins.content@index')
-    router.add_rule('/content/view/<model>/<id>', 'content@view', 'plugins.content@view')
-    router.add_rule('/content/modify/<model>/<id>', 'content@modify', 'plugins.content@modify')
-    router.add_rule('/content/search/<model>', 'content@search', 'content@index')
-    router.add_rule('/content/ajax_search/<model>', 'content@ajax_search', 'plugins.content@ajax_search')
-
-    # Propose route
-    router.add_rule('/content/propose/<model>', 'content@propose', 'plugins.content@propose',
-                    filters='pytsite.auth@f_authorize')
-    router.add_rule('/content/propose/<model>/submit', 'content@propose_submit', 'plugins.content@propose_submit',
-                    filters='pytsite.auth@f_authorize')
+    router.add_rule('content/index/<model>', 'plugins.content@index', 'content@index')
+    router.add_rule('content/view/<model>/<id>', 'plugins.content@view', 'content@view')
+    router.add_rule('content/modify/<model>/<id>', 'plugins.content@modify', 'content@modify')
+    router.add_rule('content/search/<model>', 'plugins.content@search', 'content@search')
+    router.add_rule('content/ajax_search/<model>', 'plugins.content@ajax_search', 'content@ajax_search')
 
     # Admin elements
     admin.sidebar.add_section('content', 'content@content', 100)

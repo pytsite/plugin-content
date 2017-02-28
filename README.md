@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.2.15 (2017-02-28)
+Fixed content generation console command.
+
+
 ### 0.2.14 (2017-02-28)
 Fixed content generation console command.
 

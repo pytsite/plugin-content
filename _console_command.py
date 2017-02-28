@@ -1,21 +1,27 @@
 """Content Console Commands.
 """
 import requests as _requests
+import re as _re
 from random import shuffle as _shuffle, random as _random, randint as _randint
 from pytsite import file as _file, auth as _auth, console as _console, lang as _lang, events as _events, \
     validation as _validation
+from plugins import section as _section, tag as _tag
 from . import _api
 
 __author__ = 'Alexander Shepetko'
 __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
+_TEXT_CLEANUP_RE = _re.compile('[,:;\?\-\.]')
+_SPACES_CLEANUP_RE = _re.compile('\s{2,}')
+
 
 class Generate(_console.command.Abstract):
     """Abstract command.
     """
-    li_url = 'http://loripsum.net/api/prude/'
-    lp_url = 'http://pipsum.com/1024x768'
+    lorem_txt_url = 'https://baconipsum.com/api'
+    lorem_txt_args = {'type': 'meat-and-filler', 'format': 'html', 'para': 10}
+    lorem_img_url = 'http://pipsum.com/1024x768'
 
     def get_name(self) -> str:
         """Get command's name.
@@ -37,7 +43,7 @@ class Generate(_console.command.Abstract):
         """Get command options.
         """
         return (
-            ('model', _validation.rule.NonEmpty(msg_id='content@model_is_required')),
+            ('model', _validation.rule.NonEmpty(msg_id='content@model_required')),
             ('num', _validation.rule.Integer()),
             ('images', _validation.rule.Integer()),
             ('title-len', _validation.rule.Integer()),
@@ -70,8 +76,11 @@ class Generate(_console.command.Abstract):
         no_tags = kwargs.get('no-tags')
         no_sections = kwargs.get('no-sections')
 
+        if no_html:
+            self.lorem_txt_args['format'] = 'text'
+
         if short:
-            self.li_url += 'short/'
+            self.lorem_txt_args['paras'] = 1
 
         users = list(_auth.get_users({'status': 'active'}, limit=10))
 
@@ -103,10 +112,10 @@ class Generate(_console.command.Abstract):
             # Tags
             if not no_tags and entity.has_field('tags'):
                 # Generate tags
-                tags = list(_api.get_tags(language=language))
+                tags = list(_tag.get(5, language))
                 if len(tags) < 10:
                     for n in range(0, 10):
-                        tag = _api.dispense_tag(self._generate_title(1), language=language)
+                        tag = _tag.dispense(self._generate_title(1), language=language)
                         with tag:
                             tag.save()
                             tags.append(tag)
@@ -117,11 +126,11 @@ class Generate(_console.command.Abstract):
             # Section
             if not no_sections and entity.has_field('section'):
                 # Generate sections
-                sections = list(_api.get_sections(language))
+                sections = list(_section.get(language))
                 if not len(sections):
                     for i in range(0, 3):
                         title = self._generate_title(1)
-                        section = _api.dispense_section(title, language=language)
+                        section = _section.dispense(title, language=language)
                         with section:
                             section.save()
                             sections.append(section)
@@ -134,18 +143,17 @@ class Generate(_console.command.Abstract):
             body_parts_num = images_num or 3
             body = []
             for n in range(1, body_parts_num + 1):
-                if no_html:
-                    body.append(_requests.get(self.li_url + '/plaintext/').content.decode('utf-8'))
-                else:
-                    body.append(_requests.get(self.li_url + '/decorate/link/ul/ol/dl/bq/').content.decode('utf-8'))
+                body.append(_requests.get(self.lorem_txt_url, self.lorem_txt_args).content.decode('utf-8'))
+                if not no_html:
                     body.append('\n<p>[img:{}]</p>\n'.format(n))
-                    body.append(_requests.get(self.li_url).content.decode('utf-8'))
+                    body.append(_requests.get(self.lorem_txt_url, self.lorem_txt_args).content.decode('utf-8'))
+
             entity.f_set('body', ''.join(body))
 
             # Images
             if entity.has_field('images') and images_num:
                 for n in range(0, images_num):
-                    entity.f_add('images', _file.create(self.lp_url))
+                    entity.f_add('images', _file.create(self.lorem_img_url))
 
             entity.f_set('status', 'published')
             entity.f_set('views_count', int(_random() * 1000))
@@ -158,13 +166,11 @@ class Generate(_console.command.Abstract):
 
             _console.print_info(_lang.t('content@new_content_created', {'title': entity.title}))
 
-    def _generate_title(self, max_words=7) -> str:
-        title = str(_requests.get(self.li_url + '/1/plaintext/verylong').content.decode('utf-8')).strip()
+    def _generate_title(self, max_words: int = 7) -> str:
+        lorem_txt_args = {'type': 'meat-and-filler', 'format': 'text', 'paras': 1}
+        title = str(_requests.get(self.lorem_txt_url, lorem_txt_args).content.decode('utf-8')).strip()
 
-        for s in [',', '.', ':', ';', '?', '-']:
-            title = title.replace(s, '')
-
-        title = title.split(' ')
+        title = _SPACES_CLEANUP_RE.sub(' ', _TEXT_CLEANUP_RE.sub('', title)).split(' ')
         _shuffle(title)
         title[0] = title[0].title()
         title = ' '.join(title[0:max_words])

@@ -35,11 +35,11 @@ def _init():
     browser.include('responsive', True)
 
     # Common routes
-    router.add_rule('content/index/<model>', 'plugins.content@index', 'content@index')
-    router.add_rule('content/view/<model>/<id>', 'plugins.content@view', 'content@view')
-    router.add_rule('content/modify/<model>/<id>', 'plugins.content@modify', 'content@modify')
-    router.add_rule('content/search/<model>', 'plugins.content@search', 'content@search')
-    router.add_rule('content/ajax_search/<model>', 'plugins.content@ajax_search', 'content@ajax_search')
+    router.handle('content/index/<model>', 'plugins.content@index', 'content@index')
+    router.handle('content/view/<model>/<id>', 'plugins.content@view', 'content@view')
+    router.handle('content/modify/<model>/<id>', 'plugins.content@modify', 'content@modify')
+    router.handle('content/search/<model>', 'plugins.content@search', 'content@search')
+    router.handle('content/ajax_search/<model>', 'plugins.content@ajax_search', 'content@ajax_search')
 
     # Admin elements
     admin.sidebar.add_section('content', 'content@content', 100)

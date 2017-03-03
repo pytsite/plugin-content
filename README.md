@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.2.17 (2017-03-03)
+Fixed missing route alias handling.
+
+
 ### 0.2.16 (2017-03-03)
 Support for latest PytSite router's API function rename.
 

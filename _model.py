@@ -619,10 +619,13 @@ class ContentWithURL(Content):
             raise RuntimeError("Cannot generate view URL for non-saved entity of model '{}'.".format(self.model))
 
         target_path = _router.ep_path('content@view', {'model': self.model, 'id': str(self.id)})
-        r_alias = _route_alias.get_by_target(target_path, self.language)
-        value = r_alias.alias if r_alias else target_path
 
-        return _router.url(value, lang=self.language)
+        try:
+            target_path = _route_alias.get_by_target(target_path, self.language).alias
+        except _route_alias.error.RouteAliasNotFound:
+            pass
+
+        return _router.url(target_path, lang=self.language)
 
     def _on_f_set(self, field_name: str, value, **kwargs):
         """Hook.

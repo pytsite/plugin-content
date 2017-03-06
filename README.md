@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.2.18 (2017-03-06)
+Fixed processing entities with missed route alias.
+
+
 ### 0.2.17 (2017-03-03)
 Fixed missing route alias handling.
 

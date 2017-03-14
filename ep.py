@@ -130,11 +130,12 @@ def view(args: dict, inp: dict):
     else:
         _metatag.t_set('twitter:card', 'summary')
 
-    # Other metatags
+    # Various metatags
     _metatag.t_set('og:type', 'article')
     _metatag.t_set('og:url', entity.url)
     _metatag.t_set('article:publisher', entity.url)
 
+    # 'Author' metatag
     if entity.has_field('author') and entity.author:
         _metatag.t_set('author', entity.author.full_name)
         _metatag.t_set('article:author', entity.author.full_name)
@@ -145,13 +146,19 @@ def view(args: dict, inp: dict):
         if entity.has_field(f_name) and entity.f_get(f_name):
             _hreflang.add(lng, entity.f_get(f_name).url)
 
+    # Necessary JS code
     _assetman.add('content@js/content.js')
 
+    # Push entity into args
     args.update({
         'entity': entity,
     })
 
-    return _router.call_ep('$theme@content_' + model + '_view', args, inp)
+    # Call final endpoint
+    if _router.is_ep_callable('$theme@content_' + model + '_view'):
+        return _router.call_ep('$theme@content_' + model + '_view', args, inp)
+    else:
+        return _router.call_ep('$theme@content_entity_view', args, inp)
 
 
 def modify(args: dict, inp: dict) -> str:
@@ -161,14 +168,14 @@ def modify(args: dict, inp: dict) -> str:
     eid = args['id']
 
     try:
-        frm = _odm_ui.get_m_form(model, eid if eid != 0 else None)
+        args['frm'] = _odm_ui.get_m_form(model, eid if eid != 0 else None)
 
         if _router.is_ep_callable('$theme@content_' + model + '_modify'):
-            args['frm'] = frm
             return _router.call_ep('$theme@content_' + model + '_modify', args, inp)
-
+        elif _router.is_ep_callable('$theme@content_entity_modify'):
+            return _router.call_ep('$theme@content_entity_modify', args, inp)
         else:
-            return _tpl.render('content@page/modify', {'frm': frm})
+            return _tpl.render('content@page/modify-form', args)
 
     except _odm.error.EntityNotFound:
         raise _http.error.NotFound()

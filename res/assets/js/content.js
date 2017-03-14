@@ -1,5 +1,5 @@
 // Views count
-$('.content-entity').each(function () {
+$('.content-entity, #content-entity').each(function () {
     var model = $(this).data('model');
     var entityId = $(this).data('entityId');
     if (model && entityId)

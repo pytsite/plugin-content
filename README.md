@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.2.19 (2017-03-14)
+Added new content entity endpoint name variants.
+
+
 ### 0.2.18 (2017-03-06)
 Fixed processing entities with missed route alias.
 

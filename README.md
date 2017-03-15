@@ -4,8 +4,12 @@
 ## Changelog
 
 
+### 0.2.20 (2017-03-15)
+Added new content entities index endpoint name variants.
+
+
 ### 0.2.19 (2017-03-14)
-Added new content entity endpoint name variants.
+Added new content entity view endpoint name variants.
 
 
 ### 0.2.18 (2017-03-06)

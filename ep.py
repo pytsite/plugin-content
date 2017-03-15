@@ -2,7 +2,7 @@
 """
 from datetime import datetime as _datetime
 from pytsite import odm_ui as _odm_ui, auth as _auth, http as _http, router as _router, metatag as _metatag, \
-    assetman as _assetman, odm as _odm,  lang as _lang, tpl as _tpl, logger as _logger, hreflang as _hreflang
+    assetman as _assetman, odm as _odm, lang as _lang, tpl as _tpl, logger as _logger, hreflang as _hreflang
 from plugins import taxonomy as _taxonomy, comments as _comments
 
 __author__ = 'Alexander Shepetko'
@@ -63,7 +63,11 @@ def index(args: dict, inp: dict):
         f.where_text(query)
         _metatag.t_set('title', _lang.t('content@search', {'query': query}))
 
-    return _router.call_ep('$theme@content_' + model + '_index', args, inp)
+    # Call final endpoint
+    if _router.is_ep_callable('$theme@content_' + model + '_index'):
+        return _router.call_ep('$theme@content_' + model + '_index', args, inp)
+    else:
+        return _router.call_ep('$theme@content_entity_index', args, inp)
 
 
 def view(args: dict, inp: dict):
@@ -93,7 +97,7 @@ def view(args: dict, inp: dict):
             raise _http.error.NotFound()
 
     # Update entity's comments count
-    if entity.has_field('route_alias')  and entity.has_field('comments_count') and entity.f_get('route_alias'):
+    if entity.has_field('route_alias') and entity.has_field('comments_count') and entity.f_get('route_alias'):
         _auth.switch_user_to_system()
         with entity:
             entity.f_set('comments_count', _comments.get_all_comments_count(entity.f_get('route_alias').alias)).save()

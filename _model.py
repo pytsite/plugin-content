@@ -99,7 +99,7 @@ def _process_tags(entity, inp: str, responsive_images: bool = True, images_width
         if link_orig:
             link = _html.A(r, href=img.url, target=link_target, title=_util.escape_html(alt))
             if link_class:
-                link.set_attr('cls', _util.escape_html(link_class))
+                link.set_attr('css', _util.escape_html(link_class))
 
             r = str(link)
 
@@ -416,18 +416,18 @@ class Content(_odm_ui.model.UIEntity):
         if self.has_field('status'):
             status = self.status
             status_str = self.t('status_' + status)
-            status_cls = 'primary'
+            status_css = 'primary'
             if status == 'waiting':
-                status_cls = 'warning'
+                status_css = 'warning'
             elif status == 'unpublished':
-                status_cls = 'default'
-            status = str(_html.Span(status_str, cls='label label-' + status_cls))
+                status_css = 'default'
+            status = str(_html.Span(status_str, css='label label-' + status_css))
             r.append(status)
 
         # Images
         if self.has_field('images'):
-            images_cls = 'default' if not len(self.images) else 'primary'
-            images_count = '<span class="label label-{}">{}</span>'.format(images_cls, len(self.images))
+            images_css = 'default' if not len(self.images) else 'primary'
+            images_count = '<span class="label label-{}">{}</span>'.format(images_css, len(self.images))
             r.append(images_count)
 
         # Author

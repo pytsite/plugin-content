@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.2.21 (2017-03-21)
+Support fore latest PytSite `widget`'s changes.
+
+
 ### 0.2.20 (2017-03-15)
 Added new content entities index endpoint name variants.
 

@@ -102,14 +102,14 @@ class Search(_widget.Abstract):
         self._title_tag = kwargs.get('title_tag', 'h3')
         self._title_css = kwargs.get('title_css', 'title')
 
-        self._form = _html.Form(cls='wrapper form-inline', method='GET')
+        self._form = _html.Form(css='wrapper form-inline', method='GET')
         placeholder = _lang.t('content@search_input_placeholder', language=self._language)
-        self._form.append(_html.Input(type='text', cls='form-control', name='search', required=True, value=self.value,
+        self._form.append(_html.Input(type='text', css='form-control', name='search', required=True, value=self.value,
                                       placeholder=placeholder))
         self._form.set_attr('action', _router.ep_url('plugins.content@search', {'model': self._model}))
 
-        btn = _html.Button(type='submit', cls='btn btn-default')
-        self._form.append(btn.append(_html.I(cls='fa fa-search')))
+        btn = _html.Button(type='submit', css='btn btn-default')
+        self._form.append(btn.append(_html.I(css='fa fa-search')))
 
         self._css += ' widget-content-search search-{}'.format(self._model)
 

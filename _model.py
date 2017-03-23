@@ -608,7 +608,8 @@ class ContentWithURL(Content):
     def _setup_indexes(self):
         super()._setup_indexes()
 
-        self.define_index([('route_alias', _odm.I_ASC)])
+        if self.has_field('route_alias'):
+            self.define_index([('route_alias', _odm.I_ASC)])
 
     @property
     def route_alias(self) -> _route_alias.model.RouteAlias:
@@ -659,7 +660,7 @@ class ContentWithURL(Content):
         super()._pre_save(**kwargs)
 
         # Route alias is required
-        if not self.route_alias:
+        if self.has_field('route_alias') and not self.route_alias:
             # Setting None leads to route alias auto-generation
             self.f_set('route_alias', None)
 
@@ -669,12 +670,12 @@ class ContentWithURL(Content):
         super()._after_save(first_save, **kwargs)
 
         # Update route alias target which has been created in self._pre_save()
-        if self.route_alias.target == 'NONE':
+        if self.has_field('route_alias') and self.route_alias.target == 'NONE':
             with self.route_alias:
                 target = _router.ep_path('content@view', {'model': self.model, 'id': self.id})
                 self.route_alias.f_set('target', target).save()
 
-        if first_save:
+        if first_save and self.has_field('route_alias'):
             # Clean up not fully filled route aliases
             f = _route_alias.find()
             f.eq('target', 'NONE').lt('_created', _datetime.now() - _timedelta(1))
@@ -697,8 +698,7 @@ class ContentWithURL(Content):
         """
         super().odm_ui_m_form_setup_widgets(frm)
 
-        # Visible only for admins
-        if _auth.get_current_user().is_admin:
+        if _auth.get_current_user().is_admin and self.has_field('route_alias'):
             # Route alias
             frm.add_widget(_widget.input.Text(
                 uid='route_alias',

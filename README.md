@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.2.23 (2017-03-30)
+Fixed event subscription method. 
+
+
 ### 0.2.22 (2017-03-23)
 Fixed issues related to missing `route_alias` field in `model.ContentWithURL`.
 

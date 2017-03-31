@@ -182,7 +182,7 @@ def _remove_tags(s: str) -> str:
 def _send_waiting_status_notification(entity):
     for u in _auth.get_users():
         if u.has_permission('pytsite.odm_auth.modify.' + entity.model):
-            m_subject = _lang.t('content@content_waiting_mail_subject', {'app_name': _lang.t('app_name')})
+            m_subject = _lang.t('content@content_waiting_mail_subject', {'app_name': _lang.t('app@app_name')})
             m_body = _tpl.render('content@mail/{}/propose'.format(_lang.get_current()), {
                 'user': u,
                 'entity': entity,

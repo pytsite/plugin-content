@@ -443,7 +443,7 @@ class Content(_odm_ui.model.UIEntity):
         """Hook.
         """
         frm.css += ' content-m-form'
-        _assetman.add('content@js/content.js')
+        _assetman.preload('content@js/content.js')
 
     def odm_ui_m_form_setup_widgets(self, frm: _form.Form):
         """Hook.

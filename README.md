@@ -3,6 +3,9 @@
 
 ## Changelog
 
+### 0.3 (2017-04-28)
+Support for latest PytSite asset management changes.
+
 
 ### 0.2.24 (2017-03-31)
 Fixed lang message ID.

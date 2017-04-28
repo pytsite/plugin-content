@@ -32,7 +32,7 @@ def _init():
 
     # Assets
     assetman.register_package(__name__, alias='content')
-    browser.include('responsive', True)
+    assetman.t_js(__name__ + '@js/**', 'js')
 
     # Common routes
     router.handle('content/index/<model>', 'plugins.content@index', 'content@index')

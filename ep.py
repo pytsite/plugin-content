@@ -151,7 +151,7 @@ def view(args: dict, inp: dict):
             _hreflang.add(lng, entity.f_get(f_name).url)
 
     # Necessary JS code
-    _assetman.add('content@js/content.js')
+    _assetman.preload('content@js/content.js')
 
     # Push entity into args
     args.update({

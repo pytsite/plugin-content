@@ -3,8 +3,7 @@
 import requests as _requests
 import re as _re
 from random import shuffle as _shuffle, randint as _randint
-from pytsite import file as _file, auth as _auth, console as _console, lang as _lang, events as _events, \
-    validation as _validation
+from pytsite import file as _file, auth as _auth, console as _console, lang as _lang, events as _events
 from . import _api
 
 __author__ = 'Alexander Shepetko'
@@ -15,62 +14,60 @@ _TEXT_CLEANUP_RE = _re.compile('[,:;\?\-\.]')
 _SPACES_CLEANUP_RE = _re.compile('\s{2,}')
 
 
-class Generate(_console.command.Abstract):
+class Generate(_console.Command):
     """Abstract command.
     """
     lorem_txt_url = 'https://baconipsum.com/api'
     lorem_txt_args = {'type': 'meat-and-filler', 'format': 'html', 'paras': 3}
     lorem_img_url = 'http://pipsum.com/1024x768'
 
-    def get_name(self) -> str:
+    def __init__(self):
+        super().__init__()
+
+        self._define_option(_console.option.Bool('short'))
+        self._define_option(_console.option.Bool('no-html'))
+        self._define_option(_console.option.Bool('no-tags'))
+        self._define_option(_console.option.Bool('no-sections'))
+        self._define_option(_console.option.Str('author'))
+        self._define_option(_console.option.Str('lang', default=_lang.get_current()))
+        self._define_option(_console.option.PositiveInt('num', default=10))
+        self._define_option(_console.option.PositiveInt('title-len', default=7))
+        self._define_option(_console.option.PositiveInt('description-len', default=28))
+        self._define_option(_console.option.PositiveInt('images', default=1))
+
+        self._define_argument(_console.argument.Argument('model', True))
+
+    @property
+    def name(self) -> str:
         """Get command's name.
         """
         return 'content:generate'
 
-    def get_description(self) -> str:
+    @property
+    def description(self) -> str:
         """Get command's description.
         """
-        return _lang.t('content@console_generate_command_description')
+        return 'content@console_generate_command_description'
 
-    def get_options_help(self) -> str:
-        """Get help for command's options.
-        """
-        return '[--author=LOGIN] [--description-len=LEN] [--images=NUM] [--lang=LANG] [--num=NUM] [--no-html] ' \
-               '[--no-tags] [--no-sections] [--short] [--title-len=LEN] --model=MODEL'
-
-    def get_options(self) -> tuple:
-        """Get command options.
-        """
-        return (
-            ('model', _validation.rule.NonEmpty(msg_id='content@model_required')),
-            ('num', _validation.rule.Integer()),
-            ('images', _validation.rule.Integer()),
-            ('title-len', _validation.rule.Integer()),
-            ('description-len', _validation.rule.Integer()),
-            ('lang', _validation.rule.Regex(pattern='^[a-z]{2}$')),
-            ('no-html', _validation.rule.Pass()),
-            ('short', _validation.rule.Pass()),
-            ('author', _validation.rule.Pass()),
-            ('no-tags', _validation.rule.Pass()),
-        )
-
-    def execute(self, args: tuple = (), **kwargs):
+    def execute(self):
         """Execute teh command.
         """
         _auth.switch_user_to_system()
 
-        model = kwargs['model']
+        model = self.get_argument_value(0)
 
         # Checking if the content model registered
         if not _api.is_model_registered(model):
             raise _console.error.Error("'{}' is not a registered content model.".format(model))
 
-        author_login = kwargs.get('author')
-        num = int(kwargs.get('num', 10))
-        images_num = int(kwargs.get('images', 1))
-        language = kwargs.get('lang', _lang.get_current())
-        no_html = kwargs.get('no-html')
-        short = kwargs.get('short')
+        author_login = self.get_option_value('author')
+        num = self.get_option_value('num')
+        images_num = self.get_option_value('images')
+        language = self.get_option_value('lang')
+        no_html = self.get_option_value('no-html')
+        short = self.get_option_value('short')
+        title_len = self.get_option_value('title-len')
+        description_len = self.get_option_value('description-len')
 
         if no_html:
             self.lorem_txt_args['format'] = 'text'
@@ -100,11 +97,11 @@ class Generate(_console.command.Abstract):
 
             # Title
             if entity.has_field('title'):
-                entity.f_set('title', self._generate_title(int(kwargs.get('title-len', 7))))
+                entity.f_set('title', self._generate_title(title_len))
 
             # Description
             if entity.has_field('description'):
-                entity.f_set('description', self._generate_title(int(kwargs.get('description-len', 28))))
+                entity.f_set('description', self._generate_title(description_len))
 
             # Body
             if entity.has_field('body'):

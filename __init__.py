@@ -13,8 +13,7 @@ __license__ = 'MIT'
 def _init():
     """Module Init Wrapper.
     """
-    from pytsite import admin, settings, assetman, events, tpl, lang, router, robots, browser, http_api, permissions, \
-        console
+    from pytsite import admin, settings, assetman, events, tpl, lang, router, robots, http_api, permissions, console
     from . import _eh, _settings_form, _http_api
     from ._console_command import Generate as GenerateConsoleCommand
 
@@ -32,7 +31,7 @@ def _init():
 
     # Assets
     assetman.register_package(__name__, alias='content')
-    assetman.t_js(__name__ + '@js/**', 'js')
+    assetman.t_js(__name__ + '@**', 'js')
 
     # Common routes
     router.handle('content/index/<model>', 'plugins.content@index', 'content@index')

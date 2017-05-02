@@ -1,6 +1,6 @@
 """PytSite Content Package.
 """
-from typing import Callable as _Callable, List as _List
+from typing import Callable as _Callable, List as _List, Union as _Union, Type as _Type
 from datetime import datetime as _datetime
 from urllib import parse as _urllib_parse
 from os import path as _path, makedirs as _makedirs
@@ -16,13 +16,13 @@ __license__ = 'MIT'
 _models = {}
 
 
-def register_model(model: str, cls, title: str, menu_weight: int = 0, icon: str = 'fa fa-file-text-o', replace=False):
+def register_model(model: str, cls: _Union[str, _Type[_model.Content]], title: str, menu_weight: int = 0,
+                   icon: str = 'fa fa-file-text-o', replace=False):
     """Register content model.
-    :type cls: str | _odm.model.Entity
     """
     # Resolve class
     if isinstance(cls, str):
-        cls = _util.get_class(cls)  # type: _model.Content
+        cls = _util.get_class(cls)  # type: _Type[_model.Content]
 
     if not issubclass(cls, _model.Content):
         raise TypeError('Subclass of content model expected.')

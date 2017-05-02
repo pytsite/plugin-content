@@ -4,11 +4,11 @@ import re as _re
 from typing import Tuple as _Tuple
 from frozendict import frozendict as _frozendict
 from datetime import datetime as _datetime, timedelta as _timedelta
-from pytsite import auth as _auth, odm_ui as _odm_ui, \
-    file as _file, ckeditor as _ckeditor, odm as _odm, widget as _widget, validation as _validation, html as _html, \
-    lang as _lang, events as _events, util as _util, form as _form, auth_storage_odm as _auth_storage_odm, \
-    file_storage_odm as _file_storage_odm, mail as _mail, tpl as _tpl, reg as _reg, permissions as _permissions, \
-    assetman as _assetman, router as _router, route_alias as _route_alias
+from pytsite import auth as _auth, odm_ui as _odm_ui, file as _file, ckeditor as _ckeditor, odm as _odm, \
+    widget as _widget, validation as _validation, html as _html, lang as _lang, events as _events, util as _util, \
+    form as _form, auth_storage_odm as _auth_storage_odm, file_storage_odm as _file_storage_odm, mail as _mail, \
+    tpl as _tpl, reg as _reg, permissions as _permissions, assetman as _assetman, router as _router, \
+    route_alias as _route_alias
 
 __author__ = 'Alexander Shepetko'
 __email__ = 'a@shepetko.com'
@@ -138,7 +138,7 @@ def _extract_images(entity) -> tuple:
 
         return '[img:{}]'.format(img_index)
 
-    body = _html_img_tag_re.sub(replace_func, entity.body)
+    body = _html_img_tag_re.sub(replace_func, entity.f_get('body', process_tags=False, remove_tags=False))
 
     return body, images
 

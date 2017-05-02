@@ -3,6 +3,10 @@
 
 ## Changelog
 
+### 0.3.1 (2017-05-02)
+Fixed image tags processing. 
+
+
 ### 0.3 (2017-04-28)
 Support for latest PytSite asset management changes.
 

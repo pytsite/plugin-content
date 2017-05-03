@@ -31,7 +31,7 @@ def _init():
 
     # Assets
     assetman.register_package(__name__, alias='content')
-    assetman.t_js(__name__ + '@**', 'js')
+    assetman.t_js(__name__ + '@**')
 
     # Common routes
     router.handle('content/index/<model>', 'plugins.content@index', 'content@index')

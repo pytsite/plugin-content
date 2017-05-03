@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.3.4 (2017-05-04)
+Fixed translation strings.
+
+
 ### 0.3.3 (2017-05-03)
 Fixed invalid JS assets target location.
 

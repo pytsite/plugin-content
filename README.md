@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.3.5 (2017-05-05)
+Updated controllers' signatures.
+
+
 ### 0.3.4 (2017-05-04)
 Fixed translation strings.
 

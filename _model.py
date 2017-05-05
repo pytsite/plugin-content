@@ -448,6 +448,7 @@ class Content(_odm_ui.model.UIEntity):
     def odm_ui_m_form_setup_widgets(self, frm: _form.Form):
         """Hook.
         """
+        from . import _widget as _content_widget
         current_user = _auth.get_current_user()
 
         # Title
@@ -508,7 +509,6 @@ class Content(_odm_ui.model.UIEntity):
 
         # Status
         if self.has_field('status') and current_user.has_permission('content.bypass_moderation.' + self.model):
-            from . import _widget as _content_widget
             frm.add_widget(_content_widget.StatusSelect(
                 uid='status',
                 weight=1200,
@@ -533,7 +533,6 @@ class Content(_odm_ui.model.UIEntity):
         localization_perm = 'content.set_localization.' + self.model
         if _permissions.is_permission_defined(localization_perm) and current_user.has_permission(localization_perm):
             if self.has_field('localization_' + lng):
-                from . import _widget as _content_widget
                 for i, lng in enumerate(_lang.langs(False)):
                     frm.add_widget(_content_widget.EntitySelect(
                         uid='localization_' + lng,

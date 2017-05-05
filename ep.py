@@ -10,31 +10,31 @@ __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
 
-def index(args: dict, inp: dict):
+def index(**kwargs):
     """Content Index.
     """
     # Delayed import to prevent circular dependency
     from . import _api
 
     # Checking if the model is registered
-    model = args.get('model')
+    model = kwargs.get('model')
     if not model or not _api.is_model_registered(model):
         _logger.warn("Content model '{}' is not found. Redirecting to home.".format(model))
         return _http.response.Redirect(_router.base_url())
 
     # Getting finder
     f = _api.find(model)
-    args['finder'] = f
+    kwargs['finder'] = f
 
     # Filter by term
-    term_field = args.get('term_field')
+    term_field = kwargs.get('term_field')
     if term_field and f.mock.has_field(term_field):
         term_model = f.mock.get_field(term_field).model
-        term_alias = args.get('term_alias')
+        term_alias = kwargs.get('term_alias')
         if term_alias and term_model != '*':
             term = _taxonomy.find(term_model).eq('alias', term_alias).first()
             if term:
-                args['term'] = term
+                kwargs['term'] = term
                 if isinstance(f.mock.fields[term_field], _odm.field.Ref):
                     f.eq(term_field, term)
                 elif isinstance(f.mock.fields[term_field], _odm.field.RefsList):
@@ -46,38 +46,38 @@ def index(args: dict, inp: dict):
             raise _http.error.NotFound()
 
     # Filter by author
-    author_nickname = inp.get('author') or args.get('author')
+    author_nickname = _router.request().inp.get('author') or kwargs.get('author')
     if author_nickname:
         author = _auth.get_user(nickname=author_nickname)
 
         if author:
             _metatag.t_set('title', _lang.t('content@articles_of_author', {'name': author.full_name}))
             f.eq('author', author.uid)
-            args['author'] = author
+            kwargs['author'] = author
         else:
             raise _http.error.NotFound()
 
     # Search
-    if inp.get('search'):
-        query = inp.get('search')
+    query = _router.request().inp.get('query')
+    if query:
         f.where_text(query)
         _metatag.t_set('title', _lang.t('content@search', {'query': query}))
 
     # Call final endpoint
     if _router.is_ep_callable('$theme@content_' + model + '_index'):
-        return _router.call_ep('$theme@content_' + model + '_index', args, inp)
+        return _router.call_ep('$theme@content_' + model + '_index', **kwargs)
     else:
-        return _router.call_ep('$theme@content_entity_index', args, inp)
+        return _router.call_ep('$theme@content_entity_index', **kwargs)
 
 
-def view(args: dict, inp: dict):
+def view(**kwargs):
     """View Content Entity.
     """
     from . import _api
 
-    model = args.get('model')
+    model = kwargs.get('model')
 
-    entity = _api.find(model, status='*', check_publish_time=False).eq('_id', args.get('id')).first()
+    entity = _api.find(model, status='*', check_publish_time=False).eq('_id', kwargs.get('id')).first()
     """:type: plugins.content.model.Content"""
 
     # Check entity existence
@@ -154,47 +154,47 @@ def view(args: dict, inp: dict):
     _assetman.preload('content@js/content.js')
 
     # Push entity into args
-    args.update({
+    kwargs.update({
         'entity': entity,
     })
 
     # Call final endpoint
     if _router.is_ep_callable('$theme@content_' + model + '_view'):
-        return _router.call_ep('$theme@content_' + model + '_view', args, inp)
+        return _router.call_ep('$theme@content_' + model + '_view', **kwargs)
     else:
-        return _router.call_ep('$theme@content_entity_view', args, inp)
+        return _router.call_ep('$theme@content_entity_view', **kwargs)
 
 
-def modify(args: dict, inp: dict) -> str:
+def modify(**kwargs) -> str:
     """Get content entity create/modify form.
     """
-    model = args['model']
-    eid = args['id']
+    model = kwargs['model']
+    eid = kwargs['id']
 
     try:
-        args['frm'] = _odm_ui.get_m_form(model, eid if eid != 0 else None)
+        kwargs['frm'] = _odm_ui.get_m_form(model, eid if eid != 0 else None)
 
         if _router.is_ep_callable('$theme@content_' + model + '_modify'):
-            return _router.call_ep('$theme@content_' + model + '_modify', args, inp)
+            return _router.call_ep('$theme@content_' + model + '_modify', **kwargs)
         elif _router.is_ep_callable('$theme@content_entity_modify'):
-            return _router.call_ep('$theme@content_entity_modify', args, inp)
+            return _router.call_ep('$theme@content_entity_modify', **kwargs)
         else:
-            return _tpl.render('content@page/modify-form', args)
+            return _tpl.render('content@page/modify-form', **kwargs)
 
     except _odm.error.EntityNotFound:
         raise _http.error.NotFound()
 
 
-def propose(args: dict, inp: dict) -> str:
+def propose(**kwargs):
     """Propose content endpoint.
     """
-    model = args.get('model')
+    model = kwargs.get('model')
 
     frm = _odm_ui.get_m_form(model, redirect=_router.base_url())
     frm.title = None
 
     _metatag.t_set('title', _lang.t('content@propose_content'))
 
-    return _router.call_ep('$theme@content_' + model + '_propose', {
-        'form': frm
-    })
+    kwargs['form'] = frm
+
+    return _router.call_ep('$theme@content_' + model + '_propose', **kwargs)

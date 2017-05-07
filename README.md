@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.3.6 (2017-05-07)
+Fixed incorrect call to `tpl.render()` in modify form endpoint.
+
+
 ### 0.3.5 (2017-05-05)
 Updated controllers' signatures.
 

@@ -179,7 +179,7 @@ def modify(**kwargs) -> str:
         elif _router.is_ep_callable('$theme@content_entity_modify'):
             return _router.call_ep('$theme@content_entity_modify', **kwargs)
         else:
-            return _tpl.render('content@page/modify-form', **kwargs)
+            return _tpl.render('content@page/modify-form', kwargs)
 
     except _odm.error.EntityNotFound:
         raise _http.error.NotFound()

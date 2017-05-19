@@ -1,7 +1,7 @@
-"""Content Widgets.
+"""Content Widgets
 """
-from pytsite import auth as _auth, widget as _widget, html as _html, lang as _lang, router as _router, tpl as _tpl, \
-    odm as _odm, http_api as _http_api, odm_auth as _odm_auth
+from pytsite import widget as _widget, html as _html, lang as _lang, router as _router, tpl as _tpl, odm as _odm, \
+    http_api as _http_api, odm_auth as _odm_auth
 from . import _model, _api
 
 __author__ = 'Alexander Shepetko'
@@ -19,7 +19,7 @@ class ModelSelect(_widget.select.Select):
         items = []
         for k, v in _api.get_models().items():
             if self._check_perms:
-                if _odm_auth.check_permission('view', k) or _odm_auth.check_permission('view_owm', k):
+                if _odm_auth.check_permission('view', k) or _odm_auth.check_permission('view_own', k):
                     items.append((k, _lang.t(v[1])))
             else:
                 items.append((k, _lang.t(v[1])))
@@ -35,10 +35,9 @@ class ModelCheckboxes(_widget.select.Checkboxes):
         self._check_perms = kwargs.get('check_perms', True)
 
         items = []
-        u = _auth.get_current_user()
         for k, v in _api.get_models().items():
             if self._check_perms:
-                if u.has_permission('pytsite.odm_auth.view.' + k) or u.has_permission('pytsite.odm_auth.view_own.' + k):
+                if _odm_auth.check_permission('view', k) or _odm_auth.check_permission('view_own', k):
                     items.append((k, _lang.t(v[1])))
             else:
                 items.append((k, _lang.t(v[1])))

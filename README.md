@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.3.7 (2017-05-19)
+Fixed permissions checking in widgets.
+
+
 ### 0.3.6 (2017-05-07)
 Fixed incorrect call to `tpl.render()` in modify form endpoint.
 

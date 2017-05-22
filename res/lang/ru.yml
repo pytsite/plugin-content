@@ -35,3 +35,4 @@ forbid_author_deletion: 'Невозможно удалить учётную за
 odm_auth_group_description: 'Контент'
 model_required: 'Необходимо указать модель контента'
 new_content_created: 'Создан новый :model: :title'
+enlarge_responsive_images: 'Автоматически увеличивать изображения'

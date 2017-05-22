@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 0.4 (2017-05-22)
+- Added setting to enable/disable automatic body images enlarging.
+- Fixed embedded video links parsing.
+
+
 ### 0.3.7 (2017-05-19)
 Fixed permissions checking in widgets.
 

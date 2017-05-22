@@ -35,3 +35,4 @@ forbid_author_deletion: 'Cannot delete account of user :author, because it owns 
 odm_auth_group_description: 'Content'
 model_required: 'Model required'
 new_content_created: 'New :model created: :title'
+enlarge_responsive_images: 'Automatically enlarge images'

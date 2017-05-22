@@ -8,7 +8,7 @@ from pytsite import auth as _auth, odm_ui as _odm_ui, file as _file, ckeditor as
     widget as _widget, validation as _validation, html as _html, lang as _lang, events as _events, util as _util, \
     form as _form, auth_storage_odm as _auth_storage_odm, file_storage_odm as _file_storage_odm, mail as _mail, \
     tpl as _tpl, reg as _reg, permissions as _permissions, assetman as _assetman, router as _router, \
-    route_alias as _route_alias
+    route_alias as _route_alias, settings as _settings
 
 __author__ = 'Alexander Shepetko'
 __email__ = 'a@shepetko.com'
@@ -18,10 +18,10 @@ _body_img_tag_re = _re.compile('\[img:(\d+)([^\]]*)\]')
 _body_vid_tag_re = _re.compile('\[vid:(\d+)\]')
 _html_img_tag_re = _re.compile('<img.*?src\s*=["\']([^"\']+)["\'][^>]*>')
 _html_video_youtube_re = _re.compile(
-    '<iframe.*?src=["\']?https?://www\.youtube\.com/embed/([a-zA-Z0-9_-]{11})[^"\']*["\']?.+?</iframe>'
+    '<iframe.*?src=["\']?(?:https?:)?//www\.youtube\.com/embed/([a-zA-Z0-9_-]{11})[^"\']*["\']?.+?</iframe>'
 )
 _html_video_facebook_re = _re.compile(
-    '<iframe.*?src=["\']?https?://www\.facebook\.com/plugins/video\.php\?href=([^"\']+)["\']?.+?</iframe>'
+    '<iframe.*?src=["\']?(?:https?:)?//www\.facebook\.com/plugins/video\.php\?href=([^"\']+)["\']?.+?</iframe>'
 )
 
 
@@ -30,6 +30,7 @@ def _process_tags(entity, inp: str, responsive_images: bool = True, images_width
 
     :type entity: Content
     """
+    enlarge_images_setting = _settings.get('content.enlarge_images', True)
     entity_images = entity.images if entity.has_field('images') else ()
     entity_images_count = len(entity_images)
 
@@ -52,7 +53,7 @@ def _process_tags(entity, inp: str, responsive_images: bool = True, images_width
         link_target = '_blank'
         link_class = ''
         img_css = ''
-        enlarge = True
+        enlarge = enlarge_images_setting
         alt = entity.title if entity.has_field('title') else ''
         width = 0
         height = 0

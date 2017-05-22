@@ -60,4 +60,11 @@ class Form(_settings.Form):
                 items=model_items,
             ))
 
+        self.add_widget(_widget.select.Checkbox(
+            uid='setting_enlarge_images',
+            weight=1100,
+            label=_lang.t('content@enlarge_responsive_images'),
+            default=True,
+        ))
+
         super()._on_setup_widgets()

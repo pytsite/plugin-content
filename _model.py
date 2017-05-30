@@ -479,8 +479,8 @@ class Content(_odm_ui.model.UIEntity):
                 weight=600,
                 label=self.t('images'),
                 value=self.f_get('images'),
-                max_file_size=5,
-                max_files=50,
+                max_file_size=_reg.get('content.max_image_size', 10),
+                max_files=_reg.get('content.max_images', 200),
             ))
             if self.get_field('images').required:
                 frm.add_rule('images', _validation.rule.NonEmpty())

@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.4.1 (2017-05-30)
+Added ability to configure images maximum size and files number. 
+
+
 ### 0.4 (2017-05-22)
 - Added setting to enable/disable automatic body images enlarging.
 - Fixed embedded video links parsing.

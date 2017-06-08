@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.4.3 (2017-06-08)
+Fixed translations.
+
+
 ### 0.4.2 (2017-06-08)
 Fixed permission checking according to latest PytSite core update.
 

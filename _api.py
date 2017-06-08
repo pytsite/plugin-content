@@ -275,7 +275,7 @@ def paginate(finder: _odm.Finder, per_page: int = 10) -> dict:
 
     entities = []
     for entity in finder.skip(pager.skip).get(pager.limit):
-        if entity.odm_auth_check_permission('view') or entity.odm_auth_check_permission('view_own'):
+        if entity.odm_auth_check_permission('view'):
             entities.append(entity)
 
     return {

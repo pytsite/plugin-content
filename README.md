@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.4.6 (2017-06-15)
+Endpoint controllers' names shortened.
+
+
 ### 0.4.5 (2017-06-15)
 Removed unnecessary controller existence checking.
 

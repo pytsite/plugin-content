@@ -65,7 +65,7 @@ class Index(_routing.Controller):
             _metatag.t_set('title', _lang.t('content@search', {'query': query}))
 
         # Call final endpoint
-        return _router.call('$theme@content_entity_index', **self.args)
+        return _router.call('content_entity_index', **self.args)
 
 
 class View(_routing.Controller):
@@ -158,7 +158,7 @@ class View(_routing.Controller):
         })
 
         # Call final endpoint
-        return _router.call('$theme@content_entity_view', **self.args)
+        return _router.call('content_entity_view', **self.args)
 
 
 class Modify(_routing.Controller):
@@ -172,8 +172,8 @@ class Modify(_routing.Controller):
         try:
             self.args['frm'] = _odm_ui.get_m_form(model, eid if eid != 0 else None)
 
-            if _router.has_rule('$theme@content_entity_modify'):
-                return _router.call('$theme@content_entity_modify', **self.args)
+            if _router.has_rule('content_entity_modify'):
+                return _router.call('content_entity_modify', **self.args)
             else:
                 return _tpl.render('content@page/modify-form', self.args)
 
@@ -194,4 +194,4 @@ class Propose(_routing.Controller):
 
         self.args['form'] = frm
 
-        return _router.call('$theme@content_' + model + '_propose', **self.args)
+        return _router.call('content_entity_propose', **self.args)

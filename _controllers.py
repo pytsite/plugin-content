@@ -65,10 +65,7 @@ class Index(_routing.Controller):
             _metatag.t_set('title', _lang.t('content@search', {'query': query}))
 
         # Call final endpoint
-        if _router.has_rule('$theme@content_' + model + '_index'):
-            return _router.call('$theme@content_' + model + '_index', **self.args)
-        else:
-            return _router.call('$theme@content_entity_index', **self.args)
+        return _router.call('$theme@content_entity_index', **self.args)
 
 
 class View(_routing.Controller):

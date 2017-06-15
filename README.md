@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.4.5 (2017-06-15)
+Removed unnecessary controller existence checking.
+
+
 ### 0.4.4 (2017-06-15)
 Updated to support latest PytSite version 0.99.39.
 

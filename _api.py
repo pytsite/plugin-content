@@ -72,7 +72,7 @@ def register_model(model: str, cls: _Union[str, _Type[_model.Content]], title: s
         sid='content',
         mid=model,
         title=title,
-        href=_router.ep_path('pytsite.odm_ui@browse', {'model': model}),
+        href=_router.rule_path('pytsite.odm_ui@browse', {'model': model}),
         icon=icon,
         weight=menu_weight,
         permissions=tuple(sidebar_permissions),

@@ -14,16 +14,17 @@ def _init():
     """Module Init Wrapper.
     """
     from pytsite import admin, settings, assetman, events, tpl, lang, router, robots, http_api, permissions, console
-    from . import _eh, _settings_form, _http_api
+    from . import _eh, _controllers, _settings_form, _http_api_controllers
     from ._console_command import Generate as GenerateConsoleCommand
 
     lang.register_package(__name__, alias='content')
     tpl.register_package(__name__, alias='content')
 
     # HTTP API
-    http_api.handle('PATCH', 'content/view/<model>/<uid>', _http_api.patch_view_count, 'content@patch_view_count')
+    http_api.handle('PATCH', 'content/view/<model>/<uid>', _http_api_controllers.PatchViewsCount(),
+                    'content@patch_view_count')
     http_api.handle('GET', 'content/widget_entity_select_search/<model>/<language>',
-                    _http_api.get_widget_entity_select_search, 'content@get_widget_entity_select_search')
+                    _http_api_controllers.GetWidgetEntitySelectSearch(), 'content@get_widget_entity_select_search')
 
     # Permission groups
     permissions.define_group('content', 'content@content')
@@ -34,11 +35,9 @@ def _init():
     assetman.t_js(__name__ + '@**')
 
     # Common routes
-    router.handle('content/index/<model>', 'plugins.content@index', 'content@index')
-    router.handle('content/view/<model>/<id>', 'plugins.content@view', 'content@view')
-    router.handle('content/modify/<model>/<id>', 'plugins.content@modify', 'content@modify')
-    router.handle('content/search/<model>', 'plugins.content@search', 'content@search')
-    router.handle('content/ajax_search/<model>', 'plugins.content@ajax_search', 'content@ajax_search')
+    router.handle(_controllers.Index(), 'content/index/<model>', 'content@index')
+    router.handle(_controllers.View(), 'content/view/<model>/<id>', 'content@view')
+    router.handle(_controllers.Modify(), 'content/modify/<model>/<id>', 'content@modify')
 
     # Admin elements
     admin.sidebar.add_section('content', 'content@content', 100)

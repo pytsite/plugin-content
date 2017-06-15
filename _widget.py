@@ -103,7 +103,7 @@ class Search(_widget.Abstract):
         placeholder = _lang.t('content@search_input_placeholder', language=self._language)
         self._form.append(_html.Input(type='text', css='form-control', name='search', required=True, value=self.value,
                                       placeholder=placeholder))
-        self._form.set_attr('action', _router.ep_url('plugins.content@search', {'model': self._model}))
+        self._form.set_attr('action', _router.rule_url('plugins.content@search', {'model': self._model}))
 
         btn = _html.Button(type='submit', css='btn btn-default')
         self._form.append(btn.append(_html.I(css='fa fa-search')))

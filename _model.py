@@ -619,7 +619,7 @@ class ContentWithURL(Content):
         if self.is_new:
             raise RuntimeError("Cannot generate view URL for non-saved entity of model '{}'.".format(self.model))
 
-        target_path = _router.ep_path('content@view', {'model': self.model, 'id': str(self.id)})
+        target_path = _router.rule_path('content@view', {'model': self.model, 'id': str(self.id)})
 
         try:
             target_path = _route_alias.get_by_target(target_path, self.language).alias
@@ -672,7 +672,7 @@ class ContentWithURL(Content):
         # Update route alias target which has been created in self._pre_save()
         if self.has_field('route_alias') and self.route_alias.target == 'NONE':
             with self.route_alias:
-                target = _router.ep_path('content@view', {'model': self.model, 'id': self.id})
+                target = _router.rule_path('content@view', {'model': self.model, 'id': self.id})
                 self.route_alias.f_set('target', target).save()
 
         if first_save and self.has_field('route_alias'):

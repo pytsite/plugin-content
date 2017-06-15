@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.4.4 (2017-06-15)
+Updated to support latest PytSite version 0.99.39.
+
+
 ### 0.4.3 (2017-06-08)
 Fixed translations.
 

@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.4.7 (2017-06-19)
+Updated to support latest PytSite version 0.99.45.
+
+
 ### 0.4.6 (2017-06-15)
 Endpoint controllers' names shortened.
 

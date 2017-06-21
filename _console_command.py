@@ -24,18 +24,16 @@ class Generate(_console.Command):
     def __init__(self):
         super().__init__()
 
-        self._define_option(_console.option.Bool('short'))
-        self._define_option(_console.option.Bool('no-html'))
-        self._define_option(_console.option.Bool('no-tags'))
-        self._define_option(_console.option.Bool('no-sections'))
-        self._define_option(_console.option.Str('author'))
-        self._define_option(_console.option.Str('lang', default=_lang.get_current()))
-        self._define_option(_console.option.PositiveInt('num', default=10))
-        self._define_option(_console.option.PositiveInt('title-len', default=7))
-        self._define_option(_console.option.PositiveInt('description-len', default=28))
-        self._define_option(_console.option.PositiveInt('images', default=1))
-
-        self._define_argument(_console.argument.Argument('model', True))
+        self.define_option(_console.option.Bool('short'))
+        self.define_option(_console.option.Bool('no-html'))
+        self.define_option(_console.option.Bool('no-tags'))
+        self.define_option(_console.option.Bool('no-sections'))
+        self.define_option(_console.option.Str('author'))
+        self.define_option(_console.option.Str('lang', default=_lang.get_current()))
+        self.define_option(_console.option.PositiveInt('num', default=10))
+        self.define_option(_console.option.PositiveInt('title-len', default=7))
+        self.define_option(_console.option.PositiveInt('description-len', default=28))
+        self.define_option(_console.option.PositiveInt('images', default=1))
 
     @property
     def name(self) -> str:
@@ -49,25 +47,25 @@ class Generate(_console.Command):
         """
         return 'content@console_generate_command_description'
 
-    def execute(self):
+    def exec(self):
         """Execute teh command.
         """
         _auth.switch_user_to_system()
 
-        model = self.get_argument_value(0)
+        model = self.arg(0)
 
         # Checking if the content model registered
         if not _api.is_model_registered(model):
             raise _console.error.Error("'{}' is not a registered content model.".format(model))
 
-        author_login = self.get_option_value('author')
-        num = self.get_option_value('num')
-        images_num = self.get_option_value('images')
-        language = self.get_option_value('lang')
-        no_html = self.get_option_value('no-html')
-        short = self.get_option_value('short')
-        title_len = self.get_option_value('title-len')
-        description_len = self.get_option_value('description-len')
+        author_login = self.opt('author')
+        num = self.opt('num')
+        images_num = self.opt('images')
+        language = self.opt('lang')
+        no_html = self.opt('no-html')
+        short = self.opt('short')
+        title_len = self.opt('title-len')
+        description_len = self.opt('description-len')
 
         if no_html:
             self.lorem_txt_args['format'] = 'text'

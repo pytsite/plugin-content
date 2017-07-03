@@ -8,7 +8,7 @@ from pytsite import auth as _auth, odm_ui as _odm_ui, file as _file, ckeditor as
     widget as _widget, validation as _validation, html as _html, lang as _lang, events as _events, util as _util, \
     form as _form, auth_storage_odm as _auth_storage_odm, file_storage_odm as _file_storage_odm, mail as _mail, \
     tpl as _tpl, reg as _reg, permissions as _permissions, assetman as _assetman, router as _router, \
-    route_alias as _route_alias, settings as _settings
+    route_alias as _route_alias, settings as _settings, auth_ui as _auth_ui
 
 __author__ = 'Alexander Shepetko'
 __email__ = 'a@shepetko.com'
@@ -548,7 +548,7 @@ class Content(_odm_ui.model.UIEntity):
         if _auth.get_current_user().is_admin:
             # Author
             if self.has_field('author'):
-                frm.add_widget(_auth.widget.UserSelect(
+                frm.add_widget(_auth_ui.widget.UserSelect(
                     uid='author',
                     weight=1800,
                     label=self.t('author'),

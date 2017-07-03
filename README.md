@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.4.9 (2017-07-03)
+Support for latest PytSite-1.0 release.
+
+
 ### 0.4.8 (2017-06-21)
 Updated to support latest PytSite version 0.99.46.
 

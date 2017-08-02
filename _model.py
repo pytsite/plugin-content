@@ -644,8 +644,8 @@ class ContentWithURL(Content):
 
             # Existing route alias is attached and its value needs to be changed
             elif self.route_alias and self.route_alias.alias != route_alias_str:
-                with self.route_alias:
-                    self.route_alias.delete()
+                with self.route_alias as r_alias:
+                    r_alias.delete()
                 value = _route_alias.create(route_alias_str, 'NONE', self.language).save()
 
             # Keep old route alias
@@ -671,17 +671,17 @@ class ContentWithURL(Content):
 
         # Update route alias target which has been created in self._pre_save()
         if self.has_field('route_alias') and self.route_alias.target == 'NONE':
-            with self.route_alias:
+            with self.route_alias as r_alias:
                 target = _router.rule_path('content@view', {'model': self.model, 'id': self.id})
-                self.route_alias.f_set('target', target).save()
+                r_alias.f_set('target', target).save()
 
         if first_save and self.has_field('route_alias'):
             # Clean up not fully filled route aliases
             f = _route_alias.find()
             f.eq('target', 'NONE').lt('_created', _datetime.now() - _timedelta(1))
-            for ra in f.get():
-                with ra:
-                    ra.delete()
+            for route_alias in f.get():
+                with route_alias:
+                    route_alias.delete()
 
     def _after_delete(self, **kwargs):
         """Hook.
@@ -690,8 +690,8 @@ class ContentWithURL(Content):
 
         # Delete linked route alias
         if self.has_field('route_alias') and self.route_alias:
-            with self.route_alias:
-                self.route_alias.delete()
+            with self.route_alias as r_alias:
+                r_alias.delete()
 
     def odm_ui_m_form_setup_widgets(self, frm: _form.Form):
         """Hook.

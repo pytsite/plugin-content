@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.4.10 (2017-08-02)
+Fixed rouite alias entities locking errors.
+
+
 ### 0.4.9 (2017-07-03)
 Support for latest PytSite-1.0 release.
 

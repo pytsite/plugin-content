@@ -106,7 +106,8 @@ class Search(_widget.Abstract):
         self._form.set_attr('action', _router.rule_url('plugins.content@search', {'model': self._model}))
 
         btn = _html.Button(type='submit', css='btn btn-default')
-        self._form.append(btn.append(_html.I(css='fa fa-search')))
+        btn.append(_html.I(css='fa fa-search'))
+        self._form.append(btn)
 
         self._css += ' widget-content-search search-{}'.format(self._model)
 

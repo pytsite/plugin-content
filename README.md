@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.4.11 (2017-08-09)
+Fixed HTML structure building in `widget.Search`.
+
+
 ### 0.4.10 (2017-08-02)
 Fixed rouite alias entities locking errors.
 

@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.4.12 (2017-08-27)
+`plugin.json` updated.
+
+
 ### 0.4.11 (2017-08-09)
 Fixed HTML structure building in `widget.Search`.
 

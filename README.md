@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 0.5 (2017-09-02)
+Home page meta tags management moved to core of PytSite.
+
+
 ### 0.4.12 (2017-08-27)
 `plugin.json` updated.
 

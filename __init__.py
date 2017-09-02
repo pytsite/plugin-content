@@ -43,8 +43,6 @@ def _init():
     admin.sidebar.add_section('content', 'content@content', 100)
 
     # Event handlers
-    router.on_dispatch(_eh.router_dispatch)
-    events.listen('pytsite.setup', _eh.setup)
     events.listen('pytsite.cron.hourly', _eh.cron_hourly)
     events.listen('pytsite.cron.daily', _eh.cron_daily)
     events.listen('pytsite.auth.user.delete', _eh.auth_user_delete)

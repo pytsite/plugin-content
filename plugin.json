@@ -1,6 +1,6 @@
 {
-  "name": "plugins.content",
-  "version": "0.4.12",
+  "name": "content",
+  "version": "0.5",
   "description": {
     "en": "Content",
     "ru": "Контент",
@@ -13,7 +13,9 @@
     "url": "https://shepetko.com"
   },
   "requires": {
-    "packages": [],
+    "packages": [
+      "pytsite>=4"
+    ],
     "plugins": [
       "taxonomy",
       "comments"

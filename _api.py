@@ -22,7 +22,7 @@ def register_model(model: str, cls: _Union[str, _Type[_model.Content]], title: s
     """
     # Resolve class
     if isinstance(cls, str):
-        cls = _util.get_class(cls)  # type: _Type[_model.Content]
+        cls = _util.get_module_attr(cls)  # type: _Type[_model.Content]
 
     if not issubclass(cls, _model.Content):
         raise TypeError('Subclass of content model expected.')

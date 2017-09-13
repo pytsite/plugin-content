@@ -15,10 +15,9 @@ class PatchViewsCount(_routing.Controller):
     def exec(self) -> int:
         entity = _api.dispense(self.arg('model'), self.arg('uid'))
         if entity and entity.has_field('views_count'):
-            with entity:
-                _auth.switch_user_to_system()
-                entity.f_inc('views_count').save(update_timestamp=False)
-                _auth.restore_user()
+            _auth.switch_user_to_system()
+            entity.f_inc('views_count').save(update_timestamp=False, pre_hooks=False, after_hooks=False)
+            _auth.restore_user()
 
             return entity.f_get('views_count')
 

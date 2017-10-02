@@ -1,4 +1,4 @@
-"""Pytsite Content Module.
+"""Pytsite Content Plugin
 """
 # Public API
 from . import _model as model, _widget as widget
@@ -11,7 +11,7 @@ __license__ = 'MIT'
 
 
 def _init():
-    """Module Init Wrapper.
+    """Module Init Wrapper
     """
     from pytsite import admin, settings, assetman, events, tpl, lang, router, robots, http_api, permissions, console
     from . import _eh, _controllers, _settings_form, _http_api_controllers

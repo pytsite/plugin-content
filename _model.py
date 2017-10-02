@@ -1,4 +1,4 @@
-"""Content Models
+"""PytSite Content Plugin Content Models
 """
 import re as _re
 from typing import Tuple as _Tuple

@@ -1,4 +1,4 @@
-"""Content Widgets
+"""PytSite Content Plugin Widgets
 """
 from pytsite import widget as _widget, html as _html, lang as _lang, router as _router, tpl as _tpl, odm as _odm, \
     http_api as _http_api, odm_auth as _odm_auth
@@ -10,7 +10,7 @@ __license__ = 'MIT'
 
 
 class ModelSelect(_widget.select.Select):
-    """Content Model Select.
+    """Content Model Select
     """
 
     def __init__(self, uid: str, **kwargs):
@@ -28,7 +28,7 @@ class ModelSelect(_widget.select.Select):
 
 
 class ModelCheckboxes(_widget.select.Checkboxes):
-    """Content Model Checkboxes.
+    """Content Model Checkboxes
     """
 
     def __init__(self, uid: str, **kwargs):
@@ -46,7 +46,7 @@ class ModelCheckboxes(_widget.select.Checkboxes):
 
 
 class StatusSelect(_widget.select.Select):
-    """Content Status Select.
+    """Content Status Select
     """
 
     def __init__(self, uid: str, **kwargs):
@@ -54,7 +54,7 @@ class StatusSelect(_widget.select.Select):
 
 
 class EntitySelect(_widget.select.Select2):
-    """Entity Select.
+    """Entity Select
     """
 
     def __init__(self, uid: str, **kwargs):
@@ -83,7 +83,7 @@ class EntitySelect(_widget.select.Select2):
 
 
 class Search(_widget.Abstract):
-    """Content Search Input.
+    """Content Search Input
     """
 
     def __init__(self, uid: str, **kwargs):

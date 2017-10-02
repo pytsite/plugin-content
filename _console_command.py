@@ -1,4 +1,4 @@
-"""Content Console Commands.
+"""PytSite Content Plugin Console Commands
 """
 import requests as _requests
 import re as _re
@@ -15,8 +15,6 @@ _SPACES_CLEANUP_RE = _re.compile('\s{2,}')
 
 
 class Generate(_console.Command):
-    """Abstract command.
-    """
     lorem_txt_url = 'https://baconipsum.com/api'
     lorem_txt_args = {'type': 'meat-and-filler', 'format': 'html', 'paras': 3}
     lorem_img_url = 'http://pipsum.com/1024x768'
@@ -37,18 +35,18 @@ class Generate(_console.Command):
 
     @property
     def name(self) -> str:
-        """Get command's name.
+        """Get command's name
         """
         return 'content:generate'
 
     @property
     def description(self) -> str:
-        """Get command's description.
+        """Get command's description
         """
         return 'content@console_generate_command_description'
 
     def exec(self):
-        """Execute teh command.
+        """Execute teh command
         """
         _auth.switch_user_to_system()
 

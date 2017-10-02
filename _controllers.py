@@ -1,4 +1,4 @@
-"""Pytsite Content Endpoints.
+"""PytSite Content Plugin Controllers
 """
 from datetime import datetime as _datetime
 from pytsite import odm_ui as _odm_ui, auth as _auth, router as _router, metatag as _metatag, \
@@ -12,9 +12,10 @@ __license__ = 'MIT'
 
 
 class Index(_routing.Controller):
+    """Content Entities Index
+    """
+
     def exec(self):
-        """Content Index.
-        """
         # Delayed import to prevent circular dependency
         from . import _api
 
@@ -69,7 +70,7 @@ class Index(_routing.Controller):
 
 
 class View(_routing.Controller):
-    """View Content Entity
+    """Content Entity View
     """
 
     def exec(self):
@@ -180,9 +181,10 @@ class Modify(_routing.Controller):
 
 
 class Propose(_routing.Controller):
+    """Get content entity propose form
+    """
+
     def exec(self):
-        """Propose content endpoint.
-        """
         model = self.arg('model')
 
         frm = _odm_ui.get_m_form(model, redirect=_router.base_url())

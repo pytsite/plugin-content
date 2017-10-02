@@ -1,4 +1,4 @@
-"""Content Settings Form.
+"""PytSite Content Plugin Settings Form
 """
 from pytsite import settings as _settings, widget as _widget, lang as _lang
 from . import _api

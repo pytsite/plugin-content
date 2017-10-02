@@ -1,4 +1,4 @@
-"""PytSite Content HTTP API
+"""PytSite Content Plugin HTTP API
 """
 from pytsite import auth as _auth, odm as _odm, routing as _routing
 from . import _api

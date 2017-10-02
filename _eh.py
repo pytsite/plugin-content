@@ -1,4 +1,4 @@
-"""Event Handlers.
+"""PytSite Content Plugin Event Handlers
 """
 from os import path as _path, makedirs as _makedirs
 from shutil import rmtree as _rmtree
@@ -16,18 +16,20 @@ _sitemap_generation_works = False
 
 
 def cron_hourly():
-    """'pytsite.cron.hourly' event handler.
+    """pytsite.cron.hourly
     """
     _generate_feeds()
 
 
 def cron_daily():
-    """'pytsite.cron.daily' event handler.
+    """pytsite.cron.daily
     """
     _generate_sitemap()
 
 
 def comments_create_comment(comment: _comments.model.AbstractComment):
+    """comments.create_comment
+    """
     entity = _api.find_by_url(comment.thread_uid)
     if comment.is_reply or not entity or comment.author == entity.author:
         return
@@ -40,7 +42,7 @@ def comments_create_comment(comment: _comments.model.AbstractComment):
 
 
 def auth_user_delete(user: _auth.model.AbstractUser):
-    """'auth.user.delete' event handler.
+    """auth.user.delete
     """
     for model in _api.get_models():
         f = _api.find(model, language=None)
@@ -55,7 +57,7 @@ def auth_user_delete(user: _auth.model.AbstractUser):
 
 
 def _generate_sitemap():
-    """Generate content sitemap.
+    """Generate content sitemap
     """
     global _sitemap_generation_works
 

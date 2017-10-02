@@ -1,4 +1,4 @@
-"""PytSite Content Package.
+"""PytSite Content Plugin API
 """
 from typing import Callable as _Callable, List as _List, Union as _Union, Type as _Type
 from datetime import datetime as _datetime
@@ -18,7 +18,7 @@ _models = {}
 
 def register_model(model: str, cls: _Union[str, _Type[_model.Content]], title: str, menu_weight: int = 0,
                    icon: str = 'fa fa-file-text-o', replace=False):
-    """Register content model.
+    """Register content model
     """
     # Resolve class
     if isinstance(cls, str):
@@ -81,19 +81,19 @@ def register_model(model: str, cls: _Union[str, _Type[_model.Content]], title: s
 
 
 def is_model_registered(model: str) -> bool:
-    """Check if the content model is registered.
+    """Check if the content model is registered
     """
     return model in _models
 
 
 def get_models() -> dict:
-    """Get registered content models.
+    """Get registered content models
     """
     return _models
 
 
 def get_model(model: str) -> tuple:
-    """Get model information.
+    """Get model information
     """
     if not is_model_registered(model):
         raise KeyError("Model '{}' is not registered as content model.".format(model))
@@ -102,13 +102,13 @@ def get_model(model: str) -> tuple:
 
 
 def get_model_title(model: str) -> str:
-    """Get human readable model title.
+    """Get human readable model title
     """
     return _lang.t(get_model(model)[1])
 
 
 def dispense(model: str, eid: str = None) -> _model.Content:
-    """Create content entity.
+    """Dispense content entity
     """
     if not is_model_registered(model):
         raise KeyError("Model '{}' is not registered as content model.".format(model))
@@ -117,7 +117,7 @@ def dispense(model: str, eid: str = None) -> _model.Content:
 
 
 def find(model: str, **kwargs):
-    """Get content entities finder.
+    """Instantiate content entities finder
     """
     if not is_model_registered(model):
         raise KeyError("Model '{}' is not registered as content model.".format(model))
@@ -152,6 +152,8 @@ def find(model: str, **kwargs):
 
 
 def find_by_url(url: str) -> _model.Content:
+    """Find an entity by an URL
+    """
     parsed_url = _urllib_parse.urlsplit(url, allow_fragments=False)
 
     try:
@@ -166,7 +168,7 @@ def find_by_url(url: str) -> _model.Content:
 
 
 def get_statuses() -> _List[str]:
-    """Get allowed content publication statuses.
+    """Get allowed content publication statuses
     """
     r = []
     for s in ('published', 'waiting', 'unpublished'):
@@ -177,7 +179,7 @@ def get_statuses() -> _List[str]:
 
 def generate_rss(model: str, filename: str, lng: str = '*', finder_setup: _Callable[[_odm.Finder], None] = None,
                  item_setup: _Callable[[_feed.xml.Serializable, _model.Content], None] = None, length: int = 20):
-    """Generate RSS feeds.
+    """Generate RSS feeds
     """
     # Setup finder
     finder = find(model, language=lng)
@@ -268,10 +270,10 @@ def generate_rss(model: str, filename: str, lng: str = '*', finder_setup: _Calla
     _logger.info("RSS feed successfully written to '{}'.".format(out_path))
 
 
-def paginate(finder: _odm.Finder, per_page: int = 10) -> dict:
-    """Get paginated content finder query results.
+def paginate(finder: _odm.Finder, per_page: int = 10, css: str = '') -> dict:
+    """Get paginated content finder query results
     """
-    pager = _widget.select.Pager('content-pager', total_items=finder.count(), per_page=per_page)
+    pager = _widget.select.Pager('content-pager', total_items=finder.count(), per_page=per_page, css=css)
 
     entities = []
     for entity in finder.skip(pager.skip).get(pager.limit):

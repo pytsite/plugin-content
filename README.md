@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 1.0.2 (2017-09-27)
+Added `css` argument to `paginate()` function.
+
+
 ### 1.0.1 (2017-09-27)
 Fixed language global usage.
 

@@ -20,11 +20,12 @@ def _init():
     lang.register_package(__name__, alias='content')
     tpl.register_package(__name__, alias='content')
 
-    # HTTP API
+    # HTTP API controllers
     http_api.handle('PATCH', 'content/view/<model>/<uid>', _http_api_controllers.PatchViewsCount(),
                     'content@patch_view_count')
     http_api.handle('GET', 'content/widget_entity_select_search/<model>/<language>',
                     _http_api_controllers.GetWidgetEntitySelectSearch(), 'content@get_widget_entity_select_search')
+    http_api.handle('POST', 'content/abuse/<model>/<uid>', _http_api_controllers.PostAbuse(), 'content@post_abuse')
 
     # Permission groups
     permissions.define_group('content', 'content@content')

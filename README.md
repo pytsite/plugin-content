@@ -4,7 +4,11 @@
 ## Changelog
 
 
-### 1.0.2 (2017-09-27)
+### 1.1 (2017-10-08)
+Added a new HTTP API endpoint `content@post_abuse`.
+
+
+### 1.0.2 (2017-10-02)
 Added `css` argument to `paginate()` function.
 
 

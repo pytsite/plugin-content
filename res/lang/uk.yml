@@ -34,3 +34,5 @@ model_required: 'Необхідно вказати модель контенту
 new_section_created: 'Створено новый розділ: :title'
 new_content_created: 'Створено новий :model: :title'
 enlarge_responsive_images: 'Автоматично збільшувати зображення'
+mail_subject_abuse: 'Повідомлення про небажаний контент на сайті {:app_name}'
+abuse_receipt_confirm: "Дякуємо за допомогу в покращенні сервісу. Найближчим часом ми розглянемо ваш запит і приймемо необхідні заходи."

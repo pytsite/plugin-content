@@ -1,6 +1,6 @@
 """PytSite Content Plugin HTTP API
 """
-from pytsite import auth as _auth, odm as _odm, routing as _routing
+from pytsite import auth as _auth, odm as _odm, routing as _routing, mail as _mail, lang as _lang, tpl as _tpl
 from . import _api
 
 __author__ = 'Alexander Shepetko'
@@ -56,3 +56,29 @@ class GetWidgetEntitySelectSearch(_routing.Controller):
         r = [{'id': e.model + ':' + str(e.id), 'text': e.title} for e in f.get(20)]
 
         return {'results': r}
+
+
+class PostAbuse(_routing.Controller):
+    """Report Abuse
+    """
+
+    def exec(self):
+        reporter = _auth.get_current_user()
+        if reporter.is_anonymous:
+            raise self.forbidden()
+
+        model = self.arg('model')
+        entity = _api.dispense(model, self.arg('uid'))
+
+        tpl_name = 'content@mail/{}/abuse'.format(_lang.get_current())
+        subject = _lang.t('content@mail_subject_abuse')
+
+        for recipient in _auth.get_users({'status': 'active'}):
+            perms = ('pytsite.odm_auth.modify.{}'.format(model), 'pytsite.odm_auth.delete.{}'.format(model))
+            if not recipient.has_permission(perms):
+                continue
+
+            body = _tpl.render(tpl_name, {'reporter': reporter, 'recipient': recipient, 'entity': entity})
+            _mail.Message(entity.author.email, subject, body).send()
+
+        return {'message': _lang.t('content@abuse_receipt_confirm')}

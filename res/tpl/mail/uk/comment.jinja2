@@ -1,7 +1,7 @@
 <h1>Привіт, {{ entity.author.full_name }}!</h1>
 
 <p>
-    До вашого <a href="{{ comment.url }}">матеріалу</a> був залишений коментар користувачем
+    До вашого матеріалу <a href="{{ comment.url }}">{{ entity.title | e }}</a> було залишено коментар користувачем
     <b>{{ comment.author.full_name }}</b>:
 </p>
 

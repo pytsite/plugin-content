@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 1.1.1 (2017-10-08)
+Fixed entity status changing on abuse report.
+
+
 ### 1.1 (2017-10-08)
 Added a new HTTP API endpoint `content@post_abuse`.
 

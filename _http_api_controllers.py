@@ -68,11 +68,18 @@ class PostAbuse(_routing.Controller):
             raise self.forbidden()
 
         model = self.arg('model')
-        entity = _api.dispense(model, self.arg('uid'))
+
+        try:
+            entity = _api.dispense(model, self.arg('uid'))
+        except _odm.error.EntityNotFound:
+            raise self.not_found()
+
+        _auth.switch_user_to_system()
+        entity.f_set('status', 'waiting').save()
+        _auth.restore_user()
 
         tpl_name = 'content@mail/{}/abuse'.format(_lang.get_current())
         subject = _lang.t('content@mail_subject_abuse')
-
         for recipient in _auth.get_users({'status': 'active'}):
             perms = ('pytsite.odm_auth.modify.{}'.format(model), 'pytsite.odm_auth.delete.{}'.format(model))
             if not recipient.has_permission(perms):

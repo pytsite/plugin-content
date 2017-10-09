@@ -128,8 +128,10 @@ def find(model: str, **kwargs):
     if f.mock.has_field('publish_time'):
         f.sort([('publish_time', _odm.I_DESC)])
         if kwargs.get('check_publish_time', True):
-            f.cache(0)  # It is no sense to cache such queries because argument is different every time
-            f.lte('publish_time', _datetime.now())
+            now = _datetime.now()
+            p_time_lte = _datetime(now.year, now.month, now.day, now.hour)  # Round down to current hour
+            f.cache((now - p_time_lte).seconds)
+            f.lte('publish_time', p_time_lte)
     else:
         f.sort([('_modified', _odm.I_DESC)])
 

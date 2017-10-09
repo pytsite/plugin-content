@@ -4,6 +4,10 @@
 ## Changelog
 
 
+### 1.2 (2017-10-09)
+Added caching to 'publish_time'-related queries.
+
+
 ### 1.1.1 (2017-10-08)
 Fixed entity status changing on abuse report.
 

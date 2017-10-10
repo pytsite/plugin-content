@@ -1,6 +1,6 @@
 """PytSite Content Plugin API
 """
-from typing import Callable as _Callable, List as _List, Union as _Union, Type as _Type
+from typing import Callable as _Callable, List as _List, Union as _Union, Type as _Type, Tuple as _Tuple
 from datetime import datetime as _datetime
 from urllib import parse as _urllib_parse
 from os import path as _path, makedirs as _makedirs
@@ -111,12 +111,12 @@ def dispense(model: str, eid: str = None) -> _model.Content:
     """Dispense content entity
     """
     if not is_model_registered(model):
-        raise KeyError("Model '{}' is not registered as content model.".format(model))
+        raise KeyError("Model '{}' is not registered as a content model".format(model))
 
     return _odm.dispense(model, eid)
 
 
-def find(model: str, **kwargs):
+def find(model: str, **kwargs) -> _odm.Finder:
     """Instantiate content entities finder
     """
     if not is_model_registered(model):
@@ -128,10 +128,7 @@ def find(model: str, **kwargs):
     if f.mock.has_field('publish_time'):
         f.sort([('publish_time', _odm.I_DESC)])
         if kwargs.get('check_publish_time', True):
-            now = _datetime.now()
-            p_time_lte = _datetime(now.year, now.month, now.day, now.hour)  # Round down to current hour
-            f.cache((now - p_time_lte).seconds)
-            f.lte('publish_time', p_time_lte)
+            f.lte('publish_time', _datetime.now(), False)
     else:
         f.sort([('_modified', _odm.I_DESC)])
 
@@ -169,7 +166,7 @@ def find_by_url(url: str) -> _model.Content:
         pass
 
 
-def get_statuses() -> _List[str]:
+def get_statuses() -> _List[_Tuple[str, str]]:
     """Get allowed content publication statuses
     """
     r = []

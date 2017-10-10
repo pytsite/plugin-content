@@ -30,18 +30,19 @@ class Index(_routing.Controller):
         self.args['finder'] = f
 
         # Filter by term
-        term_field = self.arg('term_field')
-        if term_field and f.mock.has_field(term_field):
-            term_model = f.mock.get_field(term_field).model
+        term_field_name = self.arg('term_field')
+        if term_field_name and f.mock.has_field(term_field_name):
+            term_field = f.mock.get_field(term_field_name)  # type: _odm.field.Ref
+            term_model = term_field.model
             term_alias = self.arg('term_alias')
             if term_alias and term_model != '*':
                 term = _taxonomy.find(term_model).eq('alias', term_alias).first()
                 if term:
                     self.args['term'] = term
-                    if isinstance(f.mock.fields[term_field], _odm.field.Ref):
-                        f.eq(term_field, term)
-                    elif isinstance(f.mock.fields[term_field], _odm.field.RefsList):
-                        f.inc(term_field, term)
+                    if isinstance(f.mock.fields[term_field_name], _odm.field.Ref):
+                        f.eq(term_field_name, term)
+                    elif isinstance(f.mock.fields[term_field_name], _odm.field.RefsList):
+                        f.inc(term_field_name, term)
                     _metatag.t_set('title', term.title)
                 else:
                     raise self.not_found()
@@ -62,7 +63,7 @@ class Index(_routing.Controller):
         # Search
         query = _router.request().inp.get('query')
         if query:
-            f.where_text(query)
+            f.text(query)
             _metatag.t_set('title', _lang.t('content@search', {'query': query}))
 
         # Call final endpoint

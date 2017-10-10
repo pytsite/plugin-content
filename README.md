@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 1.3 (2017-10-10)
+- Support for latest PytSite release 5.3.
+- Fixed caching to 'publish_time'-related queries.
+
+
 ### 1.2 (2017-10-09)
 Added caching to 'publish_time'-related queries.
 

@@ -1,6 +1,7 @@
 """PytSite Content Plugin Settings Form
 """
-from pytsite import settings as _settings, widget as _widget, lang as _lang
+from pytsite import lang as _lang
+from plugins import widget as _widget, settings as _settings
 from . import _api
 
 __author__ = 'Alexander Shepetko'

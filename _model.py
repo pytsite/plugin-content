@@ -4,11 +4,12 @@ import re as _re
 from typing import Tuple as _Tuple
 from frozendict import frozendict as _frozendict
 from datetime import datetime as _datetime, timedelta as _timedelta
-from pytsite import auth as _auth, odm_ui as _odm_ui, file as _file, ckeditor as _ckeditor, odm as _odm, \
-    widget as _widget, validation as _validation, html as _html, lang as _lang, events as _events, util as _util, \
-    form as _form, auth_storage_odm as _auth_storage_odm, file_storage_odm as _file_storage_odm, mail as _mail, \
-    tpl as _tpl, reg as _reg, permissions as _permissions, assetman as _assetman, router as _router, \
-    route_alias as _route_alias, settings as _settings, auth_ui as _auth_ui
+from pytsite import validation as _validation, html as _html, lang as _lang, events as _events, util as _util, \
+    mail as _mail, tpl as _tpl, reg as _reg, router as _router
+from plugins import auth as _auth, ckeditor as _ckeditor, route_alias as _route_alias, auth_ui as _auth_ui, \
+    auth_storage_odm as _auth_storage_odm, file_storage_odm as _file_storage_odm, permissions as _permissions, \
+    odm_ui as _odm_ui, odm as _odm, settings as _settings, file as _file, form as _form, widget as _widget, \
+    assetman as _assetman
 
 __author__ = 'Alexander Shepetko'
 __email__ = 'a@shepetko.com'
@@ -182,7 +183,7 @@ def _remove_tags(s: str) -> str:
 
 def _send_waiting_status_notification(entity):
     for u in _auth.get_users():
-        if u.has_permission('pytsite.odm_auth.modify.' + entity.model):
+        if u.has_permission('odm_auth.modify.' + entity.model):
             m_subject = _lang.t('content@content_waiting_mail_subject')
             m_body = _tpl.render('content@mail/{}/propose'.format(_lang.get_current()), {
                 'user': u,

@@ -1,6 +1,6 @@
 {
   "name": "content",
-  "version": "1.3",
+  "version": "2.0",
   "description": {
     "en": "Content",
     "ru": "Контент",
@@ -13,12 +13,31 @@
     "url": "https://shepetko.com"
   },
   "requires": {
-    "packages": [
-      "pytsite>=4"
-    ],
+    "packages": [],
     "plugins": [
+      "admin",
+      "assetman",
+      "auth",
+      "auth_storage_odm",
+      "auth_ui",
+      "ckeditor",
+      "comments",
+      "feed",
+      "file",
+      "file_storage_odm",
+      "hreflang",
+      "http_api",
+      "jquery",
+      "odm",
+      "odm_auth",
+      "odm_ui",
+      "permissions",
+      "robots_txt",
+      "route_alias",
+      "settings",
+      "sitemap",
       "taxonomy",
-      "comments"
+      "widget"
     ]
   }
 }

@@ -1,4 +1,4 @@
-require(['jquery', 'pytsite-http-api', 'pytsite-responsive'], function ($, httpApi, responsive) {
+require(['jquery', 'http-api', 'responsive'], function ($, httpApi, responsive) {
     $('.content-entity, #content-entity').each(function () {
         var model = $(this).data('model');
         var entityId = $(this).data('entityId');

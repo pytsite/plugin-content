@@ -1,7 +1,7 @@
 """PytSite Content Plugin Widgets
 """
-from pytsite import widget as _widget, html as _html, lang as _lang, router as _router, tpl as _tpl, odm as _odm, \
-    http_api as _http_api, odm_auth as _odm_auth
+from pytsite import html as _html, lang as _lang, router as _router, tpl as _tpl
+from plugins import widget as _widget, odm as _odm, odm_auth as _odm_auth, http_api as _http_api
 from . import _model, _api
 
 __author__ = 'Alexander Shepetko'

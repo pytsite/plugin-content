@@ -13,12 +13,13 @@ __license__ = 'MIT'
 def _init():
     """Module Init Wrapper
     """
-    from pytsite import admin, settings, assetman, events, tpl, lang, router, robots, http_api, permissions, console
+    from pytsite import events, tpl, lang, router, console
+    from plugins import assetman, permissions, settings, admin, robots_txt, http_api
     from . import _eh, _controllers, _settings_form, _http_api_controllers
     from ._console_command import Generate as GenerateConsoleCommand
 
-    lang.register_package(__name__, alias='content')
-    tpl.register_package(__name__, alias='content')
+    lang.register_package(__name__)
+    tpl.register_package(__name__)
 
     # HTTP API controllers
     http_api.handle('PATCH', 'content/view/<model>/<uid>', _http_api_controllers.PatchViewsCount(),
@@ -32,7 +33,7 @@ def _init():
     permissions.define_permission('content.settings.manage', 'content@manage_content_settings_permission', 'content')
 
     # Assets
-    assetman.register_package(__name__, alias='content')
+    assetman.register_package(__name__)
     assetman.t_js(__name__ + '@**')
 
     # Common routes
@@ -46,7 +47,7 @@ def _init():
     # Event handlers
     events.listen('pytsite.cron.hourly', _eh.cron_hourly)
     events.listen('pytsite.cron.daily', _eh.cron_daily)
-    events.listen('pytsite.auth.user.delete', _eh.auth_user_delete)
+    events.listen('auth.user.delete', _eh.auth_user_delete)
     events.listen('comments.create_comment', _eh.comments_create_comment)
 
     # Settings
@@ -56,7 +57,7 @@ def _init():
     console.register_command(GenerateConsoleCommand())
 
     # Sitemap location in robots.txt
-    robots.sitemap('/sitemap/index.xml')
+    robots_txt.sitemap('/sitemap/index.xml')
 
 
 _init()

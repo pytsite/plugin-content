@@ -1,12 +1,12 @@
-"""PytSite Content Plugin API
+"""PytSite Content Plugin API Functions
 """
 from typing import Callable as _Callable, List as _List, Union as _Union, Type as _Type, Tuple as _Tuple
 from datetime import datetime as _datetime
 from urllib import parse as _urllib_parse
 from os import path as _path, makedirs as _makedirs
-from pytsite import admin as _admin, odm as _odm, util as _util, settings as _settings, \
-    router as _router, lang as _lang, logger as _logger, feed as _feed, reg as _reg, permissions as _permission, \
-    route_alias as _route_alias, widget as _widget
+from pytsite import util as _util, router as _router, lang as _lang, logger as _logger, reg as _reg
+from plugins import odm as _odm, route_alias as _route_alias, feed as _feed, permissions as _permissions, \
+    settings as _settings, admin as _admin, widget as _widget
 from . import _model
 
 __author__ = 'Alexander Shepetko'
@@ -43,36 +43,36 @@ def register_model(model: str, cls: _Union[str, _Type[_model.Content]], title: s
     if mock.has_field('status'):
         perm_name = 'content.bypass_moderation.' + model
         perm_description = cls.resolve_msg_id('content_perm_bypass_moderation_' + model)
-        _permission.define_permission(perm_name, perm_description, perm_group)
+        _permissions.define_permission(perm_name, perm_description, perm_group)
 
     # Define 'set_localization' permission
     if mock.has_field('localization_' + _lang.get_current()):
         perm_name = 'content.set_localization.' + model
         perm_description = cls.resolve_msg_id('content_perm_set_localization_' + model)
-        _permission.define_permission(perm_name, perm_description, perm_group)
+        _permissions.define_permission(perm_name, perm_description, perm_group)
 
     # Define 'set_date' permission
     if mock.has_field('publish_time'):
         perm_name = 'content.set_publish_time.' + model
         perm_description = cls.resolve_msg_id('content_perm_set_publish_time_' + model)
-        _permission.define_permission(perm_name, perm_description, perm_group)
+        _permissions.define_permission(perm_name, perm_description, perm_group)
 
     # Define 'set_starred' permission
     if mock.has_field('starred'):
         perm_name = 'content.set_starred.' + model
         perm_description = cls.resolve_msg_id('content_perm_set_starred_' + model)
-        _permission.define_permission(perm_name, perm_description, perm_group)
+        _permissions.define_permission(perm_name, perm_description, perm_group)
 
     sidebar_permissions = []
     for p in mock.odm_auth_permissions():
         if p not in ('view', 'view_own'):
-            sidebar_permissions.append('pytsite.odm_auth.{}.{}'.format(p, model))
+            sidebar_permissions.append('odm_auth.{}.{}'.format(p, model))
 
     _admin.sidebar.add_menu(
         sid='content',
         mid=model,
         title=title,
-        href=_router.rule_path('pytsite.odm_ui@browse', {'model': model}),
+        href=_router.rule_path('odm_ui@browse', {'model': model}),
         icon=icon,
         weight=menu_weight,
         permissions=tuple(sidebar_permissions),

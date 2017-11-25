@@ -1,10 +1,10 @@
 """PytSite Content Plugin Controllers
 """
 from datetime import datetime as _datetime
-from pytsite import odm_ui as _odm_ui, auth as _auth, router as _router, metatag as _metatag, \
-    assetman as _assetman, odm as _odm, lang as _lang, tpl as _tpl, logger as _logger, hreflang as _hreflang, \
+from pytsite import router as _router, metatag as _metatag, lang as _lang, tpl as _tpl, logger as _logger, \
     routing as _routing
-from plugins import taxonomy as _taxonomy, comments as _comments
+from plugins import assetman as _assetman, auth as _auth, odm as _odm, taxonomy as _taxonomy, comments as _comments, \
+    odm_ui as _odm_ui, hreflang as _hreflang
 
 __author__ = 'Alexander Shepetko'
 __email__ = 'a@shepetko.com'

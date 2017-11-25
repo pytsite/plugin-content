@@ -3,7 +3,8 @@
 import requests as _requests
 import re as _re
 from random import shuffle as _shuffle, randint as _randint
-from pytsite import file as _file, auth as _auth, console as _console, lang as _lang, events as _events
+from pytsite import console as _console, lang as _lang, events as _events
+from plugins import file as _file, auth as _auth
 from . import _api
 
 __author__ = 'Alexander Shepetko'

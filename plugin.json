@@ -1,6 +1,6 @@
 {
   "name": "content",
-  "version": "2.0",
+  "version": "2.1",
   "description": {
     "en": "Content",
     "ru": "Контент",
@@ -25,6 +25,7 @@
       "feed",
       "file",
       "file_storage_odm",
+      "file_ui",
       "hreflang",
       "http_api",
       "jquery",

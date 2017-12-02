@@ -5,7 +5,7 @@ from shutil import rmtree as _rmtree
 from datetime import datetime as _datetime
 from pytsite import reg as _reg, logger as _logger, tpl as _tpl, mail as _mail, lang as _lang, router as _router, \
     errors as _errors, mongodb as _db
-from plugins import settings as _settings, auth as _auth, comments as _comments, sitemap as _sitemap
+from plugins import auth as _auth, comments as _comments, sitemap as _sitemap
 from . import _api
 
 __author__ = 'Alexander Shepetko'
@@ -79,7 +79,7 @@ def _generate_sitemap():
     sitemap = _sitemap.Sitemap()
     sitemap.add_url(_router.base_url(), _datetime.now(), 'always', 1)
     for lang in _lang.langs():
-        for model in _settings.get('content.sitemap_models', ()):
+        for model in _reg.get('content.sitemap_models', ()):
             _logger.info("Sitemap generation started for model '{}', language '{}'.".
                          format(model, _lang.lang_title(lang)))
 
@@ -121,6 +121,6 @@ def _generate_feeds():
     # For each language we have separate feed
     for lng in _lang.langs():
         # Generate RSS feed for each model
-        for model in _settings.get('content.rss_models', ()):
+        for model in _reg.get('content.rss_models', ()):
             filename = 'rss-{}'.format(model)
             _api.generate_rss(model, filename, lng, length=_reg.get('content.feed.length', 20))

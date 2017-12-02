@@ -8,8 +8,8 @@ from pytsite import validation as _validation, html as _html, lang as _lang, eve
     mail as _mail, tpl as _tpl, reg as _reg, router as _router
 from plugins import auth as _auth, ckeditor as _ckeditor, route_alias as _route_alias, auth_ui as _auth_ui, \
     auth_storage_odm as _auth_storage_odm, file_storage_odm as _file_storage_odm, permissions as _permissions, \
-    odm_ui as _odm_ui, odm as _odm, settings as _settings, file as _file, form as _form, widget as _widget, \
-    assetman as _assetman
+    odm_ui as _odm_ui, odm as _odm, file as _file, form as _form, widget as _widget, assetman as _assetman, \
+    file_ui as _file_ui
 
 __author__ = 'Alexander Shepetko'
 __email__ = 'a@shepetko.com'
@@ -31,7 +31,7 @@ def _process_tags(entity, inp: str, responsive_images: bool = True, images_width
 
     :type entity: Content
     """
-    enlarge_images_setting = _settings.get('content.enlarge_images', True)
+    enlarge_images_setting = _reg.get('content.enlarge_images', True)
     entity_images = entity.images if entity.has_field('images') else ()
     entity_images_count = len(entity_images)
 
@@ -435,7 +435,7 @@ class Content(_odm_ui.model.UIEntity):
         # Author
         if self.has_field('author'):
             if self.author:
-                r.append(str(_html.A(self.author.full_name, href=self.author.url)))
+                r.append(self.author.url)
             else:
                 r.append('&nbsp;')
 
@@ -475,7 +475,7 @@ class Content(_odm_ui.model.UIEntity):
 
         # Images
         if self.has_field('images'):
-            frm.add_widget(_file.widget.ImagesUpload(
+            frm.add_widget(_file_ui.widget.ImagesUpload(
                 uid='images',
                 weight=600,
                 label=self.t('images'),

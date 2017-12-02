@@ -6,7 +6,7 @@ from urllib import parse as _urllib_parse
 from os import path as _path, makedirs as _makedirs
 from pytsite import util as _util, router as _router, lang as _lang, logger as _logger, reg as _reg
 from plugins import odm as _odm, route_alias as _route_alias, feed as _feed, permissions as _permissions, \
-    settings as _settings, admin as _admin, widget as _widget
+    admin as _admin, widget as _widget
 from . import _model
 
 __author__ = 'Alexander Shepetko'
@@ -191,7 +191,7 @@ def generate_rss(model: str, filename: str, lng: str = '*', finder_setup: _Calla
         _makedirs(output_dir, 0o755, True)
 
     # Create generator
-    content_settings = _settings.get('content')
+    content_settings = _reg.get('content')
     parser = _feed.rss.Parser()
 
     # Get <channel> element

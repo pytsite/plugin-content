@@ -123,4 +123,4 @@ def _generate_feeds():
         # Generate RSS feed for each model
         for model in _reg.get('content.rss_models', ()):
             filename = 'rss-{}'.format(model)
-            _api.generate_rss(model, filename, lng, length=_reg.get('content.feed.length', 20))
+            _api.generate_rss(model, filename, lng, length=_reg.get('content.feed_length', 20))

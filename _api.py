@@ -210,9 +210,9 @@ def generate_rss(model: str, filename: str, lng: str = '*', finder_setup: _Calla
     channel.append_child(_feed.rss.em.Language(lng))
 
     # Channel logo
-    logo_url = _router.url(_reg.get('content.rss.logo_url', 'assets/app/img/logo-rss.png'))
+    logo_url = _router.url(_reg.get('content.rss_logo_url', 'assets/app/img/logo-rss.png'))
     channel.append_child(_feed.rss.yandex.Logo(logo_url))
-    square_logo_url = _router.url(_reg.get('content.rss.square_logo_url', 'assets/app/img/logo-rss-square.png'))
+    square_logo_url = _router.url(_reg.get('content.rss_square_logo_url', 'assets/app/img/logo-rss-square.png'))
     channel.append_child(_feed.rss.yandex.Logo(square_logo_url, square=True))
 
     # Append channel's items

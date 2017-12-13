@@ -11,7 +11,7 @@ __author__ = 'Alexander Shepetko'
 __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
-_TEXT_CLEANUP_RE = _re.compile('[,:;\?\-\.]')
+_TEXT_CLEANUP_RE = _re.compile('[,:;?\-.]')
 _SPACES_CLEANUP_RE = _re.compile('\s{2,}')
 
 
@@ -123,7 +123,7 @@ class Generate(_console.Command):
             if entity.has_field('status'):
                 entity.f_set('status', 'published')
 
-            _events.fire('content.generate', entity=entity)
+            _events.fire('content@generate', entity=entity)
 
             entity.save()
 

@@ -1,16 +1,19 @@
 """Pytsite Content Plugin
 """
-# Public API
-from . import _model as model, _widget as widget
-from ._api import register_model, get_models, find, get_model, get_model_title, dispense, get_statuses, \
-    is_model_registered, generate_rss, find_by_url, paginate
-
 __author__ = 'Alexander Shepetko'
 __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
+from pytsite import plugman as _plugman
 
-def _init():
+if _plugman.is_installed(__name__):
+    # Public API
+    from . import _model as model, _widget as widget
+    from ._api import register_model, get_models, find, get_model, get_model_title, dispense, get_statuses, \
+        is_model_registered, generate_rss, find_by_url, paginate
+
+
+def plugin_load():
     """Module Init Wrapper
     """
     from pytsite import events, tpl, lang, router, console
@@ -34,7 +37,7 @@ def _init():
 
     # Assets
     assetman.register_package(__name__)
-    assetman.t_js(__name__ + '@**')
+    assetman.t_js(__name__)
 
     # Common routes
     router.handle(_controllers.Index, 'content/index/<model>', 'content@index')
@@ -45,10 +48,10 @@ def _init():
     admin.sidebar.add_section('content', 'content@content', 100)
 
     # Event handlers
-    events.listen('pytsite.cron.hourly', _eh.cron_hourly)
-    events.listen('pytsite.cron.daily', _eh.cron_daily)
-    events.listen('auth.user.delete', _eh.auth_user_delete)
-    events.listen('comments.create_comment', _eh.comments_create_comment)
+    events.listen('pytsite.cron@hourly', _eh.cron_hourly)
+    events.listen('pytsite.cron@daily', _eh.cron_daily)
+    events.listen('auth@user.delete', _eh.auth_user_delete)
+    events.listen('comments@create_comment', _eh.comments_create_comment)
 
     # Settings
     settings.define('content', _settings_form.Form, 'content@content', 'fa fa-glass', 'content.settings.manage')
@@ -58,6 +61,3 @@ def _init():
 
     # Sitemap location in robots.txt
     robots_txt.sitemap('/sitemap/index.xml')
-
-
-_init()

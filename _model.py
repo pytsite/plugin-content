@@ -358,8 +358,8 @@ class Content(_odm_ui.model.UIEntity):
                 self.f_set('body', body)
                 self.f_set('video_links', list(self.video_links) + video_links)
 
-        _events.fire('content.entity.pre_save', entity=self)
-        _events.fire('content.entity.{}.pre_save.'.format(self.model), entity=self)
+        _events.fire('content@entity.pre_save', entity=self)
+        _events.fire('content@entity.{}.pre_save.'.format(self.model), entity=self)
 
     def _after_save(self, first_save: bool = False, **kwargs):
         """Hook.
@@ -369,8 +369,8 @@ class Content(_odm_ui.model.UIEntity):
             if self.status == 'waiting' and _reg.get('content.send_waiting_notifications', True):
                 _send_waiting_status_notification(self)
 
-        _events.fire('content.entity.save', entity=self)
-        _events.fire('content.entity.{}.save'.format(self.model), entity=self)
+        _events.fire('content@entity.save', entity=self)
+        _events.fire('content@entity.{}.save'.format(self.model), entity=self)
 
     def _after_delete(self, **kwargs):
         """Hook.

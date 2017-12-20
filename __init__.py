@@ -15,7 +15,7 @@ if _plugman.is_installed(__name__):
 
 def plugin_load():
     from pytsite import events, lang
-    from plugins import assetman
+    from plugins import assetman, permissions
     from . import _eh
 
     # Lang resources
@@ -24,6 +24,11 @@ def plugin_load():
     # Assetman resources
     assetman.register_package(__name__)
     assetman.t_js(__name__)
+
+    # Permissions
+    permissions.define_group('content', 'content@content')
+    permissions.define_permission('content@manage_settings', 'content@manage_content_settings_permission', 'content')
+
 
     # Event handlers
     events.listen('auth@user.delete', _eh.auth_user_delete)
@@ -38,7 +43,7 @@ def plugin_load_console():
 
 def plugin_load_uwsgi():
     from pytsite import cron, events, router, tpl
-    from plugins import admin, http_api, permissions, settings, robots_txt
+    from plugins import admin, http_api, settings, robots_txt
     from . import _eh, _controllers, _http_api_controllers, _settings_form
 
     # Tpl resources
@@ -60,10 +65,6 @@ def plugin_load_uwsgi():
     http_api.handle('GET', 'content/widget_entity_select_search/<model>/<language>',
                     _http_api_controllers.GetWidgetEntitySelectSearch, 'content@get_widget_entity_select_search')
     http_api.handle('POST', 'content/abuse/<model>/<uid>', _http_api_controllers.PostAbuse, 'content@post_abuse')
-
-    # Permissions
-    permissions.define_group('content', 'content@content')
-    permissions.define_permission('content@manage_settings', 'content@manage_content_settings_permission', 'content')
 
     # Settings
     settings.define('content', _settings_form.Form, 'content@content', 'fa fa-glass', 'content@manage_settings')

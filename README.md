@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 2.2.2 (2017-12-20)
+
+Init fixed.
+
+
 ### 2.2.1 (2017-12-20)
 
 Init refactored.

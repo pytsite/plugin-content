@@ -14,50 +14,70 @@ if _plugman.is_installed(__name__):
 
 
 def plugin_load():
-    """Module Init Wrapper
-    """
-    from pytsite import events, tpl, lang, router, console
-    from plugins import assetman, permissions, settings, admin, robots_txt, http_api
-    from . import _eh, _controllers, _settings_form, _http_api_controllers
-    from ._console_command import Generate as GenerateConsoleCommand
+    from pytsite import events, lang
+    from plugins import assetman
+    from . import _eh
 
+    # Lang resources
     lang.register_package(__name__)
+
+    # Assetman resources
+    assetman.register_package(__name__)
+    assetman.t_js(__name__)
+
+    # Event handlers
+    events.listen('auth@user.delete', _eh.auth_user_delete)
+
+
+def plugin_load_console():
+    from pytsite import console
+    from . import _console_command
+
+    console.register_command(_console_command.Generate())
+
+
+def plugin_load_uwsgi():
+    from pytsite import cron, events, router, tpl
+    from plugins import admin, http_api, permissions, settings, robots_txt
+    from . import _eh, _controllers, _http_api_controllers, _settings_form
+
+    # Tpl resources
     tpl.register_package(__name__)
 
-    # HTTP API controllers
+    # Events listeners
+    cron.hourly(_eh.cron_hourly)
+    cron.daily(_eh.cron_daily)
+    events.listen('comments@create_comment', _eh.comments_create_comment)
+
+    # Routes
+    router.handle(_controllers.Index, 'content/index/<model>', 'content@index')
+    router.handle(_controllers.View, 'content/view/<model>/<id>', 'content@view')
+    router.handle(_controllers.Modify, 'content/modify/<model>/<id>', 'content@modify')
+
+    # HTTP API endpoints
     http_api.handle('PATCH', 'content/view/<model>/<uid>', _http_api_controllers.PatchViewsCount,
                     'content@patch_view_count')
     http_api.handle('GET', 'content/widget_entity_select_search/<model>/<language>',
                     _http_api_controllers.GetWidgetEntitySelectSearch, 'content@get_widget_entity_select_search')
     http_api.handle('POST', 'content/abuse/<model>/<uid>', _http_api_controllers.PostAbuse, 'content@post_abuse')
 
-    # Permission groups
+    # Permissions
     permissions.define_group('content', 'content@content')
-    permissions.define_permission('content.settings.manage', 'content@manage_content_settings_permission', 'content')
+    permissions.define_permission('content@manage_settings', 'content@manage_content_settings_permission', 'content')
 
-    # Assets
-    assetman.register_package(__name__)
-    assetman.t_js(__name__)
-
-    # Common routes
-    router.handle(_controllers.Index, 'content/index/<model>', 'content@index')
-    router.handle(_controllers.View, 'content/view/<model>/<id>', 'content@view')
-    router.handle(_controllers.Modify, 'content/modify/<model>/<id>', 'content@modify')
+    # Settings
+    settings.define('content', _settings_form.Form, 'content@content', 'fa fa-glass', 'content@manage_settings')
 
     # Admin elements
     admin.sidebar.add_section('content', 'content@content', 100)
 
-    # Event handlers
-    events.listen('pytsite.cron@hourly', _eh.cron_hourly)
-    events.listen('pytsite.cron@daily', _eh.cron_daily)
-    events.listen('auth@user.delete', _eh.auth_user_delete)
-    events.listen('comments@create_comment', _eh.comments_create_comment)
-
-    # Settings
-    settings.define('content', _settings_form.Form, 'content@content', 'fa fa-glass', 'content.settings.manage')
-
-    # Console commands
-    console.register_command(GenerateConsoleCommand())
-
     # Sitemap location in robots.txt
     robots_txt.sitemap('/sitemap/index.xml')
+
+
+def plugin_install():
+    from plugins import assetman
+
+    plugin_load()
+    assetman.build(__name__)
+    assetman.build_translations()

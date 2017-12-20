@@ -1,6 +1,6 @@
 {
   "name": "content",
-  "version": "2.2",
+  "version": "2.2.1",
   "description": {
     "en": "Content",
     "ru": "Контент",
@@ -26,6 +26,7 @@
       "file",
       "file_storage_odm",
       "file_ui",
+      "font_awesome",
       "hreflang",
       "http_api",
       "jquery",
@@ -33,6 +34,7 @@
       "odm_auth",
       "odm_ui",
       "permissions",
+      "responsive",
       "robots_txt",
       "route_alias",
       "settings",

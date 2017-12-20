@@ -15,7 +15,7 @@ if _plugman.is_installed(__name__):
 
 def plugin_load():
     from pytsite import events, lang
-    from plugins import assetman, permissions
+    from plugins import assetman, permissions, admin
     from . import _eh
 
     # Lang resources
@@ -29,6 +29,8 @@ def plugin_load():
     permissions.define_group('content', 'content@content')
     permissions.define_permission('content@manage_settings', 'content@manage_content_settings_permission', 'content')
 
+    # Admin section should exist before any content's models registration
+    admin.sidebar.add_section('content', 'content@content', 100)
 
     # Event handlers
     events.listen('auth@user.delete', _eh.auth_user_delete)
@@ -43,7 +45,7 @@ def plugin_load_console():
 
 def plugin_load_uwsgi():
     from pytsite import cron, events, router, tpl
-    from plugins import admin, http_api, settings, robots_txt
+    from plugins import http_api, settings, robots_txt
     from . import _eh, _controllers, _http_api_controllers, _settings_form
 
     # Tpl resources
@@ -68,9 +70,6 @@ def plugin_load_uwsgi():
 
     # Settings
     settings.define('content', _settings_form.Form, 'content@content', 'fa fa-glass', 'content@manage_settings')
-
-    # Admin elements
-    admin.sidebar.add_section('content', 'content@content', 100)
 
     # Sitemap location in robots.txt
     robots_txt.sitemap('/sitemap/index.xml')

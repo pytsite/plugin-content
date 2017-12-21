@@ -13,17 +13,28 @@ if _plugman.is_installed(__name__):
         is_model_registered, generate_rss, find_by_url, paginate
 
 
+def _register_assetman_resources():
+    from plugins import assetman
+
+    if not assetman.is_package_registered(__name__):
+        assetman.register_package(__name__)
+        assetman.t_js(__name__)
+
+    return assetman
+
+
+def plugin_install():
+    _register_assetman_resources().build(__name__)
+
+
 def plugin_load():
     from pytsite import events, lang
-    from plugins import assetman, permissions, admin
+    from plugins import permissions, admin
     from . import _eh
 
-    # Lang resources
+    # Resources
     lang.register_package(__name__)
-
-    # Assetman resources
-    assetman.register_package(__name__)
-    assetman.t_js(__name__)
+    _register_assetman_resources()
 
     # Permissions
     permissions.define_group('content', 'content@content')
@@ -73,11 +84,3 @@ def plugin_load_uwsgi():
 
     # Sitemap location in robots.txt
     robots_txt.sitemap('/sitemap/index.xml')
-
-
-def plugin_install():
-    from plugins import assetman
-
-    plugin_load()
-    assetman.build(__name__)
-    assetman.build_translations()

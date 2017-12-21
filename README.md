@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 2.2.5 (2017-12-21)
+
+Admin sidebar item addition fixed.
+
+
 ### 2.2.4 (2017-12-21)
 
 Init fixed.

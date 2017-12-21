@@ -68,16 +68,17 @@ def register_model(model: str, cls: _Union[str, _Type[_model.Content]], title: s
         if p not in ('view', 'view_own'):
             sidebar_permissions.append('odm_auth.{}.{}'.format(p, model))
 
-    _admin.sidebar.add_menu(
-        sid='content',
-        mid=model,
-        title=title,
-        href=_router.rule_path('odm_ui@browse', {'model': model}),
-        icon=icon,
-        weight=menu_weight,
-        permissions=tuple(sidebar_permissions),
-        replace=replace
-    )
+    if _reg.get('env.type') == 'uwsgi':
+        _admin.sidebar.add_menu(
+            sid='content',
+            mid=model,
+            title=title,
+            href=_router.rule_path('odm_ui@browse', {'model': model}),
+            icon=icon,
+            weight=menu_weight,
+            permissions=tuple(sidebar_permissions),
+            replace=replace
+        )
 
 
 def is_model_registered(model: str) -> bool:

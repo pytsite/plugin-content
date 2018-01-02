@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 2.2.6 (2018-01-02)
+
+Fixed ODM UI hook's response.
+
+
 ### 2.2.5 (2017-12-21)
 
 Admin sidebar item addition fixed.

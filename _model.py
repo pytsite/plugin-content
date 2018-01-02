@@ -435,7 +435,7 @@ class Content(_odm_ui.model.UIEntity):
         # Author
         if self.has_field('author'):
             if self.author:
-                r.append(self.author.url)
+                r.append(self.author.full_name)
             else:
                 r.append('&nbsp;')
 

@@ -219,12 +219,15 @@ def generate_rss(model: str, filename: str, lng: str = '*', finder_setup: _Calla
     # Append channel's items
     for entity in finder.get(length):
         item = _feed.rss.em.Item()
-        item.append_child(_feed.rss.em.Title(entity.title))
-        item.append_child(_feed.rss.em.Link(entity.url))
-        item.append_child(_feed.rss.em.PdaLink(entity.url))
-        item.append_child(_feed.rss.em.Description(entity.description if entity.description else entity.title))
-        item.append_child(_feed.rss.em.PubDate(entity.publish_time))
-        item.append_child(_feed.rss.em.Author('{} ({})'.format(entity.author.email, entity.author.full_name)))
+        try:
+            item.append_child(_feed.rss.em.Title(entity.title))
+            item.append_child(_feed.rss.em.Link(entity.url))
+            item.append_child(_feed.rss.em.PdaLink(entity.url))
+            item.append_child(_feed.rss.em.Description(entity.description if entity.description else entity.title))
+            item.append_child(_feed.rss.em.PubDate(entity.publish_time))
+            item.append_child(_feed.rss.em.Author('{} ({})'.format(entity.author.email, entity.author.full_name)))
+        except _odm.error.FieldNotDefined:
+            pass
 
         # Section
         if entity.has_field('section'):

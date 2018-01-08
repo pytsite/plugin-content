@@ -4,9 +4,14 @@
 ## Changelog
 
 
+### 2.2.7 (2018-01-08)
+
+Non-existent fields checking added while RSS generation.
+
+
 ### 2.2.6 (2018-01-02)
 
-Fixed ODM UI hook's response.
+ODM UI hook's response fixed.
 
 
 ### 2.2.5 (2017-12-21)

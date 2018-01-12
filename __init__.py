@@ -28,9 +28,9 @@ def plugin_install():
 
 
 def plugin_load():
-    from pytsite import events, lang
+    from pytsite import events, lang, router
     from plugins import permissions, admin
-    from . import _eh
+    from . import _eh, _controllers
 
     # Resources
     lang.register_package(__name__)
@@ -45,6 +45,9 @@ def plugin_load():
 
     # Event handlers
     events.listen('auth@user.delete', _eh.auth_user_delete)
+
+    # Routes which must be registered in any environment
+    router.handle(_controllers.View, 'content/view/<model>/<id>', 'content@view')
 
 
 def plugin_load_console():
@@ -69,7 +72,6 @@ def plugin_load_uwsgi():
 
     # Routes
     router.handle(_controllers.Index, 'content/index/<model>', 'content@index')
-    router.handle(_controllers.View, 'content/view/<model>/<id>', 'content@view')
     router.handle(_controllers.Modify, 'content/modify/<model>/<id>', 'content@modify')
 
     # HTTP API endpoints

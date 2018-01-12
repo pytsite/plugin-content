@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 2.2.8 (2018-01-12)
+
+Init fixed.
+
+
 ### 2.2.7 (2018-01-08)
 
 Non-existent fields checking added while RSS generation.

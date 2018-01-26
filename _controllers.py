@@ -1,14 +1,14 @@
 """PytSite Content Plugin Controllers
 """
+__author__ = 'Alexander Shepetko'
+__email__ = 'a@shepetko.com'
+__license__ = 'MIT'
+
 from datetime import datetime as _datetime
 from pytsite import router as _router, metatag as _metatag, lang as _lang, tpl as _tpl, logger as _logger, \
     routing as _routing
 from plugins import assetman as _assetman, auth as _auth, odm as _odm, taxonomy as _taxonomy, comments as _comments, \
     odm_ui as _odm_ui, hreflang as _hreflang
-
-__author__ = 'Alexander Shepetko'
-__email__ = 'a@shepetko.com'
-__license__ = 'MIT'
 
 
 class Index(_routing.Controller):

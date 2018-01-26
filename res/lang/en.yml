@@ -19,7 +19,6 @@ content_will_be_published_after_moderation: 'Thank you. Your content will be pub
 invalid_email: 'Invalid email'
 search: 'Search :query'
 search_input_placeholder: 'Search...'
-manage_content_settings_permission: 'Manage content settings'
 additional_js_code: 'Additional JS code'
 articles_of_author: 'Content by :name'
 console_generate_command_description: 'Content generation'

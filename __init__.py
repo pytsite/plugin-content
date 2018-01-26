@@ -4,41 +4,25 @@ __author__ = 'Alexander Shepetko'
 __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
-from pytsite import plugman as _plugman
-
-if _plugman.is_installed(__name__):
-    # Public API
-    from . import _model as model, _widget as widget
-    from ._api import register_model, get_models, find, get_model, get_model_title, dispense, get_statuses, \
-        is_model_registered, generate_rss, find_by_url, paginate
-
-
-def _register_assetman_resources():
-    from plugins import assetman
-
-    if not assetman.is_package_registered(__name__):
-        assetman.register_package(__name__)
-        assetman.t_js(__name__)
-
-    return assetman
-
-
-def plugin_install():
-    _register_assetman_resources().build(__name__)
+# Public API
+from . import _model as model, _widget as widget
+from ._api import register_model, get_models, find, get_model, get_model_title, dispense, get_statuses, \
+    is_model_registered, generate_rss, find_by_url, paginate
 
 
 def plugin_load():
     from pytsite import events, lang, router
-    from plugins import permissions, admin
+    from plugins import permissions, admin, assetman
     from . import _eh, _controllers
 
     # Resources
     lang.register_package(__name__)
-    _register_assetman_resources()
+    assetman.register_package(__name__)
+
+    assetman.t_js(__name__)
 
     # Permissions
     permissions.define_group('content', 'content@content')
-    permissions.define_permission('content@manage_settings', 'content@manage_content_settings_permission', 'content')
 
     # Admin section should exist before any content's models registration
     admin.sidebar.add_section('content', 'content@content', 100)
@@ -48,6 +32,12 @@ def plugin_load():
 
     # Routes which must be registered in any environment
     router.handle(_controllers.View, 'content/view/<model>/<id>', 'content@view')
+
+
+def plugin_install():
+    from plugins import assetman
+
+    assetman.build(__name__)
 
 
 def plugin_load_console():
@@ -82,7 +72,7 @@ def plugin_load_uwsgi():
     http_api.handle('POST', 'content/abuse/<model>/<uid>', _http_api_controllers.PostAbuse, 'content@post_abuse')
 
     # Settings
-    settings.define('content', _settings_form.Form, 'content@content', 'fa fa-glass', 'content@manage_settings')
+    settings.define('content', _settings_form.Form, 'content@content', 'fa fa-glass', 'dev')
 
     # Sitemap location in robots.txt
     robots_txt.sitemap('/sitemap/index.xml')

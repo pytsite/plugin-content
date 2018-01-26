@@ -1,12 +1,12 @@
 """PytSite Content Plugin HTTP API
 """
-from pytsite import routing as _routing, mail as _mail, lang as _lang, tpl as _tpl
-from plugins import auth as _auth, odm as _odm
-from . import _api
-
 __author__ = 'Alexander Shepetko'
 __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
+
+from pytsite import routing as _routing, mail as _mail, lang as _lang, tpl as _tpl
+from plugins import auth as _auth, odm as _odm
+from . import _api
 
 
 class PatchViewsCount(_routing.Controller):
@@ -41,11 +41,11 @@ class GetWidgetEntitySelectSearch(_routing.Controller):
         language = self.arg('language')
 
         # User can browse ANY entities
-        if user.has_permission('odm_auth.view.' + model):
+        if user.has_permission('odm_auth@view.' + model):
             f = _api.find(model, status='*', check_publish_time=None, language=language)
 
         # User can browse only its OWN entities
-        elif user.has_permission('odm_auth.view_own.' + model):
+        elif user.has_permission('odm_auth@view_own.' + model):
             f = _api.find(model, status='*', check_publish_time=None, language=language)
             f.eq('author', user.uid)
 
@@ -82,7 +82,7 @@ class PostAbuse(_routing.Controller):
         tpl_name = 'content@mail/{}/abuse'.format(_lang.get_current())
         subject = _lang.t('content@mail_subject_abuse')
         for recipient in _auth.get_users({'status': 'active'}):
-            perms = ('odm_auth.modify.{}'.format(model), 'odm_auth.delete.{}'.format(model))
+            perms = ('odm_auth@modify.{}'.format(model), 'odm_auth@delete.{}'.format(model))
             if not recipient.has_permission(perms):
                 continue
 

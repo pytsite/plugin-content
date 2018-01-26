@@ -1,6 +1,6 @@
 {
   "name": "content",
-  "version": "2.2.8",
+  "version": "2.3",
   "description": {
     "en": "Content",
     "ru": "Контент",
@@ -15,7 +15,7 @@
   "requires": {
     "packages": [],
     "plugins": [
-      "admin",
+      "admin>=1.3",
       "assetman",
       "auth",
       "auth_storage_odm",
@@ -37,7 +37,7 @@
       "responsive",
       "robots_txt",
       "route_alias",
-      "settings",
+      "settings>=1.3",
       "sitemap",
       "taxonomy",
       "widget"

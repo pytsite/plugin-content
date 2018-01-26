@@ -1,5 +1,9 @@
 """PytSite Content Plugin Content Models
 """
+__author__ = 'Alexander Shepetko'
+__email__ = 'a@shepetko.com'
+__license__ = 'MIT'
+
 import re as _re
 from typing import Tuple as _Tuple
 from frozendict import frozendict as _frozendict
@@ -10,10 +14,6 @@ from plugins import auth as _auth, ckeditor as _ckeditor, route_alias as _route_
     auth_storage_odm as _auth_storage_odm, file_storage_odm as _file_storage_odm, permissions as _permissions, \
     odm_ui as _odm_ui, odm as _odm, file as _file, form as _form, widget as _widget, assetman as _assetman, \
     file_ui as _file_ui
-
-__author__ = 'Alexander Shepetko'
-__email__ = 'a@shepetko.com'
-__license__ = 'MIT'
 
 _body_img_tag_re = _re.compile('\[img:(\d+)([^\]]*)\]')
 _body_vid_tag_re = _re.compile('\[vid:(\d+)\]')
@@ -183,7 +183,7 @@ def _remove_tags(s: str) -> str:
 
 def _send_waiting_status_notification(entity):
     for u in _auth.get_users():
-        if u.has_permission('odm_auth.modify.' + entity.model):
+        if u.has_permission('odm_auth@modify.' + entity.model):
             m_subject = _lang.t('content@content_waiting_mail_subject')
             m_body = _tpl.render('content@mail/{}/propose'.format(_lang.get_current()), {
                 'user': u,

@@ -1,15 +1,15 @@
 """PytSite Content Plugin Console Commands
 """
+__author__ = 'Alexander Shepetko'
+__email__ = 'a@shepetko.com'
+__license__ = 'MIT'
+
 import requests as _requests
 import re as _re
 from random import shuffle as _shuffle, randint as _randint
 from pytsite import console as _console, lang as _lang, events as _events
 from plugins import file as _file, auth as _auth
 from . import _api
-
-__author__ = 'Alexander Shepetko'
-__email__ = 'a@shepetko.com'
-__license__ = 'MIT'
 
 _TEXT_CLEANUP_RE = _re.compile('[,:;?\-.]')
 _SPACES_CLEANUP_RE = _re.compile('\s{2,}')

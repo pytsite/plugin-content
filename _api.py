@@ -1,5 +1,9 @@
 """PytSite Content Plugin API Functions
 """
+__author__ = 'Alexander Shepetko'
+__email__ = 'a@shepetko.com'
+__license__ = 'MIT'
+
 from typing import Callable as _Callable, List as _List, Union as _Union, Type as _Type, Tuple as _Tuple
 from datetime import datetime as _datetime
 from urllib import parse as _urllib_parse
@@ -8,10 +12,6 @@ from pytsite import util as _util, router as _router, lang as _lang, logger as _
 from plugins import odm as _odm, route_alias as _route_alias, feed as _feed, permissions as _permissions, \
     admin as _admin, widget as _widget
 from . import _model
-
-__author__ = 'Alexander Shepetko'
-__email__ = 'a@shepetko.com'
-__license__ = 'MIT'
 
 _models = {}
 
@@ -66,14 +66,14 @@ def register_model(model: str, cls: _Union[str, _Type[_model.Content]], title: s
     sidebar_permissions = []
     for p in mock.odm_auth_permissions():
         if p not in ('view', 'view_own'):
-            sidebar_permissions.append('odm_auth.{}.{}'.format(p, model))
+            sidebar_permissions.append('odm_auth@{}.{}'.format(p, model))
 
     if _reg.get('env.type') == 'uwsgi':
         _admin.sidebar.add_menu(
             sid='content',
             mid=model,
             title=title,
-            href=_router.rule_path('odm_ui@browse', {'model': model}),
+            path=_router.rule_path('odm_ui@browse', {'model': model}),
             icon=icon,
             weight=menu_weight,
             permissions=tuple(sidebar_permissions),

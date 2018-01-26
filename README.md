@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 2.3 (2018-01-26)
+
+- Support for `admin-1.3` and `settings-1.3`.
+
+
 ### 2.2.8 (2018-01-12)
 
 Init fixed.

@@ -55,7 +55,7 @@ class Generate(_console.Command):
 
         # Checking if the content model registered
         if not _api.is_model_registered(model):
-            raise _console.error.Error("'{}' is not a registered content model.".format(model))
+            raise _console.error.CommandExecutionError("'{}' is not a registered content model".format(model))
 
         author_login = self.opt('author')
         num = self.opt('num')
@@ -83,10 +83,10 @@ class Generate(_console.Command):
                 if author_login:
                     author = _auth.get_user(author_login)
                     if not author:
-                        raise _console.error.Error("'{}' is not a registered user.".format(author_login))
+                        raise _console.error.CommandExecutionError("'{}' is not a registered user".format(author_login))
                 else:
                     if not users:
-                        raise _console.error.Error(_lang.t('content@no_users_found'))
+                        raise _console.error.CommandExecutionError(_lang.t('content@no_users_found'))
                     rand = _randint(0, len(users) - 1)
                     author = users[rand:rand + 1][0]
 

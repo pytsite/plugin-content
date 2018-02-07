@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 2.3.1 (2018-02-07)
+
+Support for PytSite-7.7.
+
+
 ### 2.3 (2018-01-26)
 
 - Support for `admin-1.3` and `settings-1.3`.

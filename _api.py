@@ -68,7 +68,7 @@ def register_model(model: str, cls: _Union[str, _Type[_model.Content]], title: s
         if p not in ('view', 'view_own'):
             sidebar_permissions.append('odm_auth@{}.{}'.format(p, model))
 
-    if _reg.get('env.type') == 'uwsgi':
+    if _reg.get('env.type') == 'wsgi':
         _admin.sidebar.add_menu(
             sid='content',
             mid=model,

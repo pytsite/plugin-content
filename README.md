@@ -4,6 +4,14 @@
 ## Changelog
 
 
+### 2.5 (2018-02-18)
+
+Signature of `register_model()` changed:
+
+* `icon` renamed to `menu_icon`;
+* new argument `menu_sid` added.
+
+
 ### 2.4 (2018-02-11)
 
 Support for PytSite-7.9.

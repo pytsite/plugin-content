@@ -1,5 +1,9 @@
 """PytSite Content Plugin Event Handlers
 """
+__author__ = 'Alexander Shepetko'
+__email__ = 'a@shepetko.com'
+__license__ = 'MIT'
+
 from os import path as _path, makedirs as _makedirs
 from shutil import rmtree as _rmtree
 from datetime import datetime as _datetime
@@ -7,10 +11,6 @@ from pytsite import reg as _reg, logger as _logger, tpl as _tpl, mail as _mail, 
     errors as _errors, mongodb as _db
 from plugins import auth as _auth, comments as _comments, sitemap as _sitemap
 from . import _api
-
-__author__ = 'Alexander Shepetko'
-__email__ = 'a@shepetko.com'
-__license__ = 'MIT'
 
 _sitemap_generation_works = False
 

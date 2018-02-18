@@ -19,9 +19,10 @@ def plugin_load():
     lang.register_package(__name__)
     assetman.register_package(__name__)
 
+    # Assetman tasks
     assetman.t_js(__name__)
 
-    # Permissions
+    # Permissions group
     permissions.define_group('content', 'content@content')
 
     # Admin section should exist before any content's models registration
@@ -47,7 +48,7 @@ def plugin_load_console():
     console.register_command(_console_command.Generate())
 
 
-def plugin_load_uwsgi():
+def plugin_load_wsgi():
     from pytsite import cron, events, router, tpl
     from plugins import http_api, settings, robots_txt
     from . import _eh, _controllers, _http_api_controllers, _settings_form

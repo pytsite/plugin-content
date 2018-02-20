@@ -451,7 +451,7 @@ class Content(_odm_ui.model.UIEntity):
         """Hook.
         """
         from . import _widget as _content_widget
-        current_user = _auth.get_current_user()
+        c_user = _auth.get_current_user()
 
         # Title
         if self.has_field('title'):
@@ -510,7 +510,8 @@ class Content(_odm_ui.model.UIEntity):
                 frm.add_rule('body', _validation.rule.NonEmpty())
 
         # Status
-        if self.has_field('status') and current_user.has_permission('content.bypass_moderation.' + self.model):
+        if self.has_field('status') and \
+                (c_user.has_permission('content.bypass_moderation.' + self.model) or c_user.is_admin_or_dev):
             frm.add_widget(_content_widget.StatusSelect(
                 uid='status',
                 weight=1200,
@@ -533,30 +534,29 @@ class Content(_odm_ui.model.UIEntity):
 
         # Localizations
         localization_perm = 'content.set_localization.' + self.model
-        if _permissions.is_permission_defined(localization_perm) and current_user.has_permission(localization_perm):
-            if self.has_field('localization_' + lng):
-                for i, lng in enumerate(_lang.langs(False)):
-                    frm.add_widget(_content_widget.EntitySelect(
-                        uid='localization_' + lng,
-                        weight=1600 + i,
-                        label=self.t('localization', {'lang': _lang.lang_title(lng)}),
-                        model=self.model,
-                        language=lng,
-                        value=self.f_get('localization_' + lng)
-                    ))
-
-        # Visible only for admins
-        if _auth.get_current_user().is_admin:
-            # Author
-            if self.has_field('author'):
-                frm.add_widget(_auth_ui.widget.UserSelect(
-                    uid='author',
-                    weight=1800,
-                    label=self.t('author'),
-                    value=_auth.get_current_user() if self.is_new else self.author,
-                    h_size='col-sm-4',
-                    required=True,
+        if _permissions.is_permission_defined(localization_perm) and \
+                (c_user.has_permission(localization_perm) or c_user.is_admin_or_dev) and \
+                self.has_field('localization_' + lng):
+            for i, lng in enumerate(_lang.langs(False)):
+                frm.add_widget(_content_widget.EntitySelect(
+                    uid='localization_' + lng,
+                    weight=1600 + i,
+                    label=self.t('localization', {'lang': _lang.lang_title(lng)}),
+                    model=self.model,
+                    language=lng,
+                    value=self.f_get('localization_' + lng)
                 ))
+
+        # Author
+        if self.has_field('author') and _auth.get_current_user().is_admin_or_dev:
+            frm.add_widget(_auth_ui.widget.UserSelect(
+                uid='author',
+                weight=1800,
+                label=self.t('author'),
+                value=_auth.get_current_user() if self.is_new else self.author,
+                h_size='col-sm-4',
+                required=True,
+            ))
 
     def odm_ui_mass_action_entity_description(self) -> str:
         """Get delete form description.
@@ -707,7 +707,7 @@ class ContentWithURL(Content):
         """
         super().odm_ui_m_form_setup_widgets(frm)
 
-        if _auth.get_current_user().is_admin and self.has_field('route_alias'):
+        if self.has_field('route_alias') and _auth.get_current_user().is_admin_or_dev:
             # Route alias
             frm.add_widget(_widget.input.Text(
                 uid='route_alias',

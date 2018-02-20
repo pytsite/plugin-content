@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 2.5.1 (2018-02-20)
+
+Permissions issue fixed.
+
+
 ### 2.5 (2018-02-18)
 
 Signature of `register_model()` changed:

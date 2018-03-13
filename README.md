@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 2.5.2 (2018-03-13)
+
+Admin's sidebar permissions issue fixed.
+
+
 ### 2.5.1 (2018-02-20)
 
 Permissions issue fixed.

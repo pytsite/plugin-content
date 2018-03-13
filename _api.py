@@ -64,6 +64,9 @@ def register_model(model: str, cls: _Union[str, _Type[_model.Content]], title: s
         _permissions.define_permission(perm_name, perm_description, perm_group)
 
     if _reg.get('env.type') == 'wsgi':
+        perm_skip = ('view', 'view_own')
+        perms = ['odm_auth@{}.{}'.format(p, model) for p in mock.odm_auth_permissions() if p not in perm_skip],
+
         _admin.sidebar.add_menu(
             sid=menu_sid,
             mid=model,
@@ -71,7 +74,7 @@ def register_model(model: str, cls: _Union[str, _Type[_model.Content]], title: s
             path=_router.rule_path('odm_ui@browse', {'model': model}),
             icon=menu_icon,
             weight=menu_weight,
-            permissions=[p for p in mock.odm_auth_permissions() if p not in ('view', 'view_own')],
+            permissions=perms,
             replace=replace,
         )
 

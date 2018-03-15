@@ -65,13 +65,13 @@ class EntitySelect(_widget.select.Select2):
 
         super().__init__(uid, **kwargs)
 
-    def set_val(self, value, **kwargs):
+    def set_val(self, value):
         if isinstance(value, str) and not value:
             value = None
         elif isinstance(value, _model.Content):
             value = value.model + ':' + str(value.id)
 
-        return super().set_val(value, **kwargs)
+        return super().set_val(value)
 
     def _get_element(self, **kwargs):
         # In AJAX-mode Select2 doesn't contain any items,

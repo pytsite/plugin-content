@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 2.6 (2018-03-15)
+
+Support fow `widget-1.6`.
+
+
 ### 2.5.2 (2018-03-13)
 
 Admin's sidebar permissions issue fixed.

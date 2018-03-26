@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 2.6.1 (2018-03-26)
+
+Query contruction fixed in 'content@index' routing rule.
+
+
 ### 2.6 (2018-03-15)
 
 Support fow `widget-1.6`.

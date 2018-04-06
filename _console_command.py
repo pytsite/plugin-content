@@ -8,7 +8,7 @@ import requests as _requests
 import re as _re
 from random import shuffle as _shuffle, randint as _randint
 from pytsite import console as _console, lang as _lang, events as _events
-from plugins import file as _file, auth as _auth
+from plugins import file as _file, auth as _auth, query as _query
 from . import _api
 
 _TEXT_CLEANUP_RE = _re.compile('[,:;?\-.]')
@@ -72,7 +72,7 @@ class Generate(_console.Command):
         if short:
             self.lorem_txt_args['paras'] = 1
 
-        users = list(_auth.get_users({'status': 'active'}, limit=10))
+        users = list(_auth.find_users(_query.Query(_query.Eq('status', 'active')), limit=10))
 
         # Generate content entities
         for m in range(0, num):

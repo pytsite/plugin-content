@@ -4,6 +4,13 @@
 ## Changelog
 
 
+### 3.0 (2018-04-06)
+
+- Support of `auth-2.0`, `odm-2.0`.
+- Default value of registry value `content.max_image_size` reduced to 5.
+- Permissions renamed and defition its logic refactored.
+
+
 ### 2.6.1 (2018-03-26)
 
 Query contruction fixed in 'content@index' routing rule.

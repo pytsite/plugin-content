@@ -25,10 +25,10 @@ def register_model(model: str, cls: _Union[str, _Type[_model.Content]], title: s
         cls = _util.get_module_attr(cls)  # type: _Type[_model.Content]
 
     if not issubclass(cls, _model.Content):
-        raise TypeError('Subclass of content model expected.')
+        raise TypeError('Subclass of {} expected, got {}'.format(_model.Content, type(cls)))
 
     if not replace and is_model_registered(model):
-        raise KeyError("Model '{}' is already registered.".format(model))
+        raise KeyError("Content model '{}' is already registered".format(model))
 
     # Register ODM model
     _odm.register_model(model, cls, replace)
@@ -36,35 +36,9 @@ def register_model(model: str, cls: _Union[str, _Type[_model.Content]], title: s
     # Saving info about registered _content_ model
     _models[model] = (cls, title)
 
-    perm_group = cls.odm_auth_permissions_group()
-    mock = dispense(model)
-
-    # Define 'bypass_moderation' permission
-    if mock.has_field('status'):
-        perm_name = 'content.bypass_moderation.' + model
-        perm_description = cls.resolve_msg_id('content_perm_bypass_moderation_' + model)
-        _permissions.define_permission(perm_name, perm_description, perm_group)
-
-    # Define 'set_localization' permission
-    if mock.has_field('localization_' + _lang.get_current()):
-        perm_name = 'content.set_localization.' + model
-        perm_description = cls.resolve_msg_id('content_perm_set_localization_' + model)
-        _permissions.define_permission(perm_name, perm_description, perm_group)
-
-    # Define 'set_date' permission
-    if mock.has_field('publish_time'):
-        perm_name = 'content.set_publish_time.' + model
-        perm_description = cls.resolve_msg_id('content_perm_set_publish_time_' + model)
-        _permissions.define_permission(perm_name, perm_description, perm_group)
-
-    # Define 'set_starred' permission
-    if mock.has_field('starred'):
-        perm_name = 'content.set_starred.' + model
-        perm_description = cls.resolve_msg_id('content_perm_set_starred_' + model)
-        _permissions.define_permission(perm_name, perm_description, perm_group)
-
     if _reg.get('env.type') == 'wsgi':
         perm_skip = ('view', 'view_own')
+        mock = dispense(model)
         perms = ['odm_auth@{}.{}'.format(p, model) for p in mock.odm_auth_permissions() if p not in perm_skip],
 
         _admin.sidebar.add_menu(
@@ -246,7 +220,7 @@ def generate_rss(model: str, filename: str, lng: str = '*', finder_setup: _Calla
         if entity.has_field('video_links') and entity.video_links:
             m_group = item.append_child(_feed.rss.media.Group())
             for link_url in entity.video_links:
-                m_group.append_child(_feed.rss.media.Player(url=link_url))
+                m_group.add_widget(_feed.rss.media.Player(url=link_url))
 
         # Comments count
         if entity.has_field('comments_count'):

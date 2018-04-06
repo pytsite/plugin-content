@@ -182,7 +182,7 @@ def _remove_tags(s: str) -> str:
 
 
 def _send_waiting_status_notification(entity):
-    for u in _auth.get_users():
+    for u in _auth.find_users():
         if u.has_permission('odm_auth@modify.' + entity.model):
             m_subject = _lang.t('content@content_waiting_mail_subject')
             m_body = _tpl.render('content@mail/{}/propose'.format(_lang.get_current()), {
@@ -197,6 +197,31 @@ class Content(_odm_ui.model.UIEntity):
 
     Just minimum amount of fields.
     """
+
+    @classmethod
+    def on_register(cls, model: str):
+        super().on_register(model)
+
+        perm_group = cls.odm_auth_permissions_group()
+        mock = _odm.dispense(model)
+
+        # Define 'bypass_moderation' permission
+        if mock.has_field('status'):
+            perm_name = 'content@bypass_moderation.' + model
+            perm_description = cls.resolve_msg_id('content_perm_bypass_moderation_' + model)
+            _permissions.define_permission(perm_name, perm_description, perm_group)
+
+        # Define 'set_localization' permission
+        if mock.has_field('localization_' + _lang.get_current()):
+            perm_name = 'content@set_localization.' + model
+            perm_description = cls.resolve_msg_id('content_perm_set_localization_' + model)
+            _permissions.define_permission(perm_name, perm_description, perm_group)
+
+        # Define 'set_date' permission
+        if mock.has_field('publish_time'):
+            perm_name = 'content@set_publish_time.' + model
+            perm_description = cls.resolve_msg_id('content_perm_set_publish_time_' + model)
+            _permissions.define_permission(perm_name, perm_description, perm_group)
 
     @classmethod
     def odm_auth_permissions_group(cls) -> str:
@@ -480,7 +505,7 @@ class Content(_odm_ui.model.UIEntity):
                 weight=600,
                 label=self.t('images'),
                 value=self.f_get('images'),
-                max_file_size=_reg.get('content.max_image_size', 10),
+                max_file_size=_reg.get('content.max_image_size', 5),
                 max_files=_reg.get('content.max_images', 200),
             ))
             if self.get_field('images').required:
@@ -511,7 +536,7 @@ class Content(_odm_ui.model.UIEntity):
 
         # Status
         if self.has_field('status') and \
-                (c_user.has_permission('content.bypass_moderation.' + self.model) or c_user.is_admin_or_dev):
+                (c_user.has_permission('content@bypass_moderation.' + self.model) or c_user.is_admin_or_dev):
             frm.add_widget(_content_widget.StatusSelect(
                 uid='status',
                 weight=1200,
@@ -533,7 +558,7 @@ class Content(_odm_ui.model.UIEntity):
         ))
 
         # Localizations
-        localization_perm = 'content.set_localization.' + self.model
+        localization_perm = 'content@set_localization.' + self.model
         if _permissions.is_permission_defined(localization_perm) and \
                 (c_user.has_permission(localization_perm) or c_user.is_admin_or_dev) and \
                 self.has_field('localization_' + lng):

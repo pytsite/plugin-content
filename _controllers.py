@@ -172,10 +172,7 @@ class Modify(_routing.Controller):
         try:
             self.args['frm'] = _odm_ui.get_m_form(model, eid if eid != 0 else None)
 
-            if _router.has_rule('content_entity_modify'):
-                return _router.call('content_entity_modify', self.args)
-            else:
-                return _tpl.render('content@page/modify-form', self.args)
+            return _router.call('content_entity_modify', self.args)
 
         except _odm.error.EntityNotFound:
             raise self.not_found()

@@ -1,6 +1,6 @@
 <h1>Здравствуйте, {{ user.full_name }}!</h1>
 <p>
-    Только что на сайте <a href="{{ base_url() }}">{{ t('app_name') }}</a> был предложен новый материал
+    Только что на <a href="{{ base_url() }}">{{ t('app_name') }}</a> был добавлен новый материал
     &laquo;{{ entity.title }}&raquo; пользователем {{ entity.author.full_name }}.
     Пожалуйста, <a href="{{ entity.modify_url }}">решите дальнейшую судьбу материала</a>.
 </p>

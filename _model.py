@@ -182,14 +182,13 @@ def _remove_tags(s: str) -> str:
 
 
 def _send_waiting_status_notification(entity):
-    for u in _auth.find_users():
-        if u.has_permission('odm_auth@modify.' + entity.model):
-            m_subject = _lang.t('content@content_waiting_mail_subject')
-            m_body = _tpl.render('content@mail/{}/propose'.format(_lang.get_current()), {
-                'user': u,
-                'entity': entity,
-            })
-            _mail.Message(u.email, m_subject, m_body).send()
+    for u in _auth.get_admin_users():
+        m_subject = _lang.t('content@content_waiting_mail_subject')
+        m_body = _tpl.render('content@mail/{}/waiting-content'.format(_lang.get_current()), {
+            'user': u,
+            'entity': entity,
+        })
+        _mail.Message(u.email, m_subject, m_body).send()
 
 
 class Content(_odm_ui.model.UIEntity):

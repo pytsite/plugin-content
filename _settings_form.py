@@ -18,6 +18,13 @@ class Form(_settings.Form):
             default=True,
         ))
 
+        self.add_widget(_widget.select.Checkbox(
+            uid='setting_send_waiting_notifications',
+            weight=20,
+            label=_lang.t('content@send_waiting_notifications'),
+            default=True,
+        ))
+
         model_items = []
         for k in sorted(_api.get_models().keys()):
             if _api.dispense(k).has_field('route_alias'):

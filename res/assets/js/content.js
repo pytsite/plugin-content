@@ -12,7 +12,7 @@ require(['jquery', 'http-api', 'responsive'], function ($, httpApi, responsive) 
     });
 
     // Auto fill of 'Description' input
-    $('.content-m-form').on('pytsiteFormForward', function (e, form) {
+    $('.content-m-form').on('formForward', function (e, form) {
         form.em.find('.widget-uid-description input').focus(function () {
             var descriptionInput = $(this);
             var titleInput = form.em.find('.widget-uid-title input');

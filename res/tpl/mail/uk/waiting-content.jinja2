@@ -1,0 +1,10 @@
+<h1>Привіт, {{ user.full_name }}!</h1>
+<p>
+    Щойно на <a href="{{ base_url() }}">{{ t('app_name') }}</a> був запропонований новий матеріал
+    &laquo;{{ entity.title }}&raquo; користувачем {{ entity.author.full_name }}.
+    Будь ласка, <a href="{{ entity.modify_url }}">вирішить подальшу долю матеріалу</a>.
+</p>
+<p>
+    --<br/>
+    З найкращими побажаннями, {{ t('app_name') }}.
+</p>

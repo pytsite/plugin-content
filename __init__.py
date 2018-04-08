@@ -28,9 +28,6 @@ def plugin_load():
     # Admin section should exist before any content's models registration
     admin.sidebar.add_section('content', 'content@content', 100)
 
-    # Event handlers
-    events.listen('auth@user.delete', _eh.auth_user_delete)
-
     # Routes which must be registered in any environment
     router.handle(_controllers.View, 'content/view/<model>/<id>', 'content@view')
 

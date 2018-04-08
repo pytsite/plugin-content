@@ -4,6 +4,12 @@
 ## Changelog
 
 
+### 3.1 (2018-04-08)
+
+- Support of `odm_auth-1.6`.
+- Cleanup.
+
+
 ### 3.0 (2018-04-06)
 
 - Support of `auth-2.0`, `odm-2.0`.

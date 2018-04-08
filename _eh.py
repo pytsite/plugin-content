@@ -41,21 +41,6 @@ def comments_create_comment(comment: _comments.model.AbstractComment):
     _mail.Message(entity.author.email, subject, body, m_from).send()
 
 
-def auth_user_delete(user: _auth.model.AbstractUser):
-    """auth.user.delete
-    """
-    for model in _api.get_models():
-        f = _api.find(model, language=None)
-        if f.mock.has_field('author'):
-            entity = f.eq('author', user).first()
-            if entity:
-                raise _errors.ForbidDeletion(_lang.t('content@forbid_author_deletion', {
-                    'author': user.full_name,
-                    'content_model': model,
-                    'content_title': entity.f_get('title'),
-                }))
-
-
 def _generate_sitemap():
     """Generate content sitemap
     """

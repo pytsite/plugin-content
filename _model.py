@@ -217,12 +217,6 @@ class Content(_odm_ui.model.UIEntity):
             perm_description = cls.resolve_msg_id('content_perm_set_localization_' + model)
             _permissions.define_permission(perm_name, perm_description, perm_group)
 
-        # Define 'set_date' permission
-        if mock.has_field('publish_time'):
-            perm_name = 'content@set_publish_time.' + model
-            perm_description = cls.resolve_msg_id('content_perm_set_publish_time_' + model)
-            _permissions.define_permission(perm_name, perm_description, perm_group)
-
     @classmethod
     def odm_auth_permissions_group(cls) -> str:
         return 'content'

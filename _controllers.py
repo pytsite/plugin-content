@@ -86,15 +86,18 @@ class View(_routing.Controller):
 
         # Check permissions
         if not (entity.odm_auth_check_permission('view') or entity.odm_auth_check_permission('view_own')):
-            raise self.not_found()
+            raise self.forbidden()
 
         # Show non published entities only to users who can edit them
         if entity.has_field('publish_time') and entity.f_get('publish_time') > _datetime.now():
             if not (entity.odm_auth_check_permission('modify') or entity.odm_auth_check_permission('modify_own')):
                 raise self.not_found()
+            _router.session().add_warning_message(_lang.t('content@content_warning_future_publish_time'))
+
         if entity.has_field('status') and entity.status != 'published':
             if not (entity.odm_auth_check_permission('modify') or entity.odm_auth_check_permission('modify_own')):
                 raise self.not_found()
+            _router.session().add_warning_message(_lang.t('content@content_status_warning_{}'.format(entity.status)))
 
         # Update entity's comments count
         if entity.has_field('route_alias') and entity.has_field('comments_count') and entity.f_get('route_alias'):

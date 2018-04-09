@@ -34,3 +34,6 @@ enlarge_responsive_images: 'Автоматично збільшувати зоб
 mail_subject_abuse: 'Повідомлення про небажаний контент на сайті {:app_name}'
 abuse_receipt_confirm: "Дякуємо за допомогу в покращенні сервісу. Найближчим часом ми розглянемо ваш запит і приймемо необхідні заходи."
 send_waiting_notifications: 'Повідомляти адміністраторів про новий контент зі статусом "На модерації"'
+content_status_warning_waiting: 'Увага! Цей контент очікує модерації.'
+content_status_warning_unpublished: 'Увага! Цей контент знято з публікації.'
+content_warning_future_publish_time: 'Увага! Час публікації цого контенту ще не настало.'

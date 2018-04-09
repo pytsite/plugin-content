@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 3.1.3 (2018-04-09)
+
+Some user notifications added.
+
+
 ### 3.1.2 (2018-04-09)
 
 Tpl argument name fixed.

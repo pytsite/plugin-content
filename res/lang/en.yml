@@ -34,3 +34,6 @@ enlarge_responsive_images: 'Automatically enlarge images'
 mail_subject_abuse: 'Abusive content report on the {:app_name}'
 abuse_receipt_confirm: "Thank you for your help to make our service better. We'll review your request and take appropriate actions as soon as possible."
 send_waiting_notifications: 'Notify administrators about waiting content'
+content_status_warning_waiting: 'Warning! This content is waiting for moderation.'
+content_status_warning_unpublished: 'Warning! This content is not published.'
+content_warning_future_publish_time: 'Warning! Publish time of this content is in the future.'

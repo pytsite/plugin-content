@@ -170,7 +170,7 @@ class Modify(_routing.Controller):
         eid = self.arg('id')
 
         try:
-            self.args['frm'] = _odm_ui.get_m_form(model, eid if eid != 0 else None)
+            self.args['form'] = _odm_ui.get_m_form(model, eid if eid != 0 else None)
 
             return _router.call('content_entity_modify', self.args)
 

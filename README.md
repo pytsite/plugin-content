@@ -4,6 +4,13 @@
 ## Changelog
 
 
+### 4.0 (2018-04-12)
+
+- New `Browse` controller added.
+- Support for application-provided default templates added.
+- Names of application-provided expected routes changed.
+
+
 ### 3.1.3 (2018-04-09)
 
 Some user notifications added.

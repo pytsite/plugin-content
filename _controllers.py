@@ -5,8 +5,7 @@ __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
 from datetime import datetime as _datetime
-from pytsite import router as _router, metatag as _metatag, lang as _lang, tpl as _tpl, logger as _logger, \
-    routing as _routing
+from pytsite import router as _router, metatag as _metatag, lang as _lang, routing as _routing, tpl as _tpl
 from plugins import assetman as _assetman, auth as _auth, odm as _odm, taxonomy as _taxonomy, comments as _comments, \
     odm_ui as _odm_ui, hreflang as _hreflang
 
@@ -21,9 +20,8 @@ class Index(_routing.Controller):
 
         # Checking if the model is registered
         model = self.arg('model')
-        if not model or not _api.is_model_registered(model):
-            _logger.warn("Content model '{}' is not found. Redirecting to home.".format(model))
-            return self.redirect(_router.base_url())
+        if not _api.is_model_registered(model):
+            raise self.not_found()
 
         # Getting finder
         f = _api.find(model)
@@ -48,6 +46,7 @@ class Index(_routing.Controller):
                     raise self.not_found()
             else:
                 raise self.not_found()
+
         # Filter by author
         author_nickname = _router.request().inp.get('author') or self.arg('author')
         if author_nickname:
@@ -60,14 +59,13 @@ class Index(_routing.Controller):
             else:
                 raise self.not_found()
 
-        # Search
-        query = _router.request().inp.get('query')
-        if query:
-            f.text(query)
-            _metatag.t_set('title', _lang.t('content@search', {'query': query}))
+        try:
+            # Call a controller provided by application
+            return _router.call('content_index', self.args)
 
-        # Call final endpoint
-        return _router.call('content_entity_index', self.args)
+        except _routing.error.RuleNotFound:
+            # Render a template provided by application
+            return _tpl.render('content/index', self.args)
 
 
 class View(_routing.Controller):
@@ -160,8 +158,29 @@ class View(_routing.Controller):
             'entity': entity,
         })
 
-        # Call final endpoint
-        return _router.call('content_entity_view', self.args)
+        try:
+            # Call a controller provided by application
+            return _router.call('content_view', self.args)
+
+        except _routing.error.RuleNotFound:
+            # Render a template provided by application
+            return _tpl.render('content/view', self.args)
+
+
+class Browse(_routing.Controller):
+    """Get entities browser
+    """
+
+    def exec(self) -> str:
+        self.args['browser'] = _odm_ui.get_browser(self.arg('model'))
+
+        try:
+            # Call a controller provided by application
+            return _router.call('content_browse', self.args)
+
+        except _routing.error.RuleNotFound:
+            # Render a template provided by application
+            return _tpl.render('content/browse', self.args)
 
 
 class Modify(_routing.Controller):
@@ -169,30 +188,16 @@ class Modify(_routing.Controller):
     """
 
     def exec(self) -> str:
-        model = self.arg('model')
-        eid = self.arg('id')
-
         try:
-            self.args['form'] = _odm_ui.get_m_form(model, eid if eid != 0 else None)
+            self.args['form'] = _odm_ui.get_m_form(self.arg('model'), self.arg('id'))
 
-            return _router.call('content_entity_modify', self.args)
+            try:
+                # Call a controller provided by application
+                return _router.call('content_modify', self.args)
+
+            except _routing.error.RuleNotFound:
+                # Render a template provided by application
+                return _tpl.render('content/modify', self.args)
 
         except _odm.error.EntityNotFound:
             raise self.not_found()
-
-
-class Propose(_routing.Controller):
-    """Get content entity propose form
-    """
-
-    def exec(self):
-        model = self.arg('model')
-
-        frm = _odm_ui.get_m_form(model, redirect=_router.base_url())
-        frm.title = None
-
-        _metatag.t_set('title', _lang.t('content@propose_content'))
-
-        self.args['form'] = frm
-
-        return _router.call('content_entity_propose', self.args)

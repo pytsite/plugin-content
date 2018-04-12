@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.0.1 (2018-04-12)
+
+Missing `Browser` controller's rule added.
+
+
 ### 4.0 (2018-04-12)
 
 - New `Browse` controller added.

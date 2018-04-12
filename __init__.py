@@ -60,6 +60,7 @@ def plugin_load_wsgi():
 
     # Routes
     router.handle(_controllers.Index, 'content/index/<model>', 'content@index')
+    router.handle(_controllers.Browse, 'content/browser/<model>', 'content@browse')
     router.handle(_controllers.Modify, 'content/modify/<model>/<id>', 'content@modify')
 
     # HTTP API endpoints

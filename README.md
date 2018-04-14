@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.2 (2018-04-14)
+
+ODM UI model router's rules detection added.
+
+
 ### 4.1.3 (2018-04-14)
 
 Router's rule path fixed.

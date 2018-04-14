@@ -399,6 +399,18 @@ class Content(_odm_ui.model.UIEntity):
                 img.delete()
 
     @classmethod
+    def odm_ui_browse_rule(cls) -> str:
+        return 'content_browse' if _router.has_rule('content_browse') else super().odm_ui_browse_rule()
+
+    @classmethod
+    def odm_ui_m_form_rule(cls) -> str:
+        return 'content_modify' if _router.has_rule('content_modify') else super().odm_ui_m_form_rule()
+
+    @classmethod
+    def odm_ui_d_form_rule(cls) -> str:
+        return 'content_delete' if _router.has_rule('content_delete') else super().odm_ui_d_form_rule()
+
+    @classmethod
     def odm_ui_browser_setup(cls, browser: _odm_ui.Browser):
         """Setup ODM UI browser hook.
         """

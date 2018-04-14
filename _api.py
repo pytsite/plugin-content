@@ -45,7 +45,7 @@ def register_model(model: str, cls: _Union[str, _Type[_model.Content]], title: s
             sid=menu_sid,
             mid=model,
             title=title,
-            path=_router.rule_path('odm_ui@browse', {'model': model}),
+            path=_router.rule_path('odm_ui@admin_browse', {'model': model}),
             icon=menu_icon,
             weight=menu_weight,
             permissions=perms,

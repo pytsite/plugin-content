@@ -420,7 +420,8 @@ class Content(_odm_ui.model.UIEntity):
             browser.insert_data_field('images', 'content@images')
 
         # Author
-        if mock.has_field('author'):
+        u = _auth.get_current_user()
+        if mock.has_field('author') and u.has_permission('odm_auth@modify.{}'.format(browser.model)):
             browser.insert_data_field('author', 'content@author')
 
     def odm_ui_browser_row(self) -> list:
@@ -451,7 +452,8 @@ class Content(_odm_ui.model.UIEntity):
             r.append(images_count)
 
         # Author
-        if self.has_field('author'):
+        u = _auth.get_current_user()
+        if self.has_field('author') and u.has_permission('odm_auth@modify.{}'.format(self.model)):
             if self.author:
                 r.append(self.author.full_name)
             else:
@@ -528,8 +530,7 @@ class Content(_odm_ui.model.UIEntity):
                 frm.add_rule('body', _validation.rule.NonEmpty())
 
         # Status
-        if self.has_field('status') and \
-                (c_user.has_permission('content@bypass_moderation.' + self.model) or c_user.is_admin_or_dev):
+        if self.has_field('status') and c_user.has_permission('content@bypass_moderation.' + self.model):
             frm.add_widget(_content_widget.StatusSelect(
                 uid='status',
                 weight=1200,
@@ -552,17 +553,16 @@ class Content(_odm_ui.model.UIEntity):
 
         # Localizations
         localization_perm = 'content@set_localization.' + self.model
-        if _permissions.is_permission_defined(localization_perm) and \
-                (c_user.has_permission(localization_perm) or c_user.is_admin_or_dev) and \
+        if _permissions.is_permission_defined(localization_perm) and c_user.has_permission(localization_perm) and \
                 self.has_field('localization_' + lng):
-            for i, lng in enumerate(_lang.langs(False)):
+            for i, l in enumerate(_lang.langs(False)):
                 frm.add_widget(_content_widget.EntitySelect(
-                    uid='localization_' + lng,
+                    uid='localization_' + l,
                     weight=1600 + i,
-                    label=self.t('localization', {'lang': _lang.lang_title(lng)}),
+                    label=self.t('localization', {'lang': _lang.lang_title(l)}),
                     model=self.model,
-                    language=lng,
-                    value=self.f_get('localization_' + lng)
+                    language=l,
+                    value=self.f_get('localization_' + l)
                 ))
 
         # Author
@@ -634,11 +634,12 @@ class ContentWithURL(Content):
     def route_alias(self) -> _route_alias.model.RouteAlias:
         return self.f_get('route_alias')
 
-    def odm_ui_view_url(self) -> str:
-        if self.is_new:
-            raise RuntimeError("Cannot generate view URL for non-saved entity of model '{}'.".format(self.model))
+    @classmethod
+    def odm_ui_view_rule(cls) -> str:
+        return 'content@view'
 
-        target_path = _router.rule_path('content@view', {'model': self.model, 'id': str(self.id)})
+    def odm_ui_view_url(self, args: dict = None) -> str:
+        target_path = _router.url(super().odm_ui_view_url(args), strip_lang=True, as_list=True)[2]
 
         try:
             target_path = _route_alias.get_by_target(target_path, self.language).alias

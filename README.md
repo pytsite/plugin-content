@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.1.3 (2018-04-14)
+
+Router's rule path fixed.
+
+
 ### 4.1.2 (2018-04-14)
 
 Permissions issue fixed.

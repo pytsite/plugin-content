@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.1.2 (2018-04-14)
+
+Permissions issue fixed.
+
+
 ### 4.1.1 (2018-04-14)
 
 `plugin.json` fixed.

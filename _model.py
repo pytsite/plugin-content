@@ -402,7 +402,14 @@ class Content(_odm_ui.model.UIEntity):
     def odm_ui_browser_setup(cls, browser: _odm_ui.Browser):
         """Setup ODM UI browser hook.
         """
-        browser.finder_adjust = lambda f: f.inc('language', (_lang.get_current(), 'n'))
+        c_user = _auth.get_current_user()
+
+        def _finder_adj(f: _odm.Finder):
+            f.eq('language', _lang.get_current())
+            if mock.has_field('author') and not c_user.has_permission('odm_auth@modify.{}'.format(browser.model)):
+                f.eq('author', c_user)
+
+        browser.finder_adjust = _finder_adj
         browser.default_sort_field = '_modified'
 
         mock = _odm.dispense(browser.model)
@@ -419,9 +426,8 @@ class Content(_odm_ui.model.UIEntity):
         if mock.has_field('images'):
             browser.insert_data_field('images', 'content@images')
 
-        # Author
-        u = _auth.get_current_user()
-        if mock.has_field('author') and u.has_permission('odm_auth@modify.{}'.format(browser.model)):
+        # Author (visible only if current user has permission to modify any entity)
+        if mock.has_field('author') and c_user.has_permission('odm_auth@modify.{}'.format(browser.model)):
             browser.insert_data_field('author', 'content@author')
 
     def odm_ui_browser_row(self) -> list:

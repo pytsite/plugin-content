@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.1.1 (2018-04-14)
+
+`plugin.json` fixed.
+
+
 ### 4.1 (2018-04-14)
 
 Support of `odm_ui-3.0`.

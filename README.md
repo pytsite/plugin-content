@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.3.1 (2018-04-15)
+
+Referer checking fixed.
+
+
 ### 4.3 (2018-04-15)
 
 Support of `odm_ui-3.2`.

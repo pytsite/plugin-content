@@ -402,7 +402,9 @@ class Content(_odm_ui.model.UIEntity):
 
     @classmethod
     def odm_ui_browse_rule(cls) -> str:
-        if not _router.request().referrer.startswith(_ADM_BP) and \
+        ref = _router.request().referrer
+
+        if ref and not ref.startswith(_ADM_BP) and \
                 (_router.has_rule('content_browse') or _tpl.tpl_exists('content/browse')):
             return 'content@browse'
         else:
@@ -410,7 +412,9 @@ class Content(_odm_ui.model.UIEntity):
 
     @classmethod
     def odm_ui_m_form_rule(cls) -> str:
-        if not _router.request().referrer.startswith(_ADM_BP) and \
+        ref = _router.request().referrer
+
+        if ref and not ref.startswith(_ADM_BP) and \
                 (_router.has_rule('content_modify') or _tpl.tpl_exists('content/modify')):
             return 'content@modify'
         else:
@@ -418,7 +422,9 @@ class Content(_odm_ui.model.UIEntity):
 
     @classmethod
     def odm_ui_d_form_rule(cls) -> str:
-        if not _router.request().referrer.startswith(_ADM_BP) and \
+        ref = _router.request().referrer
+
+        if ref and not ref.startswith(_ADM_BP) and \
                 (_router.has_rule('content_delete') or _tpl.tpl_exists('content/delete')):
             return 'content@delete'
         else:

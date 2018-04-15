@@ -29,7 +29,7 @@ def plugin_load():
     admin.sidebar.add_section('content', 'content@content', 100)
 
     # Routes which must be registered in any environment
-    router.handle(_controllers.View, 'content/view/<model>/<id>', 'content@view')
+    router.handle(_controllers.View, 'content/view/<model>/<eid>', 'content@view')
 
 
 def plugin_install():

@@ -76,7 +76,7 @@ class View(_routing.Controller):
         from . import _api
 
         model = self.arg('model')
-        entity = _api.find(model, status='*', check_publish_time=False).eq('_id', self.arg('id')).first()
+        entity = _api.find(model, status='*', check_publish_time=False).eq('_id', self.arg('eid')).first()
 
         # Check entity existence
         if not entity:
@@ -189,7 +189,7 @@ class Modify(_routing.Controller):
 
     def exec(self) -> str:
         try:
-            self.args['form'] = _odm_ui.get_m_form(self.arg('model'), self.arg('id'))
+            self.args['form'] = _odm_ui.get_m_form(self.arg('model'), self.arg('eid'))
 
             try:
                 # Call a controller provided by application

@@ -62,7 +62,7 @@ def plugin_load_wsgi():
     router.handle(_controllers.Index, 'content/index/<model>', 'content@index')
     router.handle(_controllers.Browse, 'content/browse/<model>', 'content@browse')
     router.handle(_controllers.Modify, 'content/<model>/modify/<eid>', 'content@modify')
-    router.handle(_controllers.Delete, 'content/<model>/delete', 'content@delete')
+    router.handle(_controllers.Delete, 'content/<model>/delete', 'content@delete', methods=('GET', 'POST'))
 
     # HTTP API endpoints
     http_api.handle('PATCH', 'content/view/<model>/<uid>', _http_api_controllers.PatchViewsCount,

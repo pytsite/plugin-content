@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.3.8 (2018-04-15)
+
+Content delete form submit rule methods fixed.
+
+
 ### 4.3.7 (2018-04-15)
 
 Admin forms router rule names fixed.

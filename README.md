@@ -4,14 +4,19 @@
 ## Changelog
 
 
+### 4.3.6 (2018-04-15)
+
+Route rule argument name fixed.
+
+
 ### 4.3.5 (2018-04-15)
 
-Route argument's name fixed.
+Route rule argument name fixed.
 
 
 ### 4.3.4 (2018-04-15)
 
-MIssing route added.
+Missing route added.
 
 
 ### 4.3.3 (2018-04-15)

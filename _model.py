@@ -732,7 +732,7 @@ class ContentWithURL(Content):
 
         # Update route alias target which has been created in self._pre_save()
         if self.has_field('route_alias') and self.route_alias.target == 'NONE':
-            target = _router.rule_path('content@view', {'model': self.model, 'id': self.id})
+            target = _router.rule_path('content@view', {'model': self.model, 'eid': self.id})
             self.route_alias.f_set('target', target).save()
 
         if first_save and self.has_field('route_alias'):

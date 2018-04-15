@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.3.5 (2018-04-15)
+
+Route argument's name fixed.
+
+
 ### 4.3.4 (2018-04-15)
 
 MIssing route added.

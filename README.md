@@ -4,6 +4,12 @@
 ## Changelog
 
 
+### 4.3.9 (2018-04-15)
+
+- Authentication filters added to routing rules.
+- Modify form title hidden by default now.
+
+
 ### 4.3.8 (2018-04-15)
 
 Content delete form submit rule methods fixed.

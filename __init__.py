@@ -47,7 +47,7 @@ def plugin_load_console():
 
 def plugin_load_wsgi():
     from pytsite import cron, events, router, tpl
-    from plugins import http_api, settings, robots_txt
+    from plugins import http_api, settings, robots_txt, auth_ui
     from . import _eh, _controllers, _http_api_controllers, _settings_form
 
     # Tpl resources
@@ -60,9 +60,12 @@ def plugin_load_wsgi():
 
     # Routes
     router.handle(_controllers.Index, 'content/index/<model>', 'content@index')
-    router.handle(_controllers.Browse, 'content/browse/<model>', 'content@browse')
-    router.handle(_controllers.Modify, 'content/<model>/modify/<eid>', 'content@modify')
-    router.handle(_controllers.Delete, 'content/<model>/delete', 'content@delete', methods=('GET', 'POST'))
+    router.handle(_controllers.Browse, 'content/browse/<model>', 'content@browse',
+                  filters=auth_ui.AuthFilterController)
+    router.handle(_controllers.Modify, 'content/<model>/modify/<eid>', 'content@modify',
+                  filters=auth_ui.AuthFilterController)
+    router.handle(_controllers.Delete, 'content/<model>/delete', 'content@delete', methods=('GET', 'POST'),
+                  filters=auth_ui.AuthFilterController)
 
     # HTTP API endpoints
     http_api.handle('PATCH', 'content/view/<model>/<uid>', _http_api_controllers.PatchViewsCount,

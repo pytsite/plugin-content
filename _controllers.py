@@ -189,7 +189,7 @@ class Modify(_routing.Controller):
 
     def exec(self) -> str:
         try:
-            self.args['form'] = _odm_ui.get_m_form(self.arg('model'), self.arg('eid'))
+            self.args['form'] = _odm_ui.get_m_form(self.arg('model'), self.arg('eid'), hide_title=True)
 
             try:
                 # Call a controller provided by application

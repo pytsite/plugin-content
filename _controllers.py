@@ -208,7 +208,7 @@ class Delete(_routing.Controller):
     """
 
     def exec(self) -> str:
-        self.args['form'] = _odm_ui.get_d_form(self.arg('model'), self.arg('eids'))
+        self.args['form'] = _odm_ui.get_d_form(self.arg('model'), self.arg('eids', self.arg('ids', [])))
 
         try:
             # Call a controller provided by application

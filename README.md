@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.3.7 (2018-04-15)
+
+Admin forms router rule names fixed.
+
+
 ### 4.3.6 (2018-04-15)
 
 Route rule argument name fixed.

@@ -5,7 +5,7 @@ __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
 import re as _re
-from typing import Tuple as _Tuple
+from typing import Tuple as _Tuple, Optional as _Optional
 from frozendict import frozendict as _frozendict
 from datetime import datetime as _datetime, timedelta as _timedelta
 from pytsite import validation as _validation, html as _html, lang as _lang, events as _events, util as _util, \
@@ -401,34 +401,26 @@ class Content(_odm_ui.model.UIEntity):
                 img.delete()
 
     @classmethod
-    def odm_ui_browse_rule(cls) -> str:
+    def _get_rule(cls, rule_type: str) -> _Optional[str]:
+        path = _router.current_path(True)
         ref = _router.request().referrer
+        ref_path = _router.url(ref, strip_lang=True, as_list=True)[2] if ref else ''
 
-        if ref and not ref.startswith(_ADM_BP) and \
-                (_router.has_rule('content_browse') or _tpl.tpl_exists('content/browse')):
-            return 'content@browse'
-        else:
-            return super().odm_ui_browse_rule()
+        if not (path.startswith(_ADM_BP) or ref_path.startswith(_ADM_BP)) and \
+                (_router.has_rule('content_' + rule_type) or _tpl.tpl_exists('content/' + rule_type)):
+            return 'content@' + rule_type
+
+    @classmethod
+    def odm_ui_browse_rule(cls) -> str:
+        return cls._get_rule('browse') or super().odm_ui_browse_rule()
 
     @classmethod
     def odm_ui_m_form_rule(cls) -> str:
-        ref = _router.request().referrer
-
-        if ref and not ref.startswith(_ADM_BP) and \
-                (_router.has_rule('content_modify') or _tpl.tpl_exists('content/modify')):
-            return 'content@modify'
-        else:
-            return super().odm_ui_m_form_rule()
+        return cls._get_rule('modify') or super().odm_ui_m_form_rule()
 
     @classmethod
     def odm_ui_d_form_rule(cls) -> str:
-        ref = _router.request().referrer
-
-        if ref and not ref.startswith(_ADM_BP) and \
-                (_router.has_rule('content_delete') or _tpl.tpl_exists('content/delete')):
-            return 'content@delete'
-        else:
-            return super().odm_ui_d_form_rule()
+        return cls._get_rule('delete') or super().odm_ui_d_form_rule()
 
     @classmethod
     def odm_ui_browser_setup(cls, browser: _odm_ui.Browser):

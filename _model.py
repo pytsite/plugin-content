@@ -13,7 +13,7 @@ from pytsite import validation as _validation, html as _html, lang as _lang, eve
 from plugins import auth as _auth, ckeditor as _ckeditor, route_alias as _route_alias, auth_ui as _auth_ui, \
     auth_storage_odm as _auth_storage_odm, file_storage_odm as _file_storage_odm, permissions as _permissions, \
     odm_ui as _odm_ui, odm as _odm, file as _file, form as _form, widget as _widget, assetman as _assetman, \
-    file_ui as _file_ui
+    file_ui as _file_ui, admin as _admin
 
 _body_img_tag_re = _re.compile('\[img:(\d+)([^\]]*)\]')
 _body_vid_tag_re = _re.compile('\[vid:(\d+)\]')
@@ -24,6 +24,8 @@ _html_video_youtube_re = _re.compile(
 _html_video_facebook_re = _re.compile(
     '<iframe.*?src=["\']?(?:https?:)?//www\.facebook\.com/plugins/video\.php\?href=([^"\']+)["\']?.+?</iframe>'
 )
+
+_ADM_BP = _admin.base_path()
 
 
 def _process_tags(entity, inp: str, responsive_images: bool = True, images_width: int = None) -> str:
@@ -400,15 +402,27 @@ class Content(_odm_ui.model.UIEntity):
 
     @classmethod
     def odm_ui_browse_rule(cls) -> str:
-        return 'content_browse' if _router.has_rule('content_browse') else super().odm_ui_browse_rule()
+        if not _router.request().referrer.startswith(_ADM_BP) and \
+                (_router.has_rule('content_browse') or _tpl.tpl_exists('content/browse')):
+            return 'content@browse'
+        else:
+            return super().odm_ui_browse_rule()
 
     @classmethod
     def odm_ui_m_form_rule(cls) -> str:
-        return 'content_modify' if _router.has_rule('content_modify') else super().odm_ui_m_form_rule()
+        if not _router.request().referrer.startswith(_ADM_BP) and \
+                (_router.has_rule('content_modify') or _tpl.tpl_exists('content/modify')):
+            return 'content@modify'
+        else:
+            return super().odm_ui_m_form_rule()
 
     @classmethod
     def odm_ui_d_form_rule(cls) -> str:
-        return 'content_delete' if _router.has_rule('content_delete') else super().odm_ui_d_form_rule()
+        if not _router.request().referrer.startswith(_ADM_BP) and \
+                (_router.has_rule('content_delete') or _tpl.tpl_exists('content/delete')):
+            return 'content@delete'
+        else:
+            return super().odm_ui_d_form_rule()
 
     @classmethod
     def odm_ui_browser_setup(cls, browser: _odm_ui.Browser):

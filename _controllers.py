@@ -201,3 +201,19 @@ class Modify(_routing.Controller):
 
         except _odm.error.EntityNotFound:
             raise self.not_found()
+
+
+class Delete(_routing.Controller):
+    """Get content entities delete form
+    """
+
+    def exec(self) -> str:
+        self.args['form'] = _odm_ui.get_d_form(self.arg('model'), self.arg('ids'))
+
+        try:
+            # Call a controller provided by application
+            return _router.call('content_delete', self.args)
+
+        except _routing.error.RuleNotFound:
+            # Render a template provided by application
+            return _tpl.render('content/delete', self.args)

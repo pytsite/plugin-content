@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.3 (2018-04-15)
+
+Support of `odm_ui-3.2`.
+
+
 ### 4.2 (2018-04-14)
 
 ODM UI model router's rules detection added.

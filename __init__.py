@@ -61,7 +61,7 @@ def plugin_load_wsgi():
     # Routes
     router.handle(_controllers.Index, 'content/index/<model>', 'content@index')
     router.handle(_controllers.Browse, 'content/browse/<model>', 'content@browse')
-    router.handle(_controllers.Modify, 'content/modify/<model>/<id>', 'content@modify')
+    router.handle(_controllers.Modify, 'content/<model>/modify/<eid>', 'content@modify')
 
     # HTTP API endpoints
     http_api.handle('PATCH', 'content/view/<model>/<uid>', _http_api_controllers.PatchViewsCount,

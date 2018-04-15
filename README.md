@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.3.2 (2018-04-15)
+
+Router's rule definition fixed.
+
+
 ### 4.3.1 (2018-04-15)
 
 Referer checking fixed.

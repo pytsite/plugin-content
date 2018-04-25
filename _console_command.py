@@ -49,8 +49,6 @@ class Generate(_console.Command):
     def exec(self):
         """Execute teh command
         """
-        _auth.switch_user_to_system()
-
         model = self.arg(0)
 
         # Checking if the content model registered

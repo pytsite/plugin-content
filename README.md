@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.4 (2018-04-25)
+
+Support of `auth-3.0`.
+
+
 ### 4.3.9 (2018-04-15)
 
 - Authentication filters added to routing rules.

@@ -99,9 +99,11 @@ class View(_routing.Controller):
 
         # Update entity's comments count
         if entity.has_field('route_alias') and entity.has_field('comments_count') and entity.f_get('route_alias'):
-            _auth.switch_user_to_system()
-            entity.f_set('comments_count', _comments.get_all_comments_count(entity.route_alias.alias)).save()
-            _auth.restore_user()
+            try:
+                _auth.switch_user_to_system()
+                entity.f_set('comments_count', _comments.get_all_comments_count(entity.route_alias.alias)).save()
+            finally:
+                _auth.restore_user()
 
         # Meta title
         if entity.has_field('title'):

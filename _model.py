@@ -596,7 +596,7 @@ class Content(_odm_ui.model.UIEntity):
                 ))
 
         # Author
-        if self.has_field('author') and _auth.get_current_user().is_admin_or_dev:
+        if self.has_field('author') and _auth.get_current_user().is_admin:
             frm.add_widget(_auth_ui.widget.UserSelect(
                 uid='author',
                 weight=1800,
@@ -642,7 +642,7 @@ class Content(_odm_ui.model.UIEntity):
             }
             r['images'] = [img.as_jsonable(**img_jsonable_args) for img in self.images]
 
-        if self.has_field('author') and self.author.profile_is_public:
+        if self.has_field('author') and self.author.is_public:
             r['author'] = self.author.as_jsonable()
 
         return r
@@ -756,7 +756,7 @@ class ContentWithURL(Content):
         """
         super().odm_ui_m_form_setup_widgets(frm)
 
-        if self.has_field('route_alias') and _auth.get_current_user().is_admin_or_dev:
+        if self.has_field('route_alias') and _auth.get_current_user().is_admin:
             # Route alias
             frm.add_widget(_widget.input.Text(
                 uid='route_alias',

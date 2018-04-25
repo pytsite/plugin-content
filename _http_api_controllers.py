@@ -16,9 +16,11 @@ class PatchViewsCount(_routing.Controller):
     def exec(self) -> int:
         entity = _api.dispense(self.arg('model'), self.arg('uid'))
         if entity and entity.has_field('views_count'):
-            _auth.switch_user_to_system()
-            entity.f_inc('views_count').save(update_timestamp=False, pre_hooks=False, after_hooks=False)
-            _auth.restore_user()
+            try:
+                _auth.switch_user_to_system()
+                entity.f_inc('views_count').save(update_timestamp=False, pre_hooks=False, after_hooks=False)
+            finally:
+                _auth.restore_user()
 
             return entity.f_get('views_count')
 
@@ -72,12 +74,12 @@ class PostAbuse(_routing.Controller):
 
         try:
             entity = _api.dispense(model, self.arg('uid'))
+            _auth.switch_user_to_system()
+            entity.f_set('status', 'waiting').save()
         except _odm.error.EntityNotFound:
             raise self.not_found()
-
-        _auth.switch_user_to_system()
-        entity.f_set('status', 'waiting').save()
-        _auth.restore_user()
+        finally:
+            _auth.restore_user()
 
         tpl_name = 'content@mail/{}/abuse'.format(_lang.get_current())
         subject = _lang.t('content@mail_subject_abuse')

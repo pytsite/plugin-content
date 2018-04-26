@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.4.1 (2018-04-26)
+
+Metatag's title setting fixed in forms controllers.
+
+
 ### 4.4 (2018-04-25)
 
 Support of `auth-3.0`.

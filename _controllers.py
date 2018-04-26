@@ -191,7 +191,10 @@ class Modify(_routing.Controller):
 
     def exec(self) -> str:
         try:
-            self.args['form'] = _odm_ui.get_m_form(self.arg('model'), self.arg('eid'), hide_title=True)
+            form = _odm_ui.get_m_form(self.arg('model'), self.arg('eid'), hide_title=True)
+            self.args['form'] = form
+
+            _metatag.t_set('title', form.title)
 
             try:
                 # Call a controller provided by application
@@ -210,7 +213,10 @@ class Delete(_routing.Controller):
     """
 
     def exec(self) -> str:
-        self.args['form'] = _odm_ui.get_d_form(self.arg('model'), self.arg('eids', self.arg('ids', [])))
+        form = _odm_ui.get_d_form(self.arg('model'), self.arg('eids', self.arg('ids', [])))
+        self.args['form'] = form
+
+        _metatag.t_set('title', form.title)
 
         try:
             # Call a controller provided by application

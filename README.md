@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.5 (2018-05-14)
+
+New contructor's argument in `widget.ModelCheckboxes`: `filter`.
+
+
 ### 4.4.2 (2018-05-13)
 
 Couple of bugfixes.

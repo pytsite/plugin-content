@@ -33,16 +33,26 @@ class ModelCheckboxes(_widget.select.Checkboxes):
 
     def __init__(self, uid: str, **kwargs):
         self._check_perms = kwargs.get('check_perms', True)
+        self._filter = kwargs.get('filter')
 
         items = []
-        for k, v in _api.get_models().items():
+        for model, info in _api.get_models().items():
             if self._check_perms:
-                if _odm_auth.check_permission('view', k) or _odm_auth.check_permission('view_own', k):
-                    items.append((k, _lang.t(v[1])))
+                if _odm_auth.check_permission('view', model) or _odm_auth.check_permission('view_own', model):
+                    items.append((model, _lang.t(info[1])))
             else:
-                items.append((k, _lang.t(v[1])))
+                items.append((model, _lang.t(info[1])))
 
-        super().__init__(uid, items=sorted(items, key=lambda x: x[1]), **kwargs)
+        items = sorted(items, key=lambda x: x[1])
+
+        if callable(self._filter):
+            filtered_items = []
+            for item in items:
+                if self._filter(_api.dispense(item[0])):
+                    filtered_items.append(item)
+            items = filtered_items
+
+        super().__init__(uid, items=items, **kwargs)
 
 
 class StatusSelect(_widget.select.Select):

@@ -325,8 +325,8 @@ class Content(_odm_ui.model.UIEntity):
         """Hook.
         """
         if field_name == 'language':
-            if value != 'n' and value not in _lang.langs():
-                raise ValueError("Language '{}' is not supported.".format(value))
+            if value not in _lang.langs():
+                raise ValueError("Language '{}' is not supported".format(value))
 
             if value == 'en':
                 self.f_set('language_db', 'english')

@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.4.2 (2018-05-13)
+
+Couple of bugfixes.
+
+
 ### 4.4.1 (2018-04-26)
 
 Metatag's title setting fixed in forms controllers.

@@ -62,7 +62,7 @@ def is_model_registered(model: str) -> bool:
 def get_models() -> dict:
     """Get registered content models
     """
-    return _models
+    return _models.copy()
 
 
 def get_model(model: str) -> tuple:

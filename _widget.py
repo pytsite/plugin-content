@@ -66,10 +66,12 @@ class EntitySelect(_widget.select.Select2):
         super().__init__(uid, **kwargs)
 
     def set_val(self, value):
-        if isinstance(value, str) and not value:
+        if value == '':
             value = None
         elif isinstance(value, _model.Content):
             value = value.model + ':' + str(value.id)
+        elif value is not None:
+            raise ValueError('String, content entity or None expected, got {}'.format(value))
 
         return super().set_val(value)
 

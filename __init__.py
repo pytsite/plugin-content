@@ -8,10 +8,11 @@ __license__ = 'MIT'
 from . import _model as model, _widget as widget
 from ._api import register_model, get_models, find, get_model, get_model_title, dispense, get_statuses, \
     is_model_registered, generate_rss, find_by_url, paginate
+from ._model import Content, ContentWithURL
 
 
 def plugin_load():
-    from pytsite import events, lang, router
+    from pytsite import lang, router
     from plugins import permissions, admin, assetman
     from . import _eh, _controllers
 
@@ -70,8 +71,6 @@ def plugin_load_wsgi():
     # HTTP API endpoints
     http_api.handle('PATCH', 'content/view/<model>/<uid>', _http_api_controllers.PatchViewsCount,
                     'content@patch_view_count')
-    http_api.handle('GET', 'content/widget_entity_select_search/<model>/<language>',
-                    _http_api_controllers.GetWidgetEntitySelectSearch, 'content@get_widget_entity_select_search')
     http_api.handle('POST', 'content/abuse/<model>/<uid>', _http_api_controllers.PostAbuse, 'content@post_abuse')
 
     # Settings

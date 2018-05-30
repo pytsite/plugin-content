@@ -5,11 +5,12 @@ __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
 import re as _re
-from typing import Tuple as _Tuple, Optional as _Optional
+from typing import Tuple as _Tuple, Optional as _Optional, List as _List, Dict as _Dict
 from frozendict import frozendict as _frozendict
+from urllib.parse import urlparse as _urlparse
 from datetime import datetime as _datetime, timedelta as _timedelta
 from pytsite import validation as _validation, html as _html, lang as _lang, events as _events, util as _util, \
-    mail as _mail, tpl as _tpl, reg as _reg, router as _router
+    mail as _mail, tpl as _tpl, reg as _reg, router as _router, errors as _errors
 from plugins import auth as _auth, ckeditor as _ckeditor, route_alias as _route_alias, auth_ui as _auth_ui, \
     auth_storage_odm as _auth_storage_odm, file_storage_odm as _file_storage_odm, permissions as _permissions, \
     odm_ui as _odm_ui, odm as _odm, file as _file, form as _form, widget as _widget, assetman as _assetman, \
@@ -403,8 +404,9 @@ class Content(_odm_ui.model.UIEntity):
     @classmethod
     def _get_rule(cls, rule_type: str) -> _Optional[str]:
         path = _router.current_path(True)
+
         ref = _router.request().referrer
-        ref_path = _router.url(ref, strip_lang=True, as_list=True)[2] if ref else ''
+        ref_path = _router.url(ref, strip_lang_prefix=True, as_list=True)[2] if ref else ''
 
         if not (path.startswith(_ADM_BP) or ref_path.startswith(_ADM_BP)) and \
                 (_router.has_rule('content_' + rule_type) or _tpl.tpl_exists('content/' + rule_type)):
@@ -492,8 +494,11 @@ class Content(_odm_ui.model.UIEntity):
         return r
 
     def odm_ui_m_form_setup(self, frm: _form.Form):
-        """Hook.
+        """Hook
         """
+        if not self.is_new and self.has_field('language') and self.language != _lang.get_current():
+            raise _errors.NotFound('Entity for this language does not exist')
+
         frm.css += ' content-m-form'
         _assetman.preload('content@js/content.js')
 
@@ -586,12 +591,14 @@ class Content(_odm_ui.model.UIEntity):
         if _permissions.is_permission_defined(localization_perm) and c_user.has_permission(localization_perm) and \
                 self.has_field('localization_' + lng):
             for i, l in enumerate(_lang.langs(False)):
-                frm.add_widget(_content_widget.EntitySelect(
+                frm.add_widget(_odm_ui.widget.EntitySelectSearch(
                     uid='localization_' + l,
                     weight=1600 + i,
                     label=self.t('localization', {'lang': _lang.lang_title(l)}),
                     model=self.model,
-                    language=l,
+                    ajax_url_query={
+                        'language': l,
+                    },
                     value=self.f_get('localization_' + l)
                 ))
 
@@ -609,6 +616,41 @@ class Content(_odm_ui.model.UIEntity):
     def odm_ui_mass_action_entity_description(self) -> str:
         """Get delete form description.
         """
+        return self.title
+
+    @classmethod
+    def odm_ui_widget_select_search_entities(cls, args: dict) -> _List[_Dict[str, str]]:
+        from . import _api
+
+        user = _auth.get_current_user()
+        model = args['model']
+        query = args.get('q')
+        language = args.get('language', _lang.get_current())
+        status = args.get('status', '*')
+        check_publish_time = args.get('check_publish_time', False)
+        count = int(args.get('count', 20))
+        sort_field = args.get('sort_field', 'title')
+        sort_order = args.get('sort_order', 'asc')
+
+        if count > 100:
+            count = 100
+
+        f = _api.find(model, status=status, check_publish_time=check_publish_time, language=language)
+
+        # User can browse only its OWN entities
+        if not user.has_permission('odm_auth@view.' + model) and user.has_permission('odm_auth@view_own.' + model):
+            f.eq('author', user.uid)
+
+        f.sort([(sort_field, _odm.I_DESC if sort_order in ('desc', '-1', -1) else _odm.I_ASC)])
+
+        if query:
+            f.regex('title', query, True)
+
+        return [{'id': e.model + ':' + str(e.id), 'text': e.odm_ui_widget_select_search_entities_title}
+                for e in f.get(count)]
+
+    @property
+    def odm_ui_widget_select_search_entities_title(self):
         return self.title
 
     def as_jsonable(self, **kwargs) -> dict:
@@ -669,7 +711,7 @@ class ContentWithURL(Content):
         return 'content@view'
 
     def odm_ui_view_url(self, args: dict = None) -> str:
-        target_path = _router.url(super().odm_ui_view_url(args), strip_lang=True, as_list=True)[2]
+        target_path = _router.url(super().odm_ui_view_url(args), add_lang_prefix=False, as_list=True)[2]
 
         try:
             target_path = _route_alias.get_by_target(target_path, self.language).alias

@@ -5,8 +5,8 @@ __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
 from pytsite import lang as _lang
-from plugins import widget as _widget, odm as _odm, odm_auth as _odm_auth, http_api as _http_api
-from . import _model, _api
+from plugins import widget as _widget, odm_auth as _odm_auth
+from . import _api
 
 
 class ModelSelect(_widget.select.Select):
@@ -61,34 +61,3 @@ class StatusSelect(_widget.select.Select):
 
     def __init__(self, uid: str, **kwargs):
         super().__init__(uid, items=_api.get_statuses(), **kwargs)
-
-
-class EntitySelect(_widget.select.Select2):
-    """Entity Select
-    """
-
-    def __init__(self, uid: str, **kwargs):
-        kwargs['ajax_url'] = _http_api.url('content@get_widget_entity_select_search', {
-            'model': kwargs.get('model'),
-            'language': kwargs.get('language', _lang.get_current())
-        })
-
-        super().__init__(uid, **kwargs)
-
-    def set_val(self, value):
-        if value == '':
-            value = None
-        elif isinstance(value, _model.Content):
-            value = value.model + ':' + str(value.id)
-        elif value is not None:
-            raise ValueError('String, content entity or None expected, got {}'.format(value))
-
-        return super().set_val(value)
-
-    def _get_element(self, **kwargs):
-        # In AJAX-mode Select2 doesn't contain any items,
-        # but if we have selected item, it is necessary to append it
-        if self._ajax_url and self._value:
-            self._items.append((self._value, _odm.get_by_ref(self._value).f_get('title')))
-
-        return super()._get_element()

@@ -27,40 +27,6 @@ class PatchViewsCount(_routing.Controller):
         return 0
 
 
-class GetWidgetEntitySelectSearch(_routing.Controller):
-    def exec(self) -> dict:
-        # Query is mandatory parameter
-        query = self.arg('q')
-        if not query:
-            return {'results': ()}
-
-        # Anonymous users cannot perform search
-        user = _auth.get_current_user()
-        if user.is_anonymous:
-            raise self.forbidden()
-
-        model = self.arg('model')
-        language = self.arg('language')
-
-        # User can browse ANY entities
-        if user.has_permission('odm_auth@view.' + model):
-            f = _api.find(model, status='*', check_publish_time=None, language=language)
-
-        # User can browse only its OWN entities
-        elif user.has_permission('odm_auth@view_own.' + model):
-            f = _api.find(model, status='*', check_publish_time=None, language=language)
-            f.eq('author', user.uid)
-
-        # User cannot browse entities, so its rights equals to the anonymous user
-        else:
-            f = _api.find(model, language=language)
-
-        f.sort([('title', _odm.I_ASC)]).regex('title', query, True)
-        r = [{'id': e.model + ':' + str(e.id), 'text': e.title} for e in f.get(20)]
-
-        return {'results': r}
-
-
 class PostAbuse(_routing.Controller):
     """Report Abuse
     """

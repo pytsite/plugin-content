@@ -5,7 +5,8 @@ __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
 from datetime import datetime as _datetime
-from pytsite import router as _router, metatag as _metatag, lang as _lang, routing as _routing, tpl as _tpl
+from pytsite import router as _router, metatag as _metatag, lang as _lang, routing as _routing, tpl as _tpl, \
+    errors as _errors
 from plugins import assetman as _assetman, auth as _auth, odm as _odm, taxonomy as _taxonomy, comments as _comments, \
     odm_ui as _odm_ui, hreflang as _hreflang
 
@@ -204,7 +205,7 @@ class Modify(_routing.Controller):
                 # Render a template provided by application
                 return _tpl.render('content/modify', self.args)
 
-        except _odm.error.EntityNotFound:
+        except _errors.NotFound:
             raise self.not_found()
 
 

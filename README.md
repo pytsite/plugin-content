@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.6 (2018-05-30)
+
+`widget.EntitySelect` removed.
+
+
 ### 4.5 (2018-05-14)
 
 New contructor's argument in `widget.ModelCheckboxes`: `filter`.

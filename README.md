@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.7 (2018-06-01)
+
+Support of `pytsite-7.24`.
+
+
 ### 4.6 (2018-05-30)
 
 `widget.EntitySelect` removed.

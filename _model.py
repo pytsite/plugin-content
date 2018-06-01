@@ -403,7 +403,7 @@ class Content(_odm_ui.model.UIEntity):
 
     @classmethod
     def _get_rule(cls, rule_type: str) -> _Optional[str]:
-        path = _router.current_path(True)
+        path = _router.current_path()
 
         ref = _router.request().referrer
         ref_path = _router.url(ref, strip_lang_prefix=True, as_list=True)[2] if ref else ''

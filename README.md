@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.8 (2018-06-07)
+
+Support of `auth_ui-3.5`.
+
+
 ### 4.7 (2018-06-01)
 
 Support of `pytsite-7.24`.

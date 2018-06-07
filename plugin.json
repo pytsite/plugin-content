@@ -1,6 +1,6 @@
 {
   "name": "content",
-  "version": "4.7",
+  "version": "4.8",
   "description": {
     "en": "Content",
     "ru": "Контент",
@@ -19,7 +19,7 @@
       "assetman",
       "auth>=3.0",
       "auth_storage_odm",
-      "auth_ui",
+      "auth_ui>=3.5",
       "ckeditor",
       "comments",
       "feed",

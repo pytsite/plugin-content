@@ -7,7 +7,6 @@ __license__ = 'MIT'
 import re as _re
 from typing import Tuple as _Tuple, Optional as _Optional, List as _List, Dict as _Dict
 from frozendict import frozendict as _frozendict
-from urllib.parse import urlparse as _urlparse
 from datetime import datetime as _datetime, timedelta as _timedelta
 from pytsite import validation as _validation, html as _html, lang as _lang, events as _events, util as _util, \
     mail as _mail, tpl as _tpl, reg as _reg, router as _router, errors as _errors
@@ -195,9 +194,7 @@ def _send_waiting_status_notification(entity):
 
 
 class Content(_odm_ui.model.UIEntity):
-    """Base Content Model.
-
-    Just minimum amount of fields.
+    """Base Content Model
     """
 
     @classmethod
@@ -219,6 +216,12 @@ class Content(_odm_ui.model.UIEntity):
             perm_description = cls.resolve_msg_id('content_perm_set_localization_' + model)
             _permissions.define_permission(perm_name, perm_description, perm_group)
 
+        # Define 'set_publish_time' permission
+        if mock.has_field('publish_time'):
+            perm_name = 'article@set_publish_time.' + model
+            perm_description = cls.resolve_msg_id('content_perm_set_publish_time_' + model)
+            _permissions.define_permission(perm_name, perm_description, cls.odm_auth_permissions_group())
+
     @classmethod
     def odm_auth_permissions_group(cls) -> str:
         return 'content'
@@ -226,6 +229,7 @@ class Content(_odm_ui.model.UIEntity):
     def _setup_fields(self):
         """Hook.
         """
+        self.define_field(_odm.field.DateTime('publish_time', default=_datetime.now()))
         self.define_field(_odm.field.String('status', required=True, default='waiting'))
         self.define_field(_odm.field.String('title', required=True, strip_html=True))
         self.define_field(_odm.field.String('description', strip_html=True))
@@ -244,7 +248,7 @@ class Content(_odm_ui.model.UIEntity):
         self.define_index([('_modified', _odm.I_DESC)])
 
         # Ordinary indexes
-        for f in 'status', 'language', 'author':
+        for f in 'status', 'language', 'author', 'publish_time':
             if self.has_field(f):
                 self.define_index([(f, _odm.I_ASC)])
 
@@ -255,6 +259,22 @@ class Content(_odm_ui.model.UIEntity):
                 text_index_parts.append((f, _odm.I_TEXT))
         if text_index_parts:
             self.define_index(text_index_parts)
+
+    @property
+    def publish_time(self) -> _datetime:
+        return self.f_get('publish_time')
+
+    @property
+    def publish_date_time_pretty(self) -> str:
+        return self.f_get('publish_time', fmt='pretty_date_time')
+
+    @property
+    def publish_date_pretty(self) -> str:
+        return self.f_get('publish_time', fmt='pretty_date')
+
+    @property
+    def publish_time_ago(self) -> str:
+        return self.f_get('publish_time', fmt='ago')
 
     @property
     def status(self) -> str:
@@ -385,10 +405,16 @@ class Content(_odm_ui.model.UIEntity):
     def _after_save(self, first_save: bool = False, **kwargs):
         """Hook.
         """
-        if first_save and self.has_field('status'):
-            # Notify content moderators about waiting content
-            if self.status == 'waiting' and _reg.get('content.send_waiting_notifications', True):
-                _send_waiting_status_notification(self)
+        # Notify content moderators about waiting content
+        if first_save and self.has_field('status') and self.status == 'waiting' and \
+                _reg.get('content.send_waiting_notifications', True):
+            _send_waiting_status_notification(self)
+
+        # Set/update model-entity relation
+        me_entity = _odm.find('content_model_entity').eq('entity', self).first()
+        if not me_entity:
+            me_entity = _odm.dispense('content_model_entity')
+        me_entity.f_set('entity', self).save()
 
         _events.fire('content@entity.save', entity=self)
         _events.fire('content@entity.{}.save'.format(self.model), entity=self)
@@ -440,6 +466,11 @@ class Content(_odm_ui.model.UIEntity):
 
         mock = _odm.dispense(browser.model)
 
+        # Sort field
+        if mock.has_field('publish_time'):
+            browser.default_sort_field = 'publish_time'
+            browser.default_sort_order = 'desc'
+
         # Title
         if mock.has_field('title'):
             browser.insert_data_field('title', 'content@title')
@@ -455,6 +486,10 @@ class Content(_odm_ui.model.UIEntity):
         # Author (visible only if current user has permission to modify any entity)
         if mock.has_field('author') and c_user.has_permission('odm_auth@modify.{}'.format(browser.model)):
             browser.insert_data_field('author', 'content@author')
+
+        # Publish time
+        if mock.has_field('publish_time'):
+            browser.insert_data_field('publish_time', 'article@publish_time')
 
     def odm_ui_browser_row(self) -> list:
         """Get single UI browser row hook.
@@ -490,6 +525,10 @@ class Content(_odm_ui.model.UIEntity):
                 r.append(self.author.full_name)
             else:
                 r.append('&nbsp;')
+
+        # Publish time
+        if self.has_field('publish_time'):
+            r.append(self.f_get('publish_time', fmt='%d.%m.%Y %H:%M'))
 
         return r
 
@@ -571,6 +610,17 @@ class Content(_odm_ui.model.UIEntity):
                 weight=1200,
                 label=self.t('status'),
                 value='published' if self.is_new else self.status,
+                h_size='col-sm-4 col-md-3 col-lg-2',
+                required=True,
+            ))
+
+        # Publish time
+        if self.has_field('publish_time') and c_user.has_permission('article@set_publish_time.' + self.model):
+            frm.add_widget(_widget.select.DateTime(
+                uid='publish_time',
+                weight=1300,
+                label=self.t('publish_time'),
+                value=_datetime.now() if self.is_new else self.publish_time,
                 h_size='col-sm-4 col-md-3 col-lg-2',
                 required=True,
             ))
@@ -686,6 +736,14 @@ class Content(_odm_ui.model.UIEntity):
 
         if self.has_field('author') and self.author.is_public:
             r['author'] = self.author.as_jsonable()
+
+        if self.has_field('publish_time'):
+            r['publish_time'] = {
+                'w3c': _util.w3c_datetime_str(self.publish_time),
+                'pretty_date': self.publish_date_pretty,
+                'pretty_date_time': self.publish_date_time_pretty,
+                'ago': self.publish_time_ago,
+            }
 
         return r
 

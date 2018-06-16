@@ -10,11 +10,17 @@ from ._api import register_model, get_models, find, get_model, get_model_title, 
     is_model_registered, generate_rss, find_by_url, paginate
 from ._model import Content, ContentWithURL
 
+# Locally used imports
+from pytsite import semver as _semver
+
 
 def plugin_load():
     from pytsite import lang, router
-    from plugins import permissions, admin, assetman
-    from . import _eh, _controllers
+    from plugins import permissions, admin, assetman, odm
+    from . import _eh, _controllers, _helper_model
+
+    # ODM models
+    odm.register_model('content_model_entity', _helper_model.ModelEntity)
 
     # Resources
     lang.register_package(__name__)
@@ -76,3 +82,14 @@ def plugin_load_wsgi():
 
     # Sitemap location in robots.txt
     robots_txt.sitemap('/sitemap/index.xml')
+
+
+def plugin_update(v_from: _semver.Version):
+    if v_from <= '4.8':
+        from pytsite import console
+
+        # Fill collection of the helper model `content_model_entity`
+        for m in get_models():
+            for e in find(m, check_publish_time=False, language='*', status='*'):
+                e.save(force=True, update_timestamp=False)
+                console.print_info('Relation document created for {}'.format(e))

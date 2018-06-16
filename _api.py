@@ -4,16 +4,15 @@ __author__ = 'Alexander Shepetko'
 __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
-from typing import Callable as _Callable, List as _List, Union as _Union, Type as _Type, Tuple as _Tuple
+from typing import Callable as _Callable, List as _List, Union as _Union, Type as _Type, Tuple as _Tuple, Dict as _Dict
 from datetime import datetime as _datetime
 from urllib import parse as _urllib_parse
 from os import path as _path, makedirs as _makedirs
 from pytsite import util as _util, router as _router, lang as _lang, logger as _logger, reg as _reg
-from plugins import odm as _odm, route_alias as _route_alias, feed as _feed, permissions as _permissions, \
-    admin as _admin, widget as _widget
-from . import _model
+from plugins import odm as _odm, route_alias as _route_alias, feed as _feed, admin as _admin, widget as _widget
+from . import _model, _helper_model
 
-_models = {}
+_models = {}  # type: _Dict[str, _Tuple[_Type[_model.Content], str]]
 
 
 def register_model(model: str, cls: _Union[str, _Type[_model.Content]], title: str, menu_weight: int = 0,
@@ -59,7 +58,7 @@ def is_model_registered(model: str) -> bool:
     return model in _models
 
 
-def get_models() -> dict:
+def get_models() -> _Dict[str, _Tuple[_Type[_model.Content], str]]:
     """Get registered content models
     """
     return _models.copy()
@@ -89,35 +88,50 @@ def dispense(model: str, eid: str = None) -> _model.Content:
     return _odm.dispense(model, eid)
 
 
-def find(model: str, **kwargs) -> _odm.Finder:
+def find(model: _Union[str, _List[str]], **kwargs) -> _odm.Finder:
     """Instantiate content entities finder
     """
-    if not is_model_registered(model):
-        raise KeyError("Model '{}' is not registered as content model.".format(model))
+    check_publish_time = kwargs.get('check_publish_time', True)
+    language = kwargs.get('language', _lang.get_current())
+    status = kwargs.get('status', 'published')
 
-    f = _odm.find(model)
+    if isinstance(model, str):
+        if not is_model_registered(model):
+            raise KeyError("Model '{}' is not registered as content model.".format(model))
+        f = _odm.find(model)
+    elif isinstance(model, list):
+        for m in model:
+            if not is_model_registered(m):
+                raise KeyError("Model '{}' is not registered as content model.".format(m))
+        f = _odm.find('content_model_entity')
+        f.result_processor = lambda e: e.entity
+        f.inc('entity_model', model)
+
+    else:
+        raise TypeError('String or list of strings expected, got {}'.format(type(model)))
 
     # Publish time
-    if f.mock.has_field('publish_time'):
-        f.sort([('publish_time', _odm.I_DESC)])
-        if kwargs.get('check_publish_time', True):
-            f.lte('publish_time', _datetime.now(), False)
+    if isinstance(model, str):
+        if f.mock.has_field('publish_time'):
+            f.sort([('publish_time', _odm.I_DESC)])
+            if check_publish_time:
+                f.lte('publish_time', _datetime.now(), False)
+        else:
+            f.sort([('_modified', _odm.I_DESC)])
     else:
-        f.sort([('_modified', _odm.I_DESC)])
+        f.sort([('publish_time', _odm.I_DESC)])
 
     # Language
-    if f.mock.has_field('language'):
-        lng = kwargs.get('language', _lang.get_current())
-        if lng != '*':
-            f.eq('language', lng)
+    if language != '*':
+        if (isinstance(model, str) and f.mock.has_field('language')) or isinstance(model, list):
+            f.eq('language', language)
 
     # Status
-    if f.mock.has_field('status'):
-        status = kwargs.get('status', 'published')
-        if status != '*':
-            if status not in dict(get_statuses()):
-                raise RuntimeError("'{}' is invalid content status".format(status))
+    if status != '*':
+        if status not in dict(get_statuses()):
+            raise ValueError("'{}' is invalid content status".format(status))
 
+        if (isinstance(model, str) and f.mock.has_field('status')) or isinstance(model, list):
             f.eq('status', status)
 
     return f

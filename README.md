@@ -4,6 +4,12 @@
 ## Changelog
 
 
+### 4.9 (2018-06-16)
+
+- Limited support for searching across multiple models added.
+- `publish_time` field moved back from the `article` plugin.
+
+
 ### 4.8 (2018-06-07)
 
 Support of `auth_ui-3.5`.

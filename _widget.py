@@ -19,7 +19,7 @@ class ModelSelect(_widget.select.Select):
         items = []
         for k, v in _api.get_models().items():
             if self._check_perms:
-                if _odm_auth.check_permission('view', k) or _odm_auth.check_permission('view_own', k):
+                if _odm_auth.check_permission('view', k):
                     items.append((k, _lang.t(v[1])))
             else:
                 items.append((k, _lang.t(v[1])))
@@ -38,7 +38,7 @@ class ModelCheckboxes(_widget.select.Checkboxes):
         items = []
         for model, info in _api.get_models().items():
             if self._check_perms:
-                if _odm_auth.check_permission('view', model) or _odm_auth.check_permission('view_own', model):
+                if _odm_auth.check_permission('view', model):
                     items.append((model, _lang.t(info[1])))
             else:
                 items.append((model, _lang.t(info[1])))

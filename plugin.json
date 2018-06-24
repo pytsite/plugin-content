@@ -1,6 +1,6 @@
 {
   "name": "content",
-  "version": "4.9",
+  "version": "4.10",
   "description": {
     "en": "Content",
     "ru": "Контент",
@@ -31,7 +31,7 @@
       "http_api",
       "jquery",
       "odm>=3.4",
-      "odm_auth>=1.6",
+      "odm_auth>=1.8",
       "odm_ui>=3.8",
       "permissions",
       "query>=1.0",

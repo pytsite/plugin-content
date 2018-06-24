@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.10 (2018-06-24)
+
+Support of `odm_auth-1.8`.
+
+
 ### 4.9 (2018-06-16)
 
 - Limited support for searching across multiple models added.

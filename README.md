@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.10.1 (2018-07-22)
+
+Content view URL generation issue fixed.
+
+
 ### 4.10 (2018-06-24)
 
 Support of `odm_auth-1.8`.

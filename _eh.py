@@ -38,7 +38,7 @@ def comments_create_comment(comment: _comments.model.AbstractComment):
     subject = _lang.t('content@mail_subject_new_comment')
     body = _tpl.render(tpl_name, {'comment': comment, 'entity': entity})
     m_from = '{} <{}>'.format(comment.author.full_name, _mail.mail_from()[1])
-    _mail.Message(entity.author.email, subject, body, m_from).send()
+    _mail.Message(entity.author.login, subject, body, m_from).send()
 
 
 def _generate_sitemap():

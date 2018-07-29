@@ -211,7 +211,7 @@ def generate_rss(model: str, filename: str, lng: str = '*', finder_setup: _Calla
             item.append_child(_feed.rss.em.PdaLink(entity.url))
             item.append_child(_feed.rss.em.Description(entity.description if entity.description else entity.title))
             item.append_child(_feed.rss.em.PubDate(entity.publish_time))
-            item.append_child(_feed.rss.em.Author('{} ({})'.format(entity.author.email, entity.author.full_name)))
+            item.append_child(_feed.rss.em.Author('{} ({})'.format(entity.author.login, entity.author.full_name)))
         except _odm.error.FieldNotDefined:
             pass
 

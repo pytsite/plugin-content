@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.11 (2018-07-29)
+
+Support of `auth-3.5`, `form-4.7`, `widget-2.4`.
+
+
 ### 4.10.1 (2018-07-22)
 
 Content view URL generation issue fixed.

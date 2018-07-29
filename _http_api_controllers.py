@@ -55,6 +55,6 @@ class PostAbuse(_routing.Controller):
                 continue
 
             body = _tpl.render(tpl_name, {'reporter': reporter, 'recipient': recipient, 'entity': entity})
-            _mail.Message(entity.author.email, subject, body).send()
+            _mail.Message(entity.author.login, subject, body).send()
 
         return {'message': _lang.t('content@abuse_receipt_confirm')}

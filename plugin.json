@@ -1,6 +1,6 @@
 {
   "name": "content",
-  "version": "4.11",
+  "version": "4.12",
   "description": {
     "en": "Content",
     "ru": "Контент",
@@ -27,7 +27,7 @@
       "file_storage_odm",
       "file_ui",
       "font_awesome",
-      "form>=4.7",
+      "form>=4.12",
       "hreflang",
       "http_api",
       "jquery",

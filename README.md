@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.12 (2018-08-08)
+
+Support of `form-4.12`.
+
+
 ### 4.11 (2018-07-29)
 
 Support of `auth-3.5`, `form-4.7`, `widget-2.4`.

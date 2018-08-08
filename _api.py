@@ -1,6 +1,6 @@
 """PytSite Content Plugin API Functions
 """
-__author__ = 'Alexander Shepetko'
+__author__ = 'Oleksandr Shepetko'
 __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
@@ -36,9 +36,8 @@ def register_model(model: str, cls: _Union[str, _Type[_model.Content]], title: s
     _models[model] = (cls, title)
 
     if _reg.get('env.type') == 'wsgi':
-        perm_skip = ('view', 'view_own')
         mock = dispense(model)
-        perms = ['odm_auth@{}.{}'.format(p, model) for p in mock.odm_auth_permissions() if p not in perm_skip],
+        perms = ['odm_auth@{}.{}'.format(p, model) for p in mock.odm_auth_permissions()],
 
         _admin.sidebar.add_menu(
             sid=menu_sid,
@@ -266,8 +265,7 @@ def paginate(finder: _odm.Finder, per_page: int = 10, css: str = '') -> dict:
 
     entities = []
     for entity in finder.skip(pager.skip).get(pager.limit):
-        if entity.odm_auth_check_permission('view'):
-            entities.append(entity)
+        entities.append(entity)
 
     return {
         'entities': entities,

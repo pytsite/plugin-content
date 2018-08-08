@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.13 (2018-08-09)
+
+Support of `odm_auth-1.9`.
+
+
 ### 4.12 (2018-08-08)
 
 Support of `form-4.12`.

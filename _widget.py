@@ -1,6 +1,6 @@
 """PytSite Content Plugin Widgets
 """
-__author__ = 'Alexander Shepetko'
+__author__ = 'Oleksandr Shepetko'
 __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
@@ -14,15 +14,9 @@ class ModelSelect(_widget.select.Select):
     """
 
     def __init__(self, uid: str, **kwargs):
-        self._check_perms = kwargs.get('check_perms', True)
-
         items = []
         for k, v in _api.get_models().items():
-            if self._check_perms:
-                if _odm_auth.check_permission('view', k):
-                    items.append((k, _lang.t(v[1])))
-            else:
-                items.append((k, _lang.t(v[1])))
+            items.append((k, _lang.t(v[1])))
 
         super().__init__(uid, items=sorted(items, key=lambda x: x[1]), **kwargs)
 
@@ -37,11 +31,7 @@ class ModelCheckboxes(_widget.select.Checkboxes):
 
         items = []
         for model, info in _api.get_models().items():
-            if self._check_perms:
-                if _odm_auth.check_permission('view', model):
-                    items.append((model, _lang.t(info[1])))
-            else:
-                items.append((model, _lang.t(info[1])))
+            items.append((model, _lang.t(info[1])))
 
         items = sorted(items, key=lambda x: x[1])
 

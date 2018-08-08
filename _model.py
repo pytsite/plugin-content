@@ -1,6 +1,6 @@
 """PytSite Content Plugin Content Models
 """
-__author__ = 'Alexander Shepetko'
+__author__ = 'Oleksandr Shepetko'
 __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
@@ -676,11 +676,6 @@ class Content(_odm_ui.model.UIEntity):
             count = 100
 
         f = _api.find(model, status=status, check_publish_time=check_publish_time, language=language)
-
-        # User can browse only its OWN entities
-        if not user.has_permission('odm_auth@view.' + model) and user.has_permission('odm_auth@view_own.' + model):
-            f.eq('author', user.uid)
-
         f.sort([(sort_field, _odm.I_DESC if sort_order in ('desc', '-1', -1) else _odm.I_ASC)])
 
         if query:

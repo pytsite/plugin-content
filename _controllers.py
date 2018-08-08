@@ -1,6 +1,6 @@
 """PytSite Content Plugin Controllers
 """
-__author__ = 'Alexander Shepetko'
+__author__ = 'Oleksandr Shepetko'
 __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
@@ -82,10 +82,6 @@ class View(_routing.Controller):
         # Check entity existence
         if not entity:
             raise self.not_found()
-
-        # Check permissions
-        if not entity.odm_auth_check_permission('view'):
-            raise self.forbidden()
 
         # Show non published entities only to users who can edit them
         if entity.has_field('publish_time') and entity.f_get('publish_time') > _datetime.now():

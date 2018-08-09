@@ -508,14 +508,15 @@ class Content(_odm_ui.model.UIEntity):
             if status == 'waiting':
                 status_css = 'warning'
             elif status == 'unpublished':
-                status_css = 'default'
-            status = str(_html.Span(status_str, css='label label-' + status_css))
+                status_css = 'default secondary'
+            status = str(_html.Span(status_str, css='label label-{} badge badge-{}'.format(status_css, status_css)))
             r.append(status)
 
         # Images
         if self.has_field('images'):
-            images_css = 'default' if not len(self.images) else 'primary'
-            images_count = '<span class="label label-{}">{}</span>'.format(images_css, len(self.images))
+            images_css = 'default secondary' if not len(self.images) else 'primary'
+            images_count = '<span class="label label-{} badge badge-{}">{}</span>'.\
+                format(images_css, images_css, len(self.images))
             r.append(images_count)
 
         # Author
@@ -604,7 +605,7 @@ class Content(_odm_ui.model.UIEntity):
                 uid='status',
                 label=self.t('status'),
                 value='published' if self.is_new else self.status,
-                h_size='col-sm-4 col-md-3 col-lg-2',
+                h_size='col-xs-12 col-12 col-sm-4 col-md-3',
                 required=True,
             ))
 
@@ -614,7 +615,7 @@ class Content(_odm_ui.model.UIEntity):
                 uid='publish_time',
                 label=self.t('publish_time'),
                 value=_datetime.now() if self.is_new else self.publish_time,
-                h_size='col-sm-4 col-md-3 col-lg-2',
+                h_size='col-xs-12 col-12 col-sm-4 col-md-3',
                 required=True,
             ))
 
@@ -649,7 +650,7 @@ class Content(_odm_ui.model.UIEntity):
                 uid='author',
                 label=self.t('author'),
                 value=_auth.get_current_user() if self.is_new else self.author,
-                h_size='col-sm-4',
+                h_size='col-xs-12 col-12 col-sm-4',
                 required=True,
             ))
 

@@ -18,7 +18,7 @@ _SPACES_CLEANUP_RE = _re.compile('\s{2,}')
 class Generate(_console.Command):
     lorem_txt_url = 'https://baconipsum.com/api'
     lorem_txt_args = {'type': 'meat-and-filler', 'format': 'html', 'paras': 3}
-    lorem_img_url = 'http://pipsum.com/1024x768'
+    lorem_img_url = 'https://picsum.photos/1200/760?image={}'
 
     def __init__(self):
         super().__init__()
@@ -111,7 +111,7 @@ class Generate(_console.Command):
             # Images
             if entity.has_field('images') and images_num:
                 for n in range(0, images_num):
-                    entity.f_add('images', _file.create(self.lorem_img_url))
+                    entity.f_add('images', _file.create(self.lorem_img_url.format(_randint(0, 1000))))
 
             # Language
             if entity.has_field('language'):

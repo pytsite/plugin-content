@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.14 (2018-08-12)
+
+Images source changed in `content:generate` logic.
+
+
 ### 4.13.1 (2018-08-10)
 
 Little fixes to support Twitter Bootstrap 4.

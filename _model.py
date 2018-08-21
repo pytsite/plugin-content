@@ -624,7 +624,7 @@ class Content(_odm_ui.model.UIEntity):
         frm.add_widget(_widget.static.Text(
             uid='language',
             label=self.t('language'),
-            title=_lang.lang_title(lng),
+            text=_lang.lang_title(lng),
             value=lng,
             hidden=False if len(_lang.langs()) > 1 else True,
         ))

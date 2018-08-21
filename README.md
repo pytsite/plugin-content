@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.15 (2018-08-21)
+
+Support of `widget-2.11`.
+
+
 ### 4.14 (2018-08-12)
 
 Images source changed in `content:generate` logic.

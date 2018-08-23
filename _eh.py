@@ -37,7 +37,7 @@ def comments_create_comment(comment: _comments.model.AbstractComment):
     tpl_name = 'content@mail/{}/comment'.format(_lang.get_current())
     subject = _lang.t('content@mail_subject_new_comment')
     body = _tpl.render(tpl_name, {'comment': comment, 'entity': entity})
-    m_from = '{} <{}>'.format(comment.author.full_name, _mail.mail_from()[1])
+    m_from = '{} <{}>'.format(comment.author.first_last_name, _mail.mail_from()[1])
     _mail.Message(entity.author.login, subject, body, m_from).send()
 
 

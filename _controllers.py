@@ -54,7 +54,7 @@ class Index(_routing.Controller):
             author = _auth.get_user(nickname=author_nickname)
 
             if author:
-                _metatag.t_set('title', _lang.t('content@articles_of_author', {'name': author.full_name}))
+                _metatag.t_set('title', _lang.t('content@articles_of_author', {'name': author.first_last_name}))
                 f.eq('author', author.uid)
                 self.args['author'] = author
             else:
@@ -140,8 +140,8 @@ class View(_routing.Controller):
 
         # 'Author' metatag
         if entity.has_field('author') and entity.author:
-            _metatag.t_set('author', entity.author.full_name)
-            _metatag.t_set('article:author', entity.author.full_name)
+            _metatag.t_set('author', entity.author.first_last_name)
+            _metatag.t_set('article:author', entity.author.first_last_name)
 
         # Alternate languages URLs
         for lng in _lang.langs(False):

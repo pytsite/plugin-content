@@ -523,7 +523,7 @@ class Content(_odm_ui.model.UIEntity):
         u = _auth.get_current_user()
         if self.has_field('author') and u.has_permission('odm_auth@modify.{}'.format(self.model)):
             if self.author:
-                r.append(self.author.full_name)
+                r.append(self.author.first_last_name)
             else:
                 r.append('&nbsp;')
 

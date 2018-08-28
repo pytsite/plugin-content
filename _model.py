@@ -682,11 +682,10 @@ class Content(_odm_ui.model.UIEntity):
         if query:
             f.regex('title', query, True)
 
-        return [{'id': e.model + ':' + str(e.id), 'text': e.odm_ui_widget_select_search_entities_title}
+        return [{'id': e.model + ':' + str(e.id), 'text': e.odm_ui_widget_select_search_entities_title(args)}
                 for e in f.get(count)]
 
-    @property
-    def odm_ui_widget_select_search_entities_title(self):
+    def odm_ui_widget_select_search_entities_title(self, args: dict) -> str:
         return self.title
 
     def as_jsonable(self, **kwargs) -> dict:

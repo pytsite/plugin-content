@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.16 (2018-08-28)
+
+Support of `odm_ui-3.19`.
+
+
 ### 4.15.1 (2018-08-23)
 
 User's `full_name` usage replaced with `first_last_name`.

@@ -231,9 +231,9 @@ class Content(_odm_ui.model.UIEntity):
         """
         self.define_field(_odm.field.DateTime('publish_time', default=_datetime.now()))
         self.define_field(_odm.field.String('status', required=True, default='waiting'))
-        self.define_field(_odm.field.String('title', required=True, strip_html=True))
-        self.define_field(_odm.field.String('description', strip_html=True))
-        self.define_field(_odm.field.String('body', tidyfy_html=True))
+        self.define_field(_odm.field.String('title', required=True))
+        self.define_field(_odm.field.String('description'))
+        self.define_field(_odm.field.String('body', strip_html=False))
         self.define_field(_file_storage_odm.field.Images('images'))
         self.define_field(_odm.field.StringList('video_links', unique=True))
         self.define_field(_odm.field.String('language', default=_lang.get_current()))

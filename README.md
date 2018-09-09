@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.18.1 (2018-09-09)
+
+Missing controllers args fixed.
+
+
 ### 4.18 (2018-09-09)
 
 Breadcrumbs generation added.

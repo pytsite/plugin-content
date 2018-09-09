@@ -26,7 +26,6 @@ class Index(_routing.Controller):
 
         # Getting finder
         f = _api.find(model)
-        self.args['finder'] = f
 
         # Breadcrumb
         breadcrumb = _widget.select.Breadcrumb('content-index-breadcrumb')
@@ -76,6 +75,11 @@ class Index(_routing.Controller):
 
             else:
                 raise self.not_found()
+
+        self.args.update({
+            'finder': f,
+            'breadcrumb': breadcrumb,
+        })
 
         try:
             # Call a controller provided by application
@@ -174,9 +178,10 @@ class View(_routing.Controller):
         # Necessary JS code
         _assetman.preload('content@js/content.js')
 
-        # Push entity into args
+        # Update args
         self.args.update({
             'entity': entity,
+            'breadcrumb': breadcrumb,
         })
 
         try:

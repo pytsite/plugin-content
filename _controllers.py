@@ -8,7 +8,7 @@ from datetime import datetime as _datetime
 from pytsite import router as _router, metatag as _metatag, lang as _lang, routing as _routing, tpl as _tpl, \
     errors as _errors
 from plugins import assetman as _assetman, auth as _auth, odm as _odm, taxonomy as _taxonomy, comments as _comments, \
-    odm_ui as _odm_ui, hreflang as _hreflang
+    odm_ui as _odm_ui, hreflang as _hreflang, widget as _widget
 
 
 class Index(_routing.Controller):
@@ -28,12 +28,17 @@ class Index(_routing.Controller):
         f = _api.find(model)
         self.args['finder'] = f
 
+        # Breadcrumb
+        breadcrumb = _widget.select.Breadcrumb('content-index-breadcrumb')
+        breadcrumb.append_item(_lang.t('content@home_page'), _router.base_url())
+
         # Filter by term
         term_field_name = self.arg('term_field')
+        term_alias = self.arg('term_alias')
+        term = None
         if term_field_name and f.mock.has_field(term_field_name):
             term_field = f.mock.get_field(term_field_name)  # type: _odm.field.Ref
             term_model = term_field.model
-            term_alias = self.arg('term_alias')
             if term_alias and term_model != '*':
                 term = _taxonomy.find(term_model).eq('alias', term_alias).first()
                 if term:
@@ -43,20 +48,32 @@ class Index(_routing.Controller):
                     elif isinstance(f.mock.fields[term_field_name], (_odm.field.RefsList, _odm.field.ManualRefsList)):
                         f.inc(term_field_name, term)
                     _metatag.t_set('title', term.title)
+                    breadcrumb.append_item(term.title)
                 else:
                     raise self.not_found()
             else:
                 raise self.not_found()
 
         # Filter by author
-        author_nickname = _router.request().inp.get('author') or self.arg('author')
+        author_nickname = self.arg('author')
         if author_nickname:
             author = _auth.get_user(nickname=author_nickname)
 
             if author:
-                _metatag.t_set('title', _lang.t('content@articles_of_author', {'name': author.first_last_name}))
                 f.eq('author', author.uid)
                 self.args['author'] = author
+                _metatag.t_set('title', _lang.t('content@articles_of_author', {'name': author.first_last_name}))
+
+                if term:
+                    breadcrumb.pop_item()
+                    breadcrumb.append_item(term.title, _router.rule_url('content@index', {
+                        'model': model,
+                        'term_field': term_field_name,
+                        'term_alias': term_alias,
+                    }))
+
+                breadcrumb.append_item(author.first_last_name)
+
             else:
                 raise self.not_found()
 
@@ -78,6 +95,11 @@ class View(_routing.Controller):
 
         model = self.arg('model')
         entity = _api.find(model, status='*', check_publish_time=False).eq('_id', self.arg('eid')).first()
+
+        # Breadcrumb
+        breadcrumb = _widget.select.Breadcrumb('content-index-breadcrumb')
+        breadcrumb.append_item(_lang.t('content@home_page'), _router.base_url())
+        entity.content_breadcrumb(breadcrumb)
 
         # Check entity existence
         if not entity:

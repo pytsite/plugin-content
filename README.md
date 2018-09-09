@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.18 (2018-09-09)
+
+Breadcrumbs generation added.
+
+
 ### 4.17 (2018-09-07)
 
 Support of `odm-3.7`.

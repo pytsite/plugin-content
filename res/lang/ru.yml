@@ -37,3 +37,4 @@ send_waiting_notifications: 'Уведомлять администраторов
 content_status_warning_waiting: 'Внимание! Этот контент ожидает модерации.'
 content_status_warning_unpublished: 'Внимание! Этот контент снят с публикации.'
 content_warning_future_publish_time: 'Внимание! Время публикации этого контента ещё не наступило.'
+home_page: 'Главная'

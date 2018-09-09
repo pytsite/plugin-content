@@ -515,7 +515,7 @@ class Content(_odm_ui.model.UIEntity):
         # Images
         if self.has_field('images'):
             images_css = 'default secondary' if not len(self.images) else 'primary'
-            images_count = '<span class="label label-{} badge badge-{}">{}</span>'.\
+            images_count = '<span class="label label-{} badge badge-{}">{}</span>'. \
                 format(images_css, images_css, len(self.images))
             r.append(images_count)
 
@@ -762,6 +762,12 @@ class ContentWithURL(Content):
             pass
 
         return _router.url(target_path, lang=self.language)
+
+    def content_breadcrumb(self, breadcrumb: _widget.select.Breadcrumb):
+        """Hook
+        """
+        if self.has_field('title'):
+            breadcrumb.append_item(self.title)
 
     def _on_f_set(self, field_name: str, value, **kwargs):
         """Hook.

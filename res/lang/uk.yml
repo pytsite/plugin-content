@@ -37,3 +37,4 @@ send_waiting_notifications: 'Повідомляти адміністраторі
 content_status_warning_waiting: 'Увага! Цей контент очікує модерації.'
 content_status_warning_unpublished: 'Увага! Цей контент знято з публікації.'
 content_warning_future_publish_time: 'Увага! Час публікації цого контенту ще не настало.'
+home_page: 'Головна'

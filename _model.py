@@ -410,12 +410,6 @@ class Content(_odm_ui.model.UIEntity):
                 _reg.get('content.send_waiting_notifications', True):
             _send_waiting_status_notification(self)
 
-        # Set/update model-entity relation
-        me_entity = _odm.find('content_model_entity').eq('entity', self).first()
-        if not me_entity:
-            me_entity = _odm.dispense('content_model_entity')
-        me_entity.f_set('entity', self).save()
-
         _events.fire('content@entity.save', entity=self)
         _events.fire('content@entity.{}.save'.format(self.model), entity=self)
 

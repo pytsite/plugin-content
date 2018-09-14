@@ -10,7 +10,7 @@ from urllib import parse as _urllib_parse
 from os import path as _path, makedirs as _makedirs
 from pytsite import util as _util, router as _router, lang as _lang, logger as _logger, reg as _reg
 from plugins import odm as _odm, route_alias as _route_alias, feed as _feed, admin as _admin, widget as _widget
-from . import _model, _helper_model
+from . import _model
 
 _models = {}  # type: _Dict[str, _Tuple[_Type[_model.Content], str]]
 
@@ -81,57 +81,43 @@ def get_model_title(model: str) -> str:
 def dispense(model: str, eid: str = None) -> _model.Content:
     """Dispense content entity
     """
-    if not is_model_registered(model):
-        raise KeyError("Model '{}' is not registered as a content model".format(model))
+    e = _odm.dispense(model, eid)
 
-    return _odm.dispense(model, eid)
+    if not isinstance(e, _model.Content):
+        raise TypeError("Model '{}' is not registered as a content model".format(model))
+
+    return e
 
 
-def find(model: _Union[str, _List[str]], **kwargs) -> _odm.Finder:
+def find(model: str, **kwargs) -> _odm.Finder:
     """Instantiate content entities finder
     """
     check_publish_time = kwargs.get('check_publish_time', True)
     language = kwargs.get('language', _lang.get_current())
     status = kwargs.get('status', 'published')
 
-    if isinstance(model, str):
-        if not is_model_registered(model):
-            raise KeyError("Model '{}' is not registered as content model.".format(model))
-        f = _odm.find(model)
-    elif isinstance(model, list):
-        for m in model:
-            if not is_model_registered(m):
-                raise KeyError("Model '{}' is not registered as content model.".format(m))
-        f = _odm.find('content_model_entity')
-        f.result_processor = lambda e: e.entity
-        f.inc('entity_model', model)
-
-    else:
-        raise TypeError('String or list of strings expected, got {}'.format(type(model)))
+    if not is_model_registered(model):
+        raise KeyError("Model '{}' is not registered as content model.".format(model))
+    f = _odm.find(model)
 
     # Publish time
-    if isinstance(model, str):
-        if f.mock.has_field('publish_time'):
-            f.sort([('publish_time', _odm.I_DESC)])
-            if check_publish_time:
-                f.lte('publish_time', _datetime.now(), False)
-        else:
-            f.sort([('_modified', _odm.I_DESC)])
-    else:
+    if f.mock.has_field('publish_time'):
         f.sort([('publish_time', _odm.I_DESC)])
+        if check_publish_time:
+            f.lte('publish_time', _datetime.now(), False)
+    else:
+        f.sort([('_modified', _odm.I_DESC)])
 
     # Language
-    if language != '*':
-        if (isinstance(model, str) and f.mock.has_field('language')) or isinstance(model, list):
-            f.eq('language', language)
+    if language != '*' and f.mock.has_field('language'):
+        f.eq('language', language)
 
     # Status
-    if status != '*':
+    if status != '*' and f.mock.has_field('status'):
         if status not in dict(get_statuses()):
             raise ValueError("'{}' is invalid content status".format(status))
 
-        if (isinstance(model, str) and f.mock.has_field('status')) or isinstance(model, list):
-            f.eq('status', status)
+        f.eq('status', status)
 
     return f
 

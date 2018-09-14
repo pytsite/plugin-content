@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.20 (2018-09-14)
+
+Limited support of search across multiple models removed.
+
+
 ### 4.19 (2018-09-14)
 
 Support of `odm-4.0`.

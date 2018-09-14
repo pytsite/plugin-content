@@ -17,11 +17,7 @@ from pytsite import semver as _semver
 def plugin_load():
     from pytsite import lang, router
     from plugins import permissions, admin, assetman, odm
-    from . import _eh, _controllers, _helper_model
-
-    # ODM models
-    odm.register_model('content_model_entity', _helper_model.ModelEntity)
-
+    from . import _eh, _controllers
     # Resources
     lang.register_package(__name__)
     assetman.register_package(__name__)
@@ -85,11 +81,7 @@ def plugin_load_wsgi():
 
 
 def plugin_update(v_from: _semver.Version):
-    if v_from <= '4.8':
-        from pytsite import console
+    if v_from < '4.20':
+        from pytsite import mongodb
 
-        # Fill collection of the helper model `content_model_entity`
-        for m in get_models():
-            for e in find(m, check_publish_time=False, language='*', status='*'):
-                e.save(force=True, update_timestamp=False)
-                console.print_info('Relation document created for {}'.format(e))
+        mongodb.get_collection('content_model_entities').drop()

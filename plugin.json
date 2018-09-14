@@ -1,6 +1,6 @@
 {
   "name": "content",
-  "version": "4.19",
+  "version": "4.20",
   "description": {
     "en": "Content",
     "ru": "Контент",
@@ -8,7 +8,7 @@
   },
   "url": "https://github.com/pytsite/plugin-content",
   "author": {
-    "name": "Alexander Shepetko",
+    "name": "Oleksandr Shepetko",
     "email": "a@shepetko.com",
     "url": "https://shepetko.com"
   },

@@ -42,9 +42,9 @@ class Index(_routing.Controller):
                 term = _taxonomy.find(term_model).eq('alias', term_alias).first()
                 if term:
                     self.args['term'] = term
-                    if isinstance(f.mock.fields[term_field_name], (_odm.field.Ref, _odm.field.ManualRef)):
+                    if isinstance(f.mock.fields[term_field_name], _odm.field.Ref):
                         f.eq(term_field_name, term)
-                    elif isinstance(f.mock.fields[term_field_name], (_odm.field.RefsList, _odm.field.ManualRefsList)):
+                    elif isinstance(f.mock.fields[term_field_name], _odm.field.RefsList):
                         f.inc(term_field_name, term)
                     _metatag.t_set('title', term.title)
                     breadcrumb.append_item(term.title)

@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.19 (2018-09-14)
+
+Support of `odm-4.0`.
+
+
 ### 4.18.1 (2018-09-09)
 
 Missing controllers args fixed.

@@ -5,7 +5,7 @@ __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
 from pytsite import lang as _lang
-from plugins import widget as _widget, odm_auth as _odm_auth
+from plugins import widget as _widget
 from . import _api
 
 

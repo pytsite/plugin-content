@@ -21,7 +21,7 @@ class ModelEntity(odm.Entity):
 
     def _setup_fields(self):
         self.define_field(odm.field.String('entity_model', required=True))
-        self.define_field(odm.field.ManualRef('entity', required=True))
+        self.define_field(odm.field.Ref('entity', required=True))
         self.define_field(odm.field.DateTime('publish_time'))
         self.define_field(odm.field.String('language'))
         self.define_field(odm.field.String('status'))

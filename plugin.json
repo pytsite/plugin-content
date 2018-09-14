@@ -1,6 +1,6 @@
 {
   "name": "content",
-  "version": "4.18.1",
+  "version": "4.19",
   "description": {
     "en": "Content",
     "ru": "Контент",
@@ -31,7 +31,7 @@
       "hreflang",
       "http_api",
       "jquery",
-      "odm>=3.7",
+      "odm>=4.0",
       "odm_auth>=1.9",
       "odm_ui>=3.19",
       "permissions",

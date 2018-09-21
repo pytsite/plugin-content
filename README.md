@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.20.1 (2018-09-21)
+
+Route alias setting fixed.
+
+
 ### 4.20 (2018-09-14)
 
 Limited support of search across multiple models removed.

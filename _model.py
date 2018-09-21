@@ -764,30 +764,24 @@ class ContentWithURL(Content):
             breadcrumb.append_item(self.title)
 
     def _on_f_set(self, field_name: str, value, **kwargs):
-        """Hook.
+        """Hook
         """
-        if field_name == 'route_alias' and (isinstance(value, str) or value is None):
-            if value is None:
-                value = ''
-
+        if field_name == 'route_alias' and isinstance(value, str):
             # Delegate string generation to dedicated hook
             route_alias_str = self._alter_route_alias_str(value.strip())
 
-            # No route alias is attached, so we need to create a new one
+            # Entity doesn't have attached route alias reference
             if not self.route_alias:
-                value = _route_alias.create(route_alias_str, 'NONE', self.language).save()
-
-            # Existing route alias is attached and its value needs to be changed
-            elif self.route_alias and self.route_alias.alias != route_alias_str:
-                try:
-                    self.route_alias.delete()
-                except _odm.error.EntityDeleted:
-                    # Entity was deleted by another instance
-                    pass
-                value = _route_alias.create(route_alias_str, 'NONE', self.language).save()
-
-            # Keep old route alias
+                if self.is_new:
+                    # Create and attach route alias with no target, which will be set in self._after_save()
+                    value = _route_alias.create(route_alias_str, 'NONE', self.language).save()
+                else:
+                    target = _router.rule_path('content@view', {'model': self.model, 'eid': self.id})
+                    value = _route_alias.create(route_alias_str, target, self.language).save()
             else:
+                # Existing route alias needs to be changed
+                if self.route_alias.alias != route_alias_str:
+                    self.route_alias.f_set('alias', route_alias_str).save()
                 value = self.route_alias
 
         return super()._on_f_set(field_name, value, **kwargs)

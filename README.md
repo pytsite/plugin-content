@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 4.20.2 (2018-09-21)
+
+Sitemap generation fixed.
+
+
 ### 4.20.1 (2018-09-21)
 
 Route alias setting fixed.

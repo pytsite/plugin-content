@@ -7,10 +7,9 @@ __license__ = 'MIT'
 from os import path as _path, makedirs as _makedirs
 from shutil import rmtree as _rmtree
 from datetime import datetime as _datetime
-from pytsite import reg as _reg, logger as _logger, tpl as _tpl, mail as _mail, lang as _lang, router as _router, \
-    mongodb as _db
+from pytsite import reg as _reg, logger as _logger, tpl as _tpl, mail as _mail, lang as _lang, router as _router
 from plugins import comments as _comments, sitemap as _sitemap
-from . import _api
+from . import _api, _model
 
 _sitemap_generation_works = False
 
@@ -65,17 +64,11 @@ def _generate_sitemap():
     sitemap.add_url(_router.base_url(), _datetime.now(), 'always', 1)
     for lang in _lang.langs():
         for model in _reg.get('content.sitemap_models', ()):
-            _logger.info("Sitemap generation started for model '{}', language '{}'.".
+            _logger.info("Sitemap generation started for model '{}', language '{}'".
                          format(model, _lang.lang_title(lang)))
 
-            for doc in _api.dispense(model).collection.find({'language': lang}):
-                if not doc.get('route_alias') or not doc.get('publish_time'):
-                    continue
-
-                entity_url = _router.url(_db.get_database().dereference(doc['route_alias'])['alias'])
-                entity_pub_time = doc['publish_time']
-
-                sitemap.add_url(entity_url, entity_pub_time)
+            for entity in _api.find(model, language=lang):  # type: _model.ContentWithURL
+                sitemap.add_url(entity.url, entity.publish_time)
                 loop_links += 1
 
                 # Flush sitemap
@@ -83,7 +76,7 @@ def _generate_sitemap():
                     loop_count += 1
                     loop_links = 0
                     sitemap_path = sitemap.write(_path.join(output_dir, 'data-%02d.xml' % loop_count), True)
-                    _logger.info("'{}' successfully written with {} links.".format(sitemap_path, loop_links))
+                    _logger.info("'{}' successfully written with {} links".format(sitemap_path, loop_links))
                     sitemap_index.add_url(_router.url('/sitemap/{}'.format(_path.basename(sitemap_path))))
                     del sitemap
                     sitemap = _sitemap.Sitemap()

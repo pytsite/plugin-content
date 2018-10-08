@@ -15,15 +15,9 @@ from pytsite import semver as _semver
 
 
 def plugin_load():
-    from pytsite import lang, router
-    from plugins import permissions, admin, assetman, odm
+    from pytsite import router
+    from plugins import permissions, admin
     from . import _eh, _controllers
-    # Resources
-    lang.register_package(__name__)
-    assetman.register_package(__name__)
-
-    # Assetman tasks
-    assetman.t_js(__name__)
 
     # Permissions group
     permissions.define_group('content', 'content@content')
@@ -35,12 +29,6 @@ def plugin_load():
     router.handle(_controllers.View, 'content/view/<model>/<eid>', 'content@view')
 
 
-def plugin_install():
-    from plugins import assetman
-
-    assetman.build(__name__)
-
-
 def plugin_load_console():
     from pytsite import console
     from . import _console_command
@@ -49,12 +37,9 @@ def plugin_load_console():
 
 
 def plugin_load_wsgi():
-    from pytsite import cron, events, router, tpl
+    from pytsite import cron, events, router
     from plugins import http_api, settings, robots_txt, auth_ui
     from . import _eh, _controllers, _http_api_controllers, _settings_form
-
-    # Tpl resources
-    tpl.register_package(__name__)
 
     # Events listeners
     cron.hourly(_eh.cron_hourly)

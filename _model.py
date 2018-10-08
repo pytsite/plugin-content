@@ -12,8 +12,8 @@ from pytsite import validation as _validation, html as _html, lang as _lang, eve
     mail as _mail, tpl as _tpl, reg as _reg, router as _router, errors as _errors
 from plugins import auth as _auth, ckeditor as _ckeditor, route_alias as _route_alias, auth_ui as _auth_ui, \
     auth_storage_odm as _auth_storage_odm, file_storage_odm as _file_storage_odm, permissions as _permissions, \
-    odm_ui as _odm_ui, odm as _odm, file as _file, form as _form, widget as _widget, assetman as _assetman, \
-    file_ui as _file_ui, admin as _admin
+    odm_ui as _odm_ui, odm as _odm, file as _file, form as _form, widget as _widget, file_ui as _file_ui, \
+    admin as _admin
 
 _body_img_tag_re = _re.compile('\[img:(\d+)([^\]]*)\]')
 _body_vid_tag_re = _re.compile('\[vid:(\d+)\]')
@@ -534,7 +534,6 @@ class Content(_odm_ui.model.UIEntity):
             raise _errors.NotFound('Entity for this language does not exist')
 
         frm.css += ' content-m-form'
-        _assetman.preload('content@js/content.js')
 
     def odm_ui_m_form_setup_widgets(self, frm: _form.Form):
         """Hook.
@@ -657,7 +656,6 @@ class Content(_odm_ui.model.UIEntity):
     def odm_ui_widget_select_search_entities(cls, args: dict) -> _List[_Dict[str, str]]:
         from . import _api
 
-        user = _auth.get_current_user()
         model = args['model']
         query = args.get('q')
         language = args.get('language', _lang.get_current())

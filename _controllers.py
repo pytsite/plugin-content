@@ -7,8 +7,8 @@ __license__ = 'MIT'
 from datetime import datetime as _datetime
 from pytsite import router as _router, metatag as _metatag, lang as _lang, routing as _routing, tpl as _tpl, \
     errors as _errors
-from plugins import assetman as _assetman, auth as _auth, odm as _odm, taxonomy as _taxonomy, comments as _comments, \
-    odm_ui as _odm_ui, hreflang as _hreflang, widget as _widget
+from plugins import auth as _auth, odm as _odm, taxonomy as _taxonomy, comments as _comments, odm_ui as _odm_ui, \
+    hreflang as _hreflang, widget as _widget
 
 
 class Index(_routing.Controller):
@@ -174,9 +174,6 @@ class View(_routing.Controller):
             f_name = 'localization_' + lng
             if entity.has_field(f_name) and entity.f_get(f_name):
                 _hreflang.add(lng, entity.f_get(f_name).url)
-
-        # Necessary JS code
-        _assetman.preload('content@js/content.js')
 
         # Update args
         self.args.update({

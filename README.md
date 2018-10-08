@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.0 (2018-10-08)
+
+Support of `pytsite-8.x` and `assetman-3.x`.
+
+
 ### 4.20.2 (2018-09-21)
 
 Sitemap generation fixed.

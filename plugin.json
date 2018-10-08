@@ -1,6 +1,6 @@
 {
   "name": "content",
-  "version": "5.0",
+  "version": "5.0.1",
   "description": {
     "en": "Content",
     "ru": "Контент",
@@ -13,12 +13,12 @@
     "url": "https://shepetko.com"
   },
   "requires": {
-    "pytsite": "8.x",
+    "pytsite": ">=8",
     "plugins": {
       "admin": "2.x",
       "assetman": "3.x",
       "auth": "3.x",
-      "auth_storage_odm": "3.x",
+      "auth_storage_odm": "4.x",
       "auth_ui": "4.x",
       "ckeditor": "2.x",
       "comments": "2.x",

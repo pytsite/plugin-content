@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.0.1 (2018-10-08)
+
+`plugin.json` fixed.
+
+
 ### 5.0 (2018-10-08)
 
 Support of `pytsite-8.x` and `assetman-3.x`.

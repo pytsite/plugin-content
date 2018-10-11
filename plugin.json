@@ -22,7 +22,7 @@
       "auth_ui": "4.x",
       "ckeditor": "2.x",
       "comments": "2.x",
-      "feed": "1.x",
+      "feed": "2.x",
       "file": "1.x",
       "file_storage_odm": "2.x",
       "file_ui": "2.x",

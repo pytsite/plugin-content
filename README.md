@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.0.2 (2018-10-11)
+
+`plugin.json` fixed.
+
+
 ### 5.0.1 (2018-10-08)
 
 `plugin.json` fixed.

@@ -426,7 +426,7 @@ class Content(_odm_ui.model.UIEntity):
         path = _router.current_path()
 
         ref = _router.request().referrer
-        ref_path = _router.url(ref, strip_lang_prefix=True, as_list=True)[2] if ref else ''
+        ref_path = _router.url(ref, add_lang_prefix=False, as_list=True)[2] if ref else ''
 
         if not (path.startswith(_ADM_BP) or ref_path.startswith(_ADM_BP)) and \
                 (_router.has_rule('content_' + rule_type) or _tpl.tpl_exists('content/' + rule_type)):
@@ -746,7 +746,7 @@ class ContentWithURL(Content):
         return 'content@view'
 
     def odm_ui_view_url(self, args: dict = None) -> str:
-        target_path = _router.url(super().odm_ui_view_url(args), strip_lang_prefix=True, as_list=True)[2]
+        target_path = _router.url(super().odm_ui_view_url(args), add_lang_prefix=False, as_list=True)[2]
 
         try:
             target_path = _route_alias.get_by_target(target_path, self.language).alias

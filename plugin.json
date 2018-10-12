@@ -1,6 +1,6 @@
 {
   "name": "content",
-  "version": "5.0.1",
+  "version": "5.1",
   "description": {
     "en": "Content",
     "ru": "Контент",
@@ -16,7 +16,7 @@
     "pytsite": ">=8",
     "plugins": {
       "admin": "2.x",
-      "assetman": "3.x",
+      "assetman": "4.x",
       "auth": "3.x",
       "auth_storage_odm": "4.x",
       "auth_ui": "4.x",

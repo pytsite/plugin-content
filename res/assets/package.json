@@ -2,6 +2,7 @@
   "name": "@pytsite/content",
   "main": "index.js",
   "dependencies": {
+    "@pytsite/responsive": "1.x",
     "jquery": "3.x"
   }
 }

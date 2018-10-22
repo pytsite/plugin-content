@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.2 (2018-10-22)
+
+Support of `assetman-5.x` and `widget-4.x`.
+
+
 ### 5.1.1 (2018-10-12)
 
 NPM dependencies fixed.

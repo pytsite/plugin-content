@@ -1,8 +1,7 @@
 import '@pytsite/form';
-
-const $ = require('jquery');
-const httpApi = require('@pytsite/http-api');
-const responsive = require('@pytsite/responsive');
+import $ from 'jquery';
+import httpApi from '@pytsite/http-api';
+import responsive from '@pytsite/responsive';
 
 $('.content-entity, #content-entity').each(function () {
     var model = $(this).data('model');

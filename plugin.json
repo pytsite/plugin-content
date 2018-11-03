@@ -1,6 +1,6 @@
 {
   "name": "content",
-  "version": "5.2",
+  "version": "5.3",
   "description": {
     "en": "Content",
     "ru": "Контент",
@@ -29,7 +29,7 @@
       "form": "5.x",
       "hreflang": "1.x",
       "http_api": "3.x",
-      "odm": "5.x",
+      "odm": ">=5.1<6",
       "odm_auth": "2.x",
       "odm_ui": "4.x",
       "permissions": "1.x",

@@ -207,19 +207,19 @@ class Content(_odm_ui.model.UIEntity):
         # Define 'bypass_moderation' permission
         if mock.has_field('status'):
             perm_name = 'content@bypass_moderation.' + model
-            perm_description = cls.resolve_msg_id('content_perm_bypass_moderation_' + model)
+            perm_description = cls.resolve_lang_msg_id('content_perm_bypass_moderation_' + model)
             _permissions.define_permission(perm_name, perm_description, perm_group)
 
         # Define 'set_localization' permission
         if mock.has_field('localization_' + _lang.get_current()):
             perm_name = 'content@set_localization.' + model
-            perm_description = cls.resolve_msg_id('content_perm_set_localization_' + model)
+            perm_description = cls.resolve_lang_msg_id('content_perm_set_localization_' + model)
             _permissions.define_permission(perm_name, perm_description, perm_group)
 
         # Define 'set_publish_time' permission
         if mock.has_field('publish_time'):
             perm_name = 'article@set_publish_time.' + model
-            perm_description = cls.resolve_msg_id('content_perm_set_publish_time_' + model)
+            perm_description = cls.resolve_lang_msg_id('content_perm_set_publish_time_' + model)
             _permissions.define_permission(perm_name, perm_description, cls.odm_auth_permissions_group())
 
     @classmethod

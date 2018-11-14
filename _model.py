@@ -5,7 +5,7 @@ __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
 import re as _re
-from typing import Tuple as _Tuple, Optional as _Optional, List as _List, Dict as _Dict
+from typing import Tuple as _Tuple, Optional as _Optional
 from frozendict import frozendict as _frozendict
 from datetime import datetime as _datetime, timedelta as _timedelta
 from pytsite import validation as _validation, html as _html, lang as _lang, events as _events, util as _util, \
@@ -627,13 +627,13 @@ class Content(_odm_ui.model.UIEntity):
         if _permissions.is_permission_defined(localization_perm) and c_user.has_permission(localization_perm) and \
                 self.has_field('localization_' + lng):
             for i, l in enumerate(_lang.langs(False)):
-                frm.add_widget(_odm_ui.widget.EntitySelectSearch(
+                frm.add_widget(_odm_ui.widget.EntitySelect(
                     uid='localization_' + l,
                     label=self.t('localization', {'lang': _lang.lang_title(l)}),
                     model=self.model,
-                    ajax_url_query={
-                        'language': l,
-                    },
+                    sort_by='title',
+                    minimum_input_length=1,
+                    ajax_url_query={'language': l},
                     value=self.f_get('localization_' + l)
                 ))
 
@@ -653,29 +653,12 @@ class Content(_odm_ui.model.UIEntity):
         return self.title
 
     @classmethod
-    def odm_ui_widget_select_search_entities(cls, args: dict) -> _List[_Dict[str, str]]:
-        from . import _api
+    def odm_ui_widget_select_search_entities(cls, f: _odm.Finder, args: dict):
+        f.eq('language', args.get('language', _lang.get_current()))
 
-        model = args['model']
         query = args.get('q')
-        language = args.get('language', _lang.get_current())
-        status = args.get('status', '*')
-        check_publish_time = args.get('check_publish_time', False)
-        count = int(args.get('count', 20))
-        sort_field = args.get('sort_field', 'title')
-        sort_order = args.get('sort_order', 'asc')
-
-        if count > 100:
-            count = 100
-
-        f = _api.find(model, status=status, check_publish_time=check_publish_time, language=language)
-        f.sort([(sort_field, _odm.I_DESC if sort_order in ('desc', '-1', -1) else _odm.I_ASC)])
-
         if query:
             f.regex('title', query, True)
-
-        return [{'id': e.model + ':' + str(e.id), 'text': e.odm_ui_widget_select_search_entities_title(args)}
-                for e in f.get(count)]
 
     def odm_ui_widget_select_search_entities_title(self, args: dict) -> str:
         return self.title

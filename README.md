@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.4.1 (2018-11-15)
+
+`Index` controller fixed.
+
+
 ### 5.4 (2018-11-14)
 
 Support of `odm_ui-5.x`.

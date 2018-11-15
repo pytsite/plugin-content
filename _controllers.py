@@ -56,9 +56,8 @@ class Index(_routing.Controller):
         # Filter by author
         author_nickname = self.arg('author')
         if author_nickname:
-            author = _auth.get_user(nickname=author_nickname)
-
-            if author:
+            try:
+                author = _auth.get_user(nickname=author_nickname)
                 f.eq('author', author.uid)
                 self.args['author'] = author
                 _metatag.t_set('title', _lang.t('content@articles_of_author', {'name': author.first_last_name}))
@@ -72,8 +71,7 @@ class Index(_routing.Controller):
                     }))
 
                 breadcrumb.append_item(author.first_last_name)
-
-            else:
+            except _auth.error.UserNotFound:
                 raise self.not_found()
 
         self.args.update({

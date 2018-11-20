@@ -122,7 +122,8 @@ class View(_routing.Controller):
         if entity.has_field('route_alias') and entity.has_field('comments_count') and entity.f_get('route_alias'):
             try:
                 _auth.switch_user_to_system()
-                entity.f_set('comments_count', _comments.get_all_comments_count(entity.route_alias.alias)).save()
+                entity.f_set('comments_count', _comments.get_all_comments_count(entity.route_alias.alias))
+                entity.save(update_timestamp=False, pre_hooks=False, after_hooks=False)
             finally:
                 _auth.restore_user()
 

@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.4.2 (2018-11-20)
+
+`View` controller fixed.
+
+
 ### 5.4.1 (2018-11-15)
 
 `Index` controller fixed.

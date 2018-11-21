@@ -712,7 +712,7 @@ class ContentWithURL(Content):
     def _setup_fields(self):
         super()._setup_fields()
 
-        self.define_field(_odm.field.Ref('route_alias', model='route_alias', required=True))
+        self.define_field(_odm.field.Ref('route_alias', model='route_alias'))
 
     def _setup_indexes(self):
         super()._setup_indexes()
@@ -754,11 +754,10 @@ class ContentWithURL(Content):
             # Entity doesn't have attached route alias reference
             if not self.route_alias:
                 if self.is_new:
-                    # Create and attach route alias with no target, which will be set in self._after_save()
-                    value = _route_alias.create(route_alias_str, 'NONE', self.language).save()
-                else:
-                    target = _router.rule_path('content@view', {'model': self.model, 'eid': self.id})
-                    value = _route_alias.create(route_alias_str, target, self.language).save()
+                    raise RuntimeError('Entity must be saved first')
+
+                target = _router.rule_path('content@view', {'model': self.model, 'eid': self.id})
+                value = _route_alias.create(route_alias_str, target, self.language).save()
             else:
                 # Existing route alias needs to be changed
                 if self.route_alias.alias != route_alias_str:
@@ -767,36 +766,14 @@ class ContentWithURL(Content):
 
         return super()._on_f_set(field_name, value, **kwargs)
 
-    def _pre_save(self, **kwargs):
-        """Hook.
-        """
-        super()._pre_save(**kwargs)
-
-        # Route alias is required
-        if self.has_field('route_alias') and not self.route_alias:
-            # Setting None leads to route alias auto-generation
-            self.f_set('route_alias', None)
-
     def _after_save(self, first_save: bool = False, **kwargs):
         """Hook.
         """
         super()._after_save(first_save, **kwargs)
 
-        # Update route alias target which has been created in self._pre_save()
-        if self.has_field('route_alias') and self.route_alias.target == 'NONE':
-            target = _router.rule_path('content@view', {'model': self.model, 'eid': self.id})
-            self.route_alias.f_set('target', target).save()
-
-        if first_save and self.has_field('route_alias'):
-            # Clean up not fully filled route aliases
-            f = _route_alias.find()
-            f.eq('target', 'NONE').lt('_created', _datetime.now() - _timedelta(1))
-            for route_alias in f.get():
-                try:
-                    route_alias.delete()
-                except _odm.error.EntityDeleted:
-                    # Entity was deleted by another instance
-                    pass
+        # Auto-generate a route alias
+        if self.has_field('route_alias') and not self.route_alias:
+            self.f_set('route_alias', '')
 
     def _after_delete(self, **kwargs):
         """Hook.

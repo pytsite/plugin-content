@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.4.3 (2018-11-21)
+
+`ContentWithURL.route_alias` field setting fixed.
+
+
 ### 5.4.2 (2018-11-20)
 
 `View` controller fixed.

@@ -712,6 +712,7 @@ class ContentWithURL(Content):
     def _setup_fields(self):
         super()._setup_fields()
 
+        self.define_field(_odm.field.String('tmp_route_alias_str'))
         self.define_field(_odm.field.Ref('route_alias', model='route_alias'))
 
     def _setup_indexes(self):
@@ -753,11 +754,14 @@ class ContentWithURL(Content):
 
             # Entity doesn't have attached route alias reference
             if not self.route_alias:
+                # Route target cannot be built while entity is not saved,
+                # so route alias needs to be saved temporary as a string
                 if self.is_new:
-                    raise RuntimeError('Entity must be saved first')
-
-                target = _router.rule_path('content@view', {'model': self.model, 'eid': self.id})
-                value = _route_alias.create(route_alias_str, target, self.language).save()
+                    self.f_set('tmp_route_alias_str', value)
+                    value = None
+                else:
+                    target = _router.rule_path('content@view', {'model': self.model, 'eid': self.id})
+                    value = _route_alias.create(route_alias_str, target, self.language).save()
             else:
                 # Existing route alias needs to be changed
                 if self.route_alias.alias != route_alias_str:
@@ -773,7 +777,7 @@ class ContentWithURL(Content):
 
         # Auto-generate a route alias
         if self.has_field('route_alias') and not self.route_alias:
-            self.f_set('route_alias', '')
+            self.f_set('route_alias', self.f_get('tmp_route_alias_str')).f_rst('tmp_route_alias_str').save(fast=True)
 
     def _after_delete(self, **kwargs):
         """Hook.

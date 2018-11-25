@@ -18,7 +18,7 @@ class PatchViewsCount(_routing.Controller):
         if entity and entity.has_field('views_count'):
             try:
                 _auth.switch_user_to_system()
-                entity.f_inc('views_count').save(update_timestamp=False, pre_hooks=False, after_hooks=False)
+                entity.f_inc('views_count').save(fast=True)
             finally:
                 _auth.restore_user()
 

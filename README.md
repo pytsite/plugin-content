@@ -4,6 +4,12 @@
 ## Changelog
 
 
+### 5.5 (2018-11-25)
+
+- Support of `odm-5.4`.
+- Route alias field setting fixed.
+
+
 ### 5.4.3 (2018-11-21)
 
 `ContentWithURL.route_alias` field setting fixed.

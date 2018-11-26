@@ -1,8 +1,8 @@
-<h1>Привіт, {{ entity.author.full_name }}!</h1>
+<h1>Привіт, {{ entity.author.first_last_name }}!</h1>
 
 <p>
     До вашого матеріалу <a href="{{ comment.url }}">{{ entity.title | e }}</a> було залишено коментар користувачем
-    <b>{{ comment.author.full_name }}</b>:
+    <b>{{ comment.author.first_last_name }}</b>:
 </p>
 
 <blockquote>

@@ -1,7 +1,7 @@
-<h1>Hello, {{ entity.author.full_name }}!</h1>
+<h1>Hello, {{ entity.author.first_last_name }}!</h1>
 
 <p>
-    <b>{{ comment.author.full_name }}</b> commented your post <a href="{{ comment.url }}">{{ entity.title | e }}</a>:
+    <b>{{ comment.author.first_last_name }}</b> commented your post <a href="{{ comment.url }}">{{ entity.title | e }}</a>:
 </p>
 
 <blockquote>

@@ -7,7 +7,7 @@ __license__ = 'MIT'
 import re as _re
 from typing import Tuple as _Tuple, Optional as _Optional
 from frozendict import frozendict as _frozendict
-from datetime import datetime as _datetime, timedelta as _timedelta
+from datetime import datetime as _datetime
 from pytsite import validation as _validation, html as _html, lang as _lang, events as _events, util as _util, \
     mail as _mail, tpl as _tpl, reg as _reg, router as _router, errors as _errors
 from plugins import auth as _auth, ckeditor as _ckeditor, route_alias as _route_alias, auth_ui as _auth_ui, \
@@ -183,16 +183,6 @@ def _remove_tags(s: str) -> str:
     return s
 
 
-def _send_waiting_status_notification(entity):
-    for u in _auth.get_admin_users():
-        m_subject = _lang.t('content@content_waiting_mail_subject')
-        m_body = _tpl.render('content@mail/{}/waiting-content'.format(_lang.get_current()), {
-            'user': u,
-            'entity': entity,
-        })
-        _mail.Message(u.login, m_subject, m_body).send()
-
-
 class Content(_odm_ui.model.UIEntity):
     """Base Content Model
     """
@@ -227,9 +217,10 @@ class Content(_odm_ui.model.UIEntity):
         return 'content'
 
     def _setup_fields(self):
-        """Hook.
+        """Hook
         """
         self.define_field(_odm.field.DateTime('publish_time', default=_datetime.now()))
+        self.define_field(_odm.field.String('prev_status', default='waiting'))
         self.define_field(_odm.field.String('status', required=True, default='waiting'))
         self.define_field(_odm.field.String('title', required=True))
         self.define_field(_odm.field.String('description'))
@@ -275,6 +266,10 @@ class Content(_odm_ui.model.UIEntity):
     @property
     def publish_time_ago(self) -> str:
         return self.f_get('publish_time', fmt='ago')
+
+    @property
+    def prev_status(self) -> str:
+        return self.f_get('prev_status')
 
     @property
     def status(self) -> str:
@@ -360,6 +355,8 @@ class Content(_odm_ui.model.UIEntity):
             from . import _api
             if value not in [v[0] for v in _api.get_statuses()]:
                 raise RuntimeError("Invalid publish status: '{}'.".format(value))
+            if value != self.prev_status:
+                self.f_set('prev_status', self.status)
 
         return super()._on_f_set(field_name, value, **kwargs)
 
@@ -405,10 +402,9 @@ class Content(_odm_ui.model.UIEntity):
     def _after_save(self, first_save: bool = False, **kwargs):
         """Hook.
         """
-        # Notify content moderators about waiting content
-        if first_save and self.has_field('status') and self.status == 'waiting' and \
-                _reg.get('content.send_waiting_notifications', True):
-            _send_waiting_status_notification(self)
+        # Notify content status change
+        if self.has_field('status') and self.status != self.prev_status:
+            self.content_status_change(self.status)
 
         _events.fire('content@entity.save', entity=self)
         _events.fire('content@entity.{}.save'.format(self.model), entity=self)
@@ -434,19 +430,25 @@ class Content(_odm_ui.model.UIEntity):
 
     @classmethod
     def odm_ui_browse_rule(cls) -> str:
+        """Hook
+        """
         return cls._get_rule('browse') or super().odm_ui_browse_rule()
 
     @classmethod
     def odm_ui_m_form_rule(cls) -> str:
+        """Hook
+        """
         return cls._get_rule('modify') or super().odm_ui_m_form_rule()
 
     @classmethod
     def odm_ui_d_form_rule(cls) -> str:
+        """Hook
+        """
         return cls._get_rule('delete') or super().odm_ui_d_form_rule()
 
     @classmethod
     def odm_ui_browser_setup(cls, browser: _odm_ui.Browser):
-        """Setup ODM UI browser hook.
+        """Hook
         """
         c_user = _auth.get_current_user()
 
@@ -486,7 +488,7 @@ class Content(_odm_ui.model.UIEntity):
             browser.insert_data_field('publish_time', 'article@publish_time')
 
     def odm_ui_browser_row(self) -> list:
-        """Get single UI browser row hook.
+        """Hook
         """
         r = []
 
@@ -536,7 +538,7 @@ class Content(_odm_ui.model.UIEntity):
         frm.css += ' content-m-form'
 
     def odm_ui_m_form_setup_widgets(self, frm: _form.Form):
-        """Hook.
+        """Hook
         """
         from . import _widget as _content_widget
         c_user = _auth.get_current_user()
@@ -648,12 +650,14 @@ class Content(_odm_ui.model.UIEntity):
             ))
 
     def odm_ui_mass_action_entity_description(self) -> str:
-        """Get delete form description.
+        """Hook
         """
         return self.title
 
     @classmethod
     def odm_ui_widget_select_search_entities(cls, f: _odm.Finder, args: dict):
+        """Hook
+        """
         f.eq('language', args.get('language', _lang.get_current()))
 
         query = args.get('q')
@@ -661,7 +665,33 @@ class Content(_odm_ui.model.UIEntity):
             f.regex('title', query, True)
 
     def odm_ui_widget_select_search_entities_title(self, args: dict) -> str:
+        """Hook
+        """
         return self.title
+
+    def content_status_change(self, status: str):
+        """Hook
+        """
+        c_user = _auth.get_current_user()
+
+        # Notify administrators about waiting content
+        notify = _reg.get('content.waiting_status_admin_notification', True)
+        if notify and not c_user.is_admin and status == 'waiting':
+            for u in _auth.get_admin_users():
+                m_subject = _lang.t('content@content_waiting_mail_subject')
+                m_body = _tpl.render('content@mail/{}/waiting-content'.format(_lang.get_current()), {
+                    'user': u,
+                    'entity': self,
+                })
+                _mail.Message(u.login, m_subject, m_body).send()
+
+        # Notify content author about status change by another user
+        notify = _reg.get('content.status_change_author_notification', True)
+        if notify and c_user != self.author:
+            m_subject = _lang.t('content@content_status_change_mail_subject')
+            m_body = _tpl.render('content@mail/{}/content-status-change'.format(_lang.get_current()), {'entity': self})
+            _mail.Message(self.author.login, m_subject, m_body).send()
+
 
     def as_jsonable(self, **kwargs) -> dict:
         r = super().as_jsonable()

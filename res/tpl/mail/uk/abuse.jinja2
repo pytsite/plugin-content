@@ -1,6 +1,6 @@
-<h1>Привіт, {{ recipient.full_name }}!</h1>
+<h1>Привіт, {{ recipient.first_last_name }}!</h1>
 <p>
-    <b>{{ reporter.full_name }}</b> щойно повідомив про небажаний контент
+    <b>{{ reporter.first_last_name }}</b> щойно повідомив про небажаний контент
     <a href="{{ entity.url }}">{{ entity.title }}</a>, знайдений на сайті <a href="{{ base_url() }}">{{ t('app_name') }}</a>.
     Будь ласка, перевірте матеріал і прийміть відповідні заходи.
 </p>

@@ -1,7 +1,7 @@
-<h1>Здравствуйте, {{ user.full_name }}!</h1>
+<h1>Здравствуйте, {{ user.first_last_name }}!</h1>
 <p>
-    Только что на <a href="{{ base_url() }}">{{ t('app_name') }}</a> был добавлен новый материал
-    &laquo;{{ entity.title }}&raquo; пользователем {{ entity.author.full_name }}.
+    На <a href="{{ base_url() }}">{{ t('app_name') }}</a> имеется ожидающий модерации материал
+    &laquo;{{ entity.title }}&raquo;, созданный пользователем {{ entity.author.first_last_name }}.
     Пожалуйста, <a href="{{ entity.modify_url }}">решите дальнейшую судьбу материала</a>.
 </p>
 <p>

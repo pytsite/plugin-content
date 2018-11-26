@@ -4,6 +4,16 @@
 ## Changelog
 
 
+### 5.6 (2018-11-25)
+
+- New ODM field and property `model.Content.prev_status` added.
+- New hook `content_status_change()` added.
+- Content author notification added about content status change.
+- Configuration option `send_waiting_notifications` renamed to
+  `waiting_status_admin_notification`.
+- New configuration option added: `status_change_author_notification`.
+
+
 ### 5.5 (2018-11-25)
 
 - Support of `odm-5.4`.

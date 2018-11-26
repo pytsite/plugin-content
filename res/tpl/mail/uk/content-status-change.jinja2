@@ -1,0 +1,9 @@
+<h1>Вітаю, {{ entity.author.first_last_name }}!</h1>
+<p>
+    Статус вашої публікації &laquo;{{ entity.title }}&raquo; на <a href="{{ base_url() }}">{{ t('app_name') }}</a> було
+    змінено на <b>&laquo;{{ t('status_' ~ entity.status) }}&raquo;</b>.
+</p>
+<p>
+    --<br/>
+    З найкращими побажаннями, {{ t('app_name') }}.
+</p>

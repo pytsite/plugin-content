@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.6.2 (2018-11-26)
+
+Content status change notification bug fixed.
+
+
 ### 5.6.1 (2018-11-26)
 
 Typo fixed.

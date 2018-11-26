@@ -355,8 +355,7 @@ class Content(_odm_ui.model.UIEntity):
             from . import _api
             if value not in [v[0] for v in _api.get_statuses()]:
                 raise RuntimeError("Invalid publish status: '{}'.".format(value))
-            if value != self.prev_status:
-                self.f_set('prev_status', self.status)
+            self.f_set('prev_status', self.status)
 
         return super()._on_f_set(field_name, value, **kwargs)
 

@@ -403,7 +403,7 @@ class Content(_odm_ui.model.UIEntity):
         """
         # Notify content status change
         if self.has_field('status') and self.status != self.prev_status:
-            self.content_status_change(self.status)
+            self.content_status_change()
 
         _events.fire('content@entity.save', entity=self)
         _events.fire('content@entity.{}.save'.format(self.model), entity=self)
@@ -668,29 +668,35 @@ class Content(_odm_ui.model.UIEntity):
         """
         return self.title
 
-    def content_status_change(self, status: str):
+    def _content_notify_admins_waiting_status(self):
+        """Notify administrators about waiting content
+        """
+        for u in _auth.get_admin_users():
+            m_subject = _lang.t('content@content_waiting_mail_subject')
+            m_body = _tpl.render('content@mail/{}/waiting-content'.format(_lang.get_current()), {
+                'user': u,
+                'entity': self,
+            })
+            _mail.Message(u.login, m_subject, m_body).send()
+
+    def _content_notify_author_status_change(self):
+        """Notify content author about status change by another user
+        """
+        m_subject = _lang.t('content@content_status_change_mail_subject')
+        m_body = _tpl.render('content@mail/{}/content-status-change'.format(_lang.get_current()), {'entity': self})
+        _mail.Message(self.author.login, m_subject, m_body).send()
+
+    def content_status_change(self):
         """Hook
         """
         c_user = _auth.get_current_user()
 
-        # Notify administrators about waiting content
-        notify = _reg.get('content.waiting_status_admin_notification', True)
-        if notify and not c_user.is_admin and status == 'waiting':
-            for u in _auth.get_admin_users():
-                m_subject = _lang.t('content@content_waiting_mail_subject')
-                m_body = _tpl.render('content@mail/{}/waiting-content'.format(_lang.get_current()), {
-                    'user': u,
-                    'entity': self,
-                })
-                _mail.Message(u.login, m_subject, m_body).send()
+        if _reg.get('content.waiting_status_admin_notification', True) and not c_user.is_admin and \
+                self.status == 'waiting':
+            self._content_notify_admins_waiting_status()
 
-        # Notify content author about status change by another user
-        notify = _reg.get('content.status_change_author_notification', True)
-        if notify and c_user != self.author:
-            m_subject = _lang.t('content@content_status_change_mail_subject')
-            m_body = _tpl.render('content@mail/{}/content-status-change'.format(_lang.get_current()), {'entity': self})
-            _mail.Message(self.author.login, m_subject, m_body).send()
-
+        if _reg.get('content.status_change_author_notification', True) and c_user != self.author:
+            self._content_notify_author_status_change()
 
     def as_jsonable(self, **kwargs) -> dict:
         r = super().as_jsonable()

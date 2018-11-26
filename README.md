@@ -4,7 +4,12 @@
 ## Changelog
 
 
-### 5.6 (2018-11-25)
+### 5.6.1 (2018-11-26)
+
+Typo fixed.
+
+
+### 5.6 (2018-11-26)
 
 - New ODM field and property `model.Content.prev_status` added.
 - New hook `content_status_change()` added.

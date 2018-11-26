@@ -1,7 +1,7 @@
-<h1>Вітаю, {{ user.first_last_name }}!</h1>
+<h1>Вітаю, {{ user.first_name }}!</h1>
 <p>
     На <a href="{{ base_url() }}">{{ t('app_name') }}</a> є матеріал &laquo;{{ entity.title }}&raquo;, запропонований
-    користувачем {{ entity.author.first_last_name }} та який очикує модерації.
+    користувачем {{ entity.author.first_last_name }} та який очікує модерації.
     Будь ласка, <a href="{{ entity.modify_url }}">вирішить подальшу долю матеріалу</a>.
 </p>
 <p>

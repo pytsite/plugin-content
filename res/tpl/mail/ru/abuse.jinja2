@@ -1,4 +1,4 @@
-<h1>Привет, {{ recipient.first_last_name }}!</h1>
+<h1>Привет, {{ recipient.first_name }}!</h1>
 <p>
     <b>{{ reporter.first_last_name }}</b> только что сообщил о нежелательном содержимом
     <a href="{{ entity.url }}">{{ entity.title }}</a>, найденном на сайте <a href="{{ base_url() }}">{{ t('app_name') }}</a>.

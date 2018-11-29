@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.7 (2018-11-29)
+
+`model.Content.odm_ui_browser_row()` now returns a `dict`.
+
+
 ### 5.6.4 (2018-11-26)
 
 Light refactoring.

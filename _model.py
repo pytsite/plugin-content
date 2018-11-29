@@ -486,14 +486,14 @@ class Content(_odm_ui.model.UIEntity):
         if mock.has_field('publish_time'):
             browser.insert_data_field('publish_time', 'article@publish_time')
 
-    def odm_ui_browser_row(self) -> list:
+    def odm_ui_browser_row(self) -> dict:
         """Hook
         """
-        r = []
+        r = {}
 
         # Title
         if self.has_field('title'):
-            r.append(str(_html.A(self.title, href=self.url)) if self.url else self.title)
+            r['title'] = (str(_html.A(self.title, href=self.url)) if self.url else self.title)
 
         # Status
         if self.has_field('status'):
@@ -505,26 +505,23 @@ class Content(_odm_ui.model.UIEntity):
             elif status == 'unpublished':
                 status_css = 'default secondary'
             status = str(_html.Span(status_str, css='label label-{} badge badge-{}'.format(status_css, status_css)))
-            r.append(status)
+            r['status'] = status
 
         # Images
         if self.has_field('images'):
             images_css = 'default secondary' if not len(self.images) else 'primary'
             images_count = '<span class="label label-{} badge badge-{}">{}</span>'. \
                 format(images_css, images_css, len(self.images))
-            r.append(images_count)
+            r['images'] = images_count
 
         # Author
         u = _auth.get_current_user()
         if self.has_field('author') and u.has_permission('odm_auth@modify.{}'.format(self.model)):
-            if self.author:
-                r.append(self.author.first_last_name)
-            else:
-                r.append('&nbsp;')
+            r['author'] = self.author.first_last_name if self.author else '&nbsp;'
 
         # Publish time
         if self.has_field('publish_time'):
-            r.append(self.f_get('publish_time', fmt='%d.%m.%Y %H:%M'))
+            r['publish_time'] = self.f_get('publish_time', fmt='%d.%m.%Y %H:%M')
 
         return r
 

@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.8 (2018-12-12)
+
+New field `thumbnail` added to `Content.as_jsonable()`'s response.
+
+
 ### 5.7 (2018-11-29)
 
 `model.Content.odm_ui_browser_row()` now returns a `dict`.

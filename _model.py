@@ -723,11 +723,17 @@ class Content(_odm_ui.model.UIEntity):
             r['language'] = self.language
 
         if self.has_field('images'):
+            thumb_w = kwargs.get('images_thumb_width', 500)
+            thumb_h = kwargs.get('images_thumb_height', 500)
+
             img_jsonable_args = {
-                'thumb_width': kwargs.get('images_thumb_width', 450),
-                'thumb_height': kwargs.get('images_thumb_height', 450),
+                'thumb_width': thumb_w,
+                'thumb_height': thumb_h,
             }
             r['images'] = [img.as_jsonable(**img_jsonable_args) for img in self.images]
+
+            if self.images:
+                r['thumbnail'] = self.images[0].get_url(width=thumb_w, height=thumb_h)
 
         if self.has_field('author') and self.author.is_public:
             r['author'] = self.author.as_jsonable()

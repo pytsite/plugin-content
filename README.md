@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.9 (2018-12-12)
+
+Support of `odm_http_api-5.x`.
+
+
 ### 5.8 (2018-12-12)
 
 New field `thumbnail` added to `Content.as_jsonable()`'s response.

@@ -9,7 +9,7 @@ from typing import Tuple as _Tuple, Optional as _Optional
 from frozendict import frozendict as _frozendict
 from datetime import datetime as _datetime
 from pytsite import validation as _validation, html as _html, lang as _lang, events as _events, util as _util, \
-    mail as _mail, tpl as _tpl, reg as _reg, router as _router, errors as _errors
+    mail as _mail, tpl as _tpl, reg as _reg, router as _router, errors as _errors, routing as _routing
 from plugins import auth as _auth, ckeditor as _ckeditor, route_alias as _route_alias, auth_ui as _auth_ui, \
     auth_storage_odm as _auth_storage_odm, file_storage_odm as _file_storage_odm, permissions as _permissions, \
     odm_ui as _odm_ui, odm as _odm, file as _file, form as _form, widget as _widget, file_ui as _file_ui, \
@@ -664,6 +664,17 @@ class Content(_odm_ui.model.UIEntity):
         """Hook
         """
         return self.title
+
+    @classmethod
+    def odm_http_api_get_entities(cls, finder: _odm.Finder, args: _routing.ControllerArgs):
+        """Called by 'odm_http_api@get_entities' route
+        """
+        if 'search' in args:
+            query = args['search']
+            if args.get('search_by') == 'title' and finder.mock.has_field('title'):
+                finder.regex('title', query)
+            else:
+                finder.text(query, _lang.get_current())
 
     def _content_notify_admins_waiting_status(self):
         """Notify administrators about waiting content

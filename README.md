@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.10 (2019-01-02)
+
+Support of `odm_ui-6.x`.
+
+
 ### 5.9 (2018-12-12)
 
 Support of `odm_http_api-5.x`.

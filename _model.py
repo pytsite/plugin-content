@@ -781,8 +781,8 @@ class ContentWithURL(Content):
     def odm_ui_view_rule(cls) -> str:
         return 'content@view'
 
-    def odm_ui_view_url(self, args: dict = None) -> str:
-        target_path = _router.url(super().odm_ui_view_url(args), add_lang_prefix=False, as_list=True)[2]
+    def odm_ui_view_url(self, args: dict = None, **kwargs) -> str:
+        target_path = _router.url(super().odm_ui_view_url(args, **kwargs), add_lang_prefix=False, as_list=True)[2]
 
         try:
             target_path = _route_alias.get_by_target(target_path, self.language).alias
@@ -870,3 +870,10 @@ class ContentWithURL(Content):
                 raise RuntimeError('Cannot generate route alias because title is empty.')
 
         return orig_str
+
+    def as_jsonable(self, **kwargs):
+        r = super().as_jsonable(**kwargs)
+
+        r['url'] = self.url
+
+        return r

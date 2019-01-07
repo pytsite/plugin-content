@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.11.1 (2019-01-07)
+
+`plugin.json` fixed.
+
+
 ### 5.11 (2019-01-07)
 
 - Support of `odm-5.7`, `odm_auth-3.0`, `odm_ui-6.1`.

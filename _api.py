@@ -89,7 +89,7 @@ def dispense(model: str, eid: str = None) -> _model.Content:
     return e
 
 
-def find(model: str, **kwargs) -> _odm.Finder:
+def find(model: str, **kwargs) -> _odm.SingleModelFinder:
     """Instantiate content entities finder
     """
     check_publish_time = kwargs.get('check_publish_time', True)
@@ -148,7 +148,8 @@ def get_statuses() -> _List[_Tuple[str, str]]:
     return r
 
 
-def generate_rss(model: str, filename: str, lng: str = '*', finder_setup: _Callable[[_odm.Finder], None] = None,
+def generate_rss(model: str, filename: str, lng: str = '*',
+                 finder_setup: _Callable[[_odm.SingleModelFinder], None] = None,
                  item_setup: _Callable[[_feed.xml.Serializable, _model.Content], None] = None, length: int = 20):
     """Generate RSS feeds
     """
@@ -244,7 +245,7 @@ def generate_rss(model: str, filename: str, lng: str = '*', finder_setup: _Calla
     _logger.info("RSS feed successfully written to '{}'.".format(out_path))
 
 
-def paginate(finder: _odm.Finder, per_page: int = 10, css: str = '') -> dict:
+def paginate(finder: _odm.SingleModelFinder, per_page: int = 10, css: str = '') -> dict:
     """Get paginated content finder query results
     """
     pager = _widget.select.Pager('content-pager', total_items=finder.count(), per_page=per_page, css=css)

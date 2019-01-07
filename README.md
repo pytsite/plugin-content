@@ -4,6 +4,13 @@
 ## Changelog
 
 
+### 5.11 (2019-01-07)
+
+- Support of `odm-5.7`, `odm_auth-3.0`, `odm_ui-6.1`.
+- New `view` permission.
+- New `EntitySelect` widget.
+
+
 ### 5.10 (2019-01-02)
 
 Support of `odm_ui-6.x`.

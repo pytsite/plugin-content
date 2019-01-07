@@ -9,6 +9,7 @@ from pytsite import router as _router, metatag as _metatag, lang as _lang, routi
     errors as _errors
 from plugins import auth as _auth, odm as _odm, taxonomy as _taxonomy, comments as _comments, odm_ui as _odm_ui, \
     hreflang as _hreflang, widget as _widget
+from . import _model
 
 
 class Index(_routing.Controller):
@@ -96,25 +97,32 @@ class View(_routing.Controller):
         from . import _api
 
         model = self.arg('model')
-        entity = _api.find(model, status='*', check_publish_time=False).eq('_id', self.arg('eid')).first()
+        entity = _api.find(model, status='*', check_publish_time=False) \
+            .eq('_id', self.arg('eid')) \
+            .first() # type: _model.ContentWithURL
+
+        # Check entity existence
+        if not entity:
+            raise self.not_found()
+
+        # Check if the user can view entities of this model
+        if not entity.odm_auth_check_entity_permissions('view'):
+            raise self.forbidden()
 
         # Breadcrumb
         breadcrumb = _widget.select.Breadcrumb('content-index-breadcrumb')
         breadcrumb.append_item(_lang.t('content@home_page'), _router.base_url())
         entity.content_breadcrumb(breadcrumb)
 
-        # Check entity existence
-        if not entity:
-            raise self.not_found()
-
-        # Show non published entities only to users who can edit them
+        # Show non-published entities only to users who can edit them
         if entity.has_field('publish_time') and entity.f_get('publish_time') > _datetime.now():
-            if not entity.odm_auth_check_permission('modify'):
+            if not entity.odm_auth_check_entity_permissions('modify'):
                 raise self.not_found()
             _router.session().add_warning_message(_lang.t('content@content_warning_future_publish_time'))
 
+        # Show warning about non-published entities
         if entity.has_field('status') and entity.status != 'published':
-            if not entity.odm_auth_check_permission('modify'):
+            if not entity.odm_auth_check_entity_permissions('modify'):
                 raise self.not_found()
             _router.session().add_warning_message(_lang.t('content@content_status_warning_{}'.format(entity.status)))
 

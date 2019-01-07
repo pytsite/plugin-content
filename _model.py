@@ -216,6 +216,10 @@ class Content(_odm_ui.model.UIEntity):
     def odm_auth_permissions_group(cls) -> str:
         return 'content'
 
+    @classmethod
+    def odm_auth_permissions(cls) -> _Tuple[str, ...]:
+        return 'create', 'view', 'modify', 'delete', 'view_own', 'modify_own', 'delete_own'
+
     def _setup_fields(self):
         """Hook
         """
@@ -451,7 +455,7 @@ class Content(_odm_ui.model.UIEntity):
         """
         c_user = _auth.get_current_user()
 
-        def _finder_adj(f: _odm.Finder):
+        def _finder_adj(f: _odm.SingleModelFinder):
             f.eq('language', _lang.get_current())
             if mock.has_field('author') and not c_user.has_permission('odm_auth@modify.{}'.format(browser.model)):
                 f.eq('author', c_user)
@@ -625,12 +629,10 @@ class Content(_odm_ui.model.UIEntity):
         if _permissions.is_permission_defined(localization_perm) and c_user.has_permission(localization_perm) and \
                 self.has_field('localization_' + lng):
             for i, l in enumerate(_lang.langs(False)):
-                frm.add_widget(_odm_ui.widget.EntitySelect(
+                frm.add_widget(_content_widget.EntitySelect(
                     uid='localization_' + l,
                     label=self.t('localization', {'lang': _lang.lang_title(l)}),
                     model=self.model,
-                    sort_by='title',
-                    minimum_input_length=1,
                     ajax_url_query={'language': l},
                     value=self.f_get('localization_' + l)
                 ))
@@ -650,8 +652,7 @@ class Content(_odm_ui.model.UIEntity):
         """
         return self.title
 
-    @classmethod
-    def odm_ui_widget_select_search_entities(cls, f: _odm.Finder, args: dict):
+    def odm_ui_widget_select_search_entities(self, f: _odm.MultiModelFinder, args: dict):
         """Hook
         """
         f.eq('language', args.get('language', _lang.get_current()))
@@ -660,13 +661,18 @@ class Content(_odm_ui.model.UIEntity):
         if query:
             f.regex('title', query, True)
 
+    def odm_ui_widget_select_search_entities_is_visible(self, args: dict) -> bool:
+        """Hook
+        """
+        return self.odm_auth_check_entity_permissions('view')
+
     def odm_ui_widget_select_search_entities_title(self, args: dict) -> str:
         """Hook
         """
         return self.title
 
     @classmethod
-    def odm_http_api_get_entities(cls, finder: _odm.Finder, args: _routing.ControllerArgs):
+    def odm_http_api_get_entities(cls, finder: _odm.SingleModelFinder, args: _routing.ControllerArgs):
         """Called by 'odm_http_api@get_entities' route
         """
         if 'search' in args:

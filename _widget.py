@@ -5,7 +5,7 @@ __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
 from pytsite import lang as _lang
-from plugins import widget as _widget
+from plugins import widget as _widget, odm_ui as _odm_ui
 from . import _api
 
 
@@ -51,3 +51,11 @@ class StatusSelect(_widget.select.Select):
 
     def __init__(self, uid: str, **kwargs):
         super().__init__(uid, items=_api.get_statuses(), **kwargs)
+
+
+class EntitySelect(_odm_ui.widget.EntitySelect):
+    def __init__(self, uid: str, **kwargs):
+        kwargs.setdefault('model', list(_api.get_models().keys()))
+        kwargs.setdefault('sort_by', 'title')
+
+        super().__init__(uid, **kwargs)

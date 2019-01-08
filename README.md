@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.12 (2019-01-08)
+
+Support of `odm_ui-7.x`.
+
+
 ### 5.11.1 (2019-01-07)
 
 `plugin.json` fixed.

@@ -13,7 +13,7 @@ from pytsite import validation as _validation, html as _html, lang as _lang, eve
 from plugins import auth as _auth, ckeditor as _ckeditor, route_alias as _route_alias, auth_ui as _auth_ui, \
     auth_storage_odm as _auth_storage_odm, file_storage_odm as _file_storage_odm, permissions as _permissions, \
     odm_ui as _odm_ui, odm as _odm, file as _file, form as _form, widget as _widget, file_ui as _file_ui, \
-    admin as _admin
+    admin as _admin, odm_auth as _odm_auth
 
 _body_img_tag_re = _re.compile('\[img:(\d+)([^\]]*)\]')
 _body_vid_tag_re = _re.compile('\[vid:(\d+)\]')
@@ -449,46 +449,45 @@ class Content(_odm_ui.model.UIEntity):
         """
         return cls._get_rule('delete') or super().odm_ui_d_form_rule()
 
-    @classmethod
-    def odm_ui_browser_setup(cls, browser: _odm_ui.Browser):
+    def odm_ui_browser_setup(self, browser: _odm_ui.Browser):
         """Hook
         """
         c_user = _auth.get_current_user()
-
-        def _finder_adj(f: _odm.SingleModelFinder):
-            f.eq('language', _lang.get_current())
-            if mock.has_field('author') and not c_user.has_permission('odm_auth@modify.{}'.format(browser.model)):
-                f.eq('author', c_user)
-
-        browser.finder_adjust = _finder_adj
         browser.default_sort_field = '_modified'
 
-        mock = _odm.dispense(browser.model)
-
         # Sort field
-        if mock.has_field('publish_time'):
+        if self.has_field('publish_time'):
             browser.default_sort_field = 'publish_time'
             browser.default_sort_order = 'desc'
 
         # Title
-        if mock.has_field('title'):
+        if self.has_field('title'):
             browser.insert_data_field('title', 'content@title')
 
         # Status
-        if mock.has_field('status'):
+        if self.has_field('status'):
             browser.insert_data_field('status', 'content@status')
 
         # Images
-        if mock.has_field('images'):
+        if self.has_field('images'):
             browser.insert_data_field('images', 'content@images')
 
         # Author (visible only if current user has permission to modify any entity)
-        if mock.has_field('author') and c_user.has_permission('odm_auth@modify.{}'.format(browser.model)):
+        if self.has_field('author') and c_user.has_permission('odm_auth@modify.{}'.format(browser.model)):
             browser.insert_data_field('author', 'content@author')
 
         # Publish time
-        if mock.has_field('publish_time'):
+        if self.has_field('publish_time'):
             browser.insert_data_field('publish_time', 'article@publish_time')
+
+    def odm_ui_browser_setup_finder(self, finder: _odm.SingleModelFinder, args: _routing.ControllerArgs):
+        super().odm_ui_browser_setup_finder(finder, args)
+
+        finder.eq('language', _lang.get_current())
+
+        c_user = _auth.get_current_user()
+        if _odm_auth.check_model_permissions(self._model, 'modify', c_user):
+            finder.eq('author', c_user)
 
     def odm_ui_browser_row(self) -> dict:
         """Hook

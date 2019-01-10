@@ -104,7 +104,7 @@ def find(model: str, **kwargs) -> _odm.SingleModelFinder:
     if f.mock.has_field('publish_time'):
         f.sort([('publish_time', _odm.I_DESC)])
         if check_publish_time:
-            f.lte('publish_time', _datetime.now(), False)
+            f.lte('publish_time', _datetime.now()).no_cache('publish_time')
     else:
         f.sort([('_modified', _odm.I_DESC)])
 

@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.13 (2019-01-10)
+
+Support of `odm-5.9`.
+
+
 ### 5.12.2 (2019-01-10)
 
 `model.Content.odm_ui_browser_setup_finder()` hook fixed.

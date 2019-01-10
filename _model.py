@@ -485,10 +485,6 @@ class Content(_odm_ui.model.UIEntity):
 
         finder.eq('language', _lang.get_current())
 
-        c_user = _auth.get_current_user()
-        if not _odm_auth.check_model_permissions(self._model, 'modify', c_user):
-            finder.eq('author', c_user)
-
     def odm_ui_browser_row(self) -> dict:
         """Hook
         """

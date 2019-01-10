@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.12.2 (2019-01-10)
+
+`model.Content.odm_ui_browser_setup_finder()` hook fixed.
+
+
 ### 5.12.1 (2019-01-08)
 
 Typo fix.

@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.13.1 (2019-01-26)
+
+`min_length` and `max_length` parameters support in text input widgets.
+
+
 ### 5.13 (2019-01-10)
 
 Support of `odm-5.9`.

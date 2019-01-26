@@ -540,20 +540,26 @@ class Content(_odm_ui.model.UIEntity):
 
         # Title
         if self.has_field('title'):
+            f = self.get_field('title')  # type: _odm.field.String
             frm.add_widget(_widget.input.Text(
                 uid='title',
                 label=self.t('title'),
+                required=f.required,
+                min_length=f.min_length,
+                max_length=f.max_length,
                 value=self.title,
-                required=self.get_field('title').required,
             ))
 
         # Description
         if self.has_field('description'):
+            f = self.get_field('description')  # type: _odm.field.String
             frm.add_widget(_widget.input.Text(
                 uid='description',
                 label=self.t('description'),
-                value=self.description,
                 required=self.get_field('description').required,
+                min_length=f.min_length,
+                max_length=f.max_length,
+                value=self.description,
             ))
 
         # Images

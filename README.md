@@ -4,6 +4,14 @@
 ## Changelog
 
 
+### 5.14 (2019-01-28)
+
+- New API function `get_model_class()` added.
+- API functions `get_statuses()` removed.
+- New class methods added to `model.Content`: `content_statuses()` and
+  `content_statuses_descriptions()`.
+
+
 ### 5.13.1 (2019-01-26)
 
 `min_length` and `max_length` parameters support in text input widgets.

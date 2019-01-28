@@ -6,8 +6,8 @@ __license__ = 'MIT'
 
 # Public API
 from . import _model as model, _widget as widget
-from ._api import register_model, get_models, find, get_model, get_model_title, dispense, get_statuses, \
-    is_model_registered, generate_rss, find_by_url, paginate
+from ._api import register_model, get_models, find, get_model, get_model_title, dispense, is_model_registered, \
+    generate_rss, find_by_url, paginate
 from ._model import Content, ContentWithURL
 
 # Locally used imports

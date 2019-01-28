@@ -50,7 +50,11 @@ class StatusSelect(_widget.select.Select):
     """
 
     def __init__(self, uid: str, **kwargs):
-        super().__init__(uid, items=_api.get_statuses(), **kwargs)
+        model = kwargs.get('model')
+        if not model:
+            raise ValueError('Model is not specified')
+
+        super().__init__(uid, items=_api.get_model_class(model).content_statuses_descriptions(), **kwargs)
 
 
 class EntitySelect(_odm_ui.widget.EntitySelect):

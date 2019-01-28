@@ -4,7 +4,7 @@ __author__ = 'Oleksandr Shepetko'
 __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
-from typing import Callable as _Callable, List as _List, Union as _Union, Type as _Type, Tuple as _Tuple, Dict as _Dict
+from typing import Callable as _Callable, List as _List, Union as _Union, Tuple as _Tuple, Dict as _Dict, Type as _Type
 from datetime import datetime as _datetime
 from urllib import parse as _urllib_parse
 from os import path as _path, makedirs as _makedirs
@@ -12,16 +12,18 @@ from pytsite import util as _util, router as _router, lang as _lang, logger as _
 from plugins import odm as _odm, route_alias as _route_alias, feed as _feed, admin as _admin, widget as _widget
 from . import _model
 
-_models = {}  # type: _Dict[str, _Tuple[_Type[_model.Content], str]]
+_ContentModelClass = _Type[_model.Content]
+
+_models = {}  # type: _Dict[str, _Tuple[_ContentModelClass, str]]
 
 
-def register_model(model: str, cls: _Union[str, _Type[_model.Content]], title: str, menu_weight: int = 0,
-                   menu_icon: str = 'fa fa-file-text-o', menu_sid: str = 'content', replace=False):
+def register_model(model: str, cls: _Union[str, _ContentModelClass], title: str, menu_weight: int = 0,
+                   menu_icon: str = 'fa fa-file-text-o', menu_sid: str = 'content', replace: bool = False):
     """Register content model
     """
     # Resolve class
     if isinstance(cls, str):
-        cls = _util.get_module_attr(cls)  # type: _Type[_model.Content]
+        cls = _util.get_module_attr(cls)  # type: _ContentModelClass
 
     if not issubclass(cls, _model.Content):
         raise TypeError('Subclass of {} expected, got {}'.format(_model.Content, type(cls)))
@@ -57,19 +59,25 @@ def is_model_registered(model: str) -> bool:
     return model in _models
 
 
-def get_models() -> _Dict[str, _Tuple[_Type[_model.Content], str]]:
+def get_models() -> _Dict[str, _Tuple[_ContentModelClass, str]]:
     """Get registered content models
     """
     return _models.copy()
 
 
-def get_model(model: str) -> tuple:
+def get_model(model: str) -> _Tuple[_ContentModelClass, str]:
     """Get model information
     """
     if not is_model_registered(model):
         raise KeyError("Model '{}' is not registered as content model.".format(model))
 
     return _models[model]
+
+
+def get_model_class(model: str) -> _ContentModelClass:
+    """Get class of the content model
+    """
+    return get_model(model)[0]
 
 
 def get_model_title(model: str) -> str:
@@ -98,10 +106,12 @@ def find(model: str, **kwargs) -> _odm.SingleModelFinder:
 
     if not is_model_registered(model):
         raise KeyError("Model '{}' is not registered as content model.".format(model))
+
     f = _odm.find(model)
+    mock = f.mock  # type: _model.Content
 
     # Publish time
-    if f.mock.has_field('publish_time'):
+    if mock.has_field('publish_time'):
         f.sort([('publish_time', _odm.I_DESC)])
         if check_publish_time:
             f.lte('publish_time', _datetime.now()).no_cache('publish_time')
@@ -109,13 +119,13 @@ def find(model: str, **kwargs) -> _odm.SingleModelFinder:
         f.sort([('_modified', _odm.I_DESC)])
 
     # Language
-    if language != '*' and f.mock.has_field('language'):
+    if language != '*' and mock.has_field('language'):
         f.eq('language', language)
 
     # Status
-    if status != '*' and f.mock.has_field('status'):
-        if status not in dict(get_statuses()):
-            raise ValueError("'{}' is invalid content status".format(status))
+    if status != '*' and mock.has_field('status'):
+        if status not in mock.content_statuses():
+            raise ValueError("'{}' is invalid content status for model '{}'".format(status, model))
 
         f.eq('status', status)
 
@@ -136,16 +146,6 @@ def find_by_url(url: str) -> _model.Content:
             return dispense(parsed_path[3], parsed_path[4])
     except _route_alias.error.RouteAliasNotFound:
         pass
-
-
-def get_statuses() -> _List[_Tuple[str, str]]:
-    """Get allowed content publication statuses
-    """
-    r = []
-    for s in ('published', 'waiting', 'unpublished'):
-        r.append((s, _lang.t('content@status_' + s)))
-
-    return r
 
 
 def generate_rss(model: str, filename: str, lng: str = '*',

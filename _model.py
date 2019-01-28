@@ -5,7 +5,7 @@ __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
 import re as _re
-from typing import Tuple as _Tuple, Optional as _Optional
+from typing import Tuple as _Tuple, Optional as _Optional, List as _List
 from frozendict import frozendict as _frozendict
 from datetime import datetime as _datetime
 from pytsite import validation as _validation, html as _html, lang as _lang, events as _events, util as _util, \
@@ -13,7 +13,7 @@ from pytsite import validation as _validation, html as _html, lang as _lang, eve
 from plugins import auth as _auth, ckeditor as _ckeditor, route_alias as _route_alias, auth_ui as _auth_ui, \
     auth_storage_odm as _auth_storage_odm, file_storage_odm as _file_storage_odm, permissions as _permissions, \
     odm_ui as _odm_ui, odm as _odm, file as _file, form as _form, widget as _widget, file_ui as _file_ui, \
-    admin as _admin, odm_auth as _odm_auth
+    admin as _admin
 
 _body_img_tag_re = _re.compile('\[img:(\d+)([^\]]*)\]')
 _body_vid_tag_re = _re.compile('\[vid:(\d+)\]')
@@ -220,12 +220,20 @@ class Content(_odm_ui.model.UIEntity):
     def odm_auth_permissions(cls) -> _Tuple[str, ...]:
         return 'create', 'view', 'modify', 'delete', 'view_own', 'modify_own', 'delete_own'
 
+    @classmethod
+    def content_statuses(cls) -> _List[str]:
+        return ['published', 'waiting', 'unpublished']
+
+    @classmethod
+    def content_statuses_descriptions(cls) -> _List[_Tuple[str, str]]:
+        return [(s, cls.t('content_status_{}'.format(s))) for s in cls.content_statuses()]
+
     def _setup_fields(self):
         """Hook
         """
         self.define_field(_odm.field.DateTime('publish_time', default=_datetime.now()))
         self.define_field(_odm.field.String('prev_status', default='waiting'))
-        self.define_field(_odm.field.String('status', required=True, default='waiting'))
+        self.define_field(_odm.field.String('status', required=True, default=self.content_statuses()[0]))
         self.define_field(_odm.field.String('title', required=True))
         self.define_field(_odm.field.String('description'))
         self.define_field(_odm.field.String('body', strip_html=False))
@@ -356,9 +364,8 @@ class Content(_odm_ui.model.UIEntity):
                 self.f_set('language_db', 'none')
 
         elif field_name == 'status':
-            from . import _api
-            if value not in [v[0] for v in _api.get_statuses()]:
-                raise RuntimeError("Invalid publish status: '{}'.".format(value))
+            if value not in self.content_statuses():
+                raise ValueError("'{}' is invalid content status for model '{}'".format(value, self._model))
             self.f_set('prev_status', self.status)
 
         return super()._on_f_set(field_name, value, **kwargs)
@@ -597,12 +604,15 @@ class Content(_odm_ui.model.UIEntity):
 
         # Status
         if self.has_field('status') and c_user.has_permission('content@bypass_moderation.' + self.model):
+            status_required = self.get_field('status').required
             frm.add_widget(_content_widget.StatusSelect(
                 uid='status',
+                model=self._model,
                 label=self.t('status'),
-                value='published' if self.is_new else self.status,
+                value=self.status,
                 h_size='col-xs-12 col-12 col-sm-4 col-md-3',
-                required=True,
+                required=status_required,
+                append_none_item=not status_required,
             ))
 
         # Publish time

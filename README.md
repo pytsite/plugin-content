@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.14.1 (2019-01-29)
+
+Content status descriptions fixed in ODM UI browser.
+
+
 ### 5.14 (2019-01-28)
 
 - New API function `get_model_class()` added.

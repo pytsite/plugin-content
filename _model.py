@@ -504,7 +504,7 @@ class Content(_odm_ui.model.UIEntity):
         # Status
         if self.has_field('status'):
             status = self.status
-            status_str = self.t('status_' + status)
+            status_str = self.t('content_status_' + status)
             status_css = 'primary'
             if status == 'waiting':
                 status_css = 'warning'

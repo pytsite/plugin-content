@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.14.2 (2019-01-29)
+
+Content status selection issue fixed.
+
+
 ### 5.14.1 (2019-01-29)
 
 Content status descriptions fixed in ODM UI browser.

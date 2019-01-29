@@ -192,10 +192,10 @@ class Content(_odm_ui.model.UIEntity):
         super().on_register(model)
 
         perm_group = cls.odm_auth_permissions_group()
-        mock = _odm.dispense(model)
+        mock = _odm.dispense(model)  # type: Content
 
         # Define 'bypass_moderation' permission
-        if mock.has_field('status'):
+        if mock.has_field('status') and 'waiting' in mock.content_statuses():
             perm_name = 'content@bypass_moderation.' + model
             perm_description = cls.resolve_lang_msg_id('content_perm_bypass_moderation_' + model)
             _permissions.define_permission(perm_name, perm_description, perm_group)
@@ -375,16 +375,23 @@ class Content(_odm_ui.model.UIEntity):
         """
         super()._pre_save(**kwargs)
 
-        current_user = _auth.get_current_user()
+        c_user = _auth.get_current_user()
+
+        # Content must be reviewed by moderator
+        if self.has_field('status'):
+            sts = self.content_statuses()
+            if 'waiting' in sts and 'published' in 'sts' and self.status == 'published' \
+                    and not c_user.has_permission('content@bypass_moderation.' + self.model):
+                self.f_set('status', 'waiting')
 
         # Language is required
         if not self.language or not self.f_get('language_db'):
             self.f_set('language', _lang.get_current())
 
-        # If author is required
+        # Author is required
         if self.has_field('author') and self.get_field('author').required and not self.author:
-            if not current_user.is_anonymous:
-                self.f_set('author', current_user)
+            if not c_user.is_anonymous:
+                self.f_set('author', c_user)
             else:
                 raise RuntimeError('Cannot assign author, because current user is anonymous')
 
@@ -603,7 +610,7 @@ class Content(_odm_ui.model.UIEntity):
                 frm.add_rule('body', _validation.rule.NonEmpty())
 
         # Status
-        if self.has_field('status') and c_user.has_permission('content@bypass_moderation.' + self.model):
+        if self.has_field('status'):
             status_required = self.get_field('status').required
             frm.add_widget(_content_widget.StatusSelect(
                 uid='status',

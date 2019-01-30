@@ -224,10 +224,6 @@ class Content(_odm_ui.model.UIEntity):
     def content_statuses(cls) -> _List[str]:
         return ['published', 'waiting', 'unpublished']
 
-    @classmethod
-    def content_statuses_descriptions(cls) -> _List[_Tuple[str, str]]:
-        return [(s, cls.t('content_status_{}'.format(s))) for s in cls.content_statuses()]
-
     def _setup_fields(self):
         """Hook
         """

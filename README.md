@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.15.1 (2019-01-30)
+
+`widget.StatusSelect` items set fixed.
+
+
 ### 5.15 (2019-01-30)
 
 - Typo fixed.

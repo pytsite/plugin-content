@@ -5,7 +5,7 @@ __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
 from pytsite import lang as _lang
-from plugins import widget as _widget, odm_ui as _odm_ui
+from plugins import widget as _widget, odm_ui as _odm_ui, auth as _auth
 from . import _api
 
 
@@ -54,7 +54,12 @@ class StatusSelect(_widget.select.Select):
         if not model:
             raise ValueError('Model is not specified')
 
-        super().__init__(uid, items=_api.get_model_class(model).content_statuses_descriptions(), **kwargs)
+        cls = _api.get_model_class(model)
+        statuses = cls.content_statuses()
+        if 'waiting' in statuses and not _auth.get_current_user().has_permission('content@bypass_moderation.' + model):
+            statuses.remove('waiting')
+
+        super().__init__(uid, items=[(s, cls.t('content_status_{}'.format(s))) for s in statuses], **kwargs)
 
 
 class EntitySelect(_odm_ui.widget.EntitySelect):

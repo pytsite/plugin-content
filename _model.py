@@ -508,19 +508,21 @@ class Content(_odm_ui.model.UIEntity):
         if self.has_field('status'):
             status = self.status
             status_str = self.t('content_status_' + status)
-            status_css = 'primary'
+            label_css = badge_css = 'primary'
             if status == 'waiting':
-                status_css = 'warning'
+                label_css = 'warning'
             elif status == 'unpublished':
-                status_css = 'default secondary'
-            status = str(_html.Span(status_str, css='label label-{} badge badge-{}'.format(status_css, status_css)))
+                label_css = 'default'
+                badge_css = 'secondary'
+            status = str(_html.Span(status_str, css='label label-{} badge badge-{}'.format(label_css, badge_css)))
             r['status'] = status
 
         # Images
         if self.has_field('images'):
-            images_css = 'default secondary' if not len(self.images) else 'primary'
+            label_css = 'default' if not len(self.images) else 'primary'
+            badge_css = 'secondary' if not len(self.images) else 'primary'
             images_count = '<span class="label label-{} badge badge-{}">{}</span>'. \
-                format(images_css, images_css, len(self.images))
+                format(label_css, badge_css, len(self.images))
             r['images'] = images_count
 
         # Author

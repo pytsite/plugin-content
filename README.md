@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.15.2 (2019-01-30)
+
+Statuses CSS fix in ODM UI Browser rows.
+
+
 ### 5.15.1 (2019-01-30)
 
 `widget.StatusSelect` items set fixed.

@@ -5,7 +5,7 @@ __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
 import re as _re
-from typing import Tuple as _Tuple, Optional as _Optional, List as _List
+from typing import Tuple as _Tuple, Optional as _Optional, List as _List, Union as _Union, Iterable as _Iterable
 from frozendict import frozendict as _frozendict
 from datetime import datetime as _datetime
 from pytsite import validation as _validation, html as _html, lang as _lang, events as _events, util as _util, \
@@ -440,6 +440,16 @@ class Content(_odm_ui.model.UIEntity):
         if not (path.startswith(_ADM_BP) or ref_path.startswith(_ADM_BP)) and \
                 (_router.has_rule('content_' + rule_type) or _tpl.tpl_exists('content/' + rule_type)):
             return 'content@' + rule_type
+
+    def odm_auth_check_entity_permissions(self, perm: _Union[str, _Iterable[str]], user: _auth.AbstractUser = None):
+        if not user:
+            user = _auth.get_current_user()
+
+        if perm == 'view' and self.has_field('status') and 'published' in self.content_statuses() \
+                and self.status != 'published' and self.author != user:
+            return False
+
+        return super().odm_auth_check_entity_permissions(perm, user)
 
     @classmethod
     def odm_ui_browse_rule(cls) -> str:

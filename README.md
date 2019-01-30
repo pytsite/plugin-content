@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.15.6 (2019-01-30)
+
+Permissions checking fixed.
+
+
 ### 5.15.5 (2019-01-30)
 
 Typo fixed.

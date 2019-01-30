@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.15.3 (2019-01-30)
+
+Content status notification emails fixed.
+
+
 ### 5.15.2 (2019-01-30)
 
 Statuses CSS fix in ODM UI Browser rows.

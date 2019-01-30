@@ -719,7 +719,10 @@ class Content(_odm_ui.model.UIEntity):
             return
 
         m_subject = _lang.t('content@content_status_change_mail_subject')
-        m_body = _tpl.render('content@mail/{}/content-status-change'.format(_lang.get_current()), {'entity': self})
+        m_body = _tpl.render('content@mail/{}/content-status-change'.format(_lang.get_current()), {
+            'entity': self,
+            'status': self.t('content_status_' + self.status),
+        })
         _mail.Message(self.author.login, m_subject, m_body).send()
 
     def content_on_status_change(self):

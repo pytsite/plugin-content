@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.15.5 (2019-01-30)
+
+Typo fixed.
+
+
 ### 5.15.4 (2019-01-30)
 
 `widget.StatusSelect.items` made adjustable.

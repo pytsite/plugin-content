@@ -54,7 +54,7 @@ class StatusSelect(_widget.select.Select):
         if not model:
             raise ValueError('Model is not specified')
 
-        if not 'items' in kwargs:
+        if not kwargs.get('items'):
             cls = _api.get_model_class(model)
             statuses = cls.content_statuses()
             if 'waiting' in statuses and not _auth.get_current_user().has_permission(

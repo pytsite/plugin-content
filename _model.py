@@ -446,7 +446,7 @@ class Content(_odm_ui.model.UIEntity):
             user = _auth.get_current_user()
 
         if perm == 'view' and self.has_field('status') and 'published' in self.content_statuses() \
-                and self.status != 'published' and self.author != user:
+                and self.status != 'published' and self.author != user and not user.is_admin:
             return False
 
         return super().odm_auth_check_entity_permissions(perm, user)

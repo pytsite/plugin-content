@@ -1,7 +1,7 @@
 <h1>Hello, {{ entity.author.first_name }}!</h1>
 <p>
-    Status of your content <b>"{{ entity.title }}"</b> on the <a href="{{ base_url() }}">{{ t('app_name') }}</a> has
-    been changed to <b>"{{ status }}"</b>.
+    Status of your content <a href="{{ entity.url }}">{{ entity.title }}</a> on the <a href="{{ base_url() }}">
+    {{ t('app_name') }}</a> has been changed to <b>"{{ status }}"</b>.
 </p>
 <p>
     --<br/>

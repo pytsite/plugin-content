@@ -54,12 +54,16 @@ class StatusSelect(_widget.select.Select):
         if not model:
             raise ValueError('Model is not specified')
 
-        cls = _api.get_model_class(model)
-        statuses = cls.content_statuses()
-        if 'waiting' in statuses and not _auth.get_current_user().has_permission('content@bypass_moderation.' + model):
-            statuses.remove('waiting')
+        if not 'items' in kwargs:
+            cls = _api.get_model_class(model)
+            statuses = cls.content_statuses()
+            if 'waiting' in statuses and not _auth.get_current_user().has_permission(
+                    'content@bypass_moderation.' + model):
+                statuses.remove('waiting')
 
-        super().__init__(uid, items=[(s, cls.t('content_status_{}'.format(s))) for s in statuses], **kwargs)
+            kwargs['items'] = [(s, cls.t('content_status_{}'.format(s))) for s in statuses]
+
+        super().__init__(uid, **kwargs)
 
 
 class EntitySelect(_odm_ui.widget.EntitySelect):

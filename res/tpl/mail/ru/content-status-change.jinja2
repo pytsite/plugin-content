@@ -1,7 +1,7 @@
 <h1>Здравствуйте, {{ entity.author.first_name }}!</h1>
 <p>
-    Статус вашей публикации <b>&laquo;{{ entity.title }}&raquo;</b> на <a href="{{ base_url() }}">{{ t('app_name') }}</a>
-    был изменён на <b>&laquo;{{ status }}&raquo;</b>.
+    Статус вашей публикации <a href="{{ entity.url }}">{{ entity.title }}</a> на <a href="{{ base_url() }}">
+    {{ t('app_name') }}</a> был изменён на <b>&laquo;{{ status }}&raquo;</b>.
 </p>
 <p>
     --<br/>

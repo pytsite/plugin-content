@@ -4,6 +4,12 @@
 ## Changelog
 
 
+### 5.15 (2019-01-30)
+
+- Typo fixed.
+- `content_status_change()` renamed to `content_on_status_change()`.
+
+
 ### 5.14.2 (2019-01-29)
 
 Content status selection issue fixed.

@@ -380,7 +380,7 @@ class Content(_odm_ui.model.UIEntity):
         # Content must be reviewed by moderator
         if self.has_field('status'):
             sts = self.content_statuses()
-            if 'waiting' in sts and 'published' in 'sts' and self.status == 'published' \
+            if 'waiting' in sts and 'published' in sts and self.status == 'published' \
                     and not c_user.has_permission('content@bypass_moderation.' + self.model):
                 self.f_set('status', 'waiting')
 
@@ -420,8 +420,8 @@ class Content(_odm_ui.model.UIEntity):
         """Hook.
         """
         # Notify content status change
-        if self.has_field('status') and self.status != self.prev_status:
-            self.content_status_change()
+        if self.has_field('status') and self.has_field('prev_status') and self.status != self.prev_status:
+            self.content_on_status_change()
 
         _events.fire('content@entity.save', entity=self)
         _events.fire('content@entity.{}.save'.format(self.model), entity=self)
@@ -724,7 +724,7 @@ class Content(_odm_ui.model.UIEntity):
         m_body = _tpl.render('content@mail/{}/content-status-change'.format(_lang.get_current()), {'entity': self})
         _mail.Message(self.author.login, m_subject, m_body).send()
 
-    def content_status_change(self):
+    def content_on_status_change(self):
         """Hook
         """
         if _reg.get('content.waiting_status_admin_notification', True):

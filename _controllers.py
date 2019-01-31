@@ -121,11 +121,11 @@ class View(_routing.Controller):
             _router.session().add_warning_message(_lang.t('content@content_warning_future_publish_time'))
 
         # Check permissions
-        if not entity.odm_auth_check_entity_permissions(['view', 'view_own', 'modify']):
+        if not entity.odm_auth_check_entity_permissions(['view', 'modify']):
             raise self.not_found()
 
         # Show warning about unpublished entities
-        if entity.has_field('status') and entity.status in ('waiting', 'unpublished'):
+        if entity.has_field('status') and entity.status != 'published':
             _router.session().add_warning_message(_lang.t('content@content_status_warning_{}'.format(entity.status)))
 
         # Update entity's comments count

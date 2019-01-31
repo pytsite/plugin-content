@@ -4,6 +4,12 @@
 ## Changelog
 
 
+### 5.16 (2019-01-31)
+
+- `published` and `unpublished` entity's statuses made mandatory.
+- Statuses description ID format changed.
+
+
 ### 5.15.7 (2019-01-30)
 
 Permissions checking fixed.

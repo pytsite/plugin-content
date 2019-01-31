@@ -4,7 +4,7 @@ __author__ = 'Oleksandr Shepetko'
 __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
-from typing import Callable as _Callable, List as _List, Union as _Union, Tuple as _Tuple, Dict as _Dict, Type as _Type
+from typing import Callable as _Callable, Union as _Union, Tuple as _Tuple, Dict as _Dict, Type as _Type
 from datetime import datetime as _datetime
 from urllib import parse as _urllib_parse
 from os import path as _path, makedirs as _makedirs

@@ -194,11 +194,19 @@ class Content(_odm_ui.model.UIEntity):
         perm_group = cls.odm_auth_permissions_group()
         mock = _odm.dispense(model)  # type: Content
 
-        # Define 'bypass_moderation' permission
-        if mock.has_field('status') and 'waiting' in mock.content_statuses():
-            perm_name = 'content@bypass_moderation.' + model
-            perm_description = cls.resolve_lang_msg_id('content_perm_bypass_moderation_' + model)
-            _permissions.define_permission(perm_name, perm_description, perm_group)
+        if mock.has_field('status'):
+            statuses = mock.content_statuses()
+
+            # Check for required statuses
+            for req_s in ('published', 'unpublished'):
+                if req_s not in statuses:
+                    raise ValueError("Status '{}' is not defined in model '{}'".format(req_s, model))
+
+            # Define 'bypass_moderation' permission
+            if 'waiting' in statuses:
+                perm_name = 'content@bypass_moderation.' + model
+                perm_description = cls.resolve_lang_msg_id('content_perm_bypass_moderation_' + model)
+                _permissions.define_permission(perm_name, perm_description, perm_group)
 
         # Define 'set_localization' permission
         if mock.has_field('localization_' + _lang.get_current()):
@@ -445,8 +453,8 @@ class Content(_odm_ui.model.UIEntity):
         if not user:
             user = _auth.get_current_user()
 
-        if perm == 'view' and self.has_field('status') and 'published' in self.content_statuses() \
-                and self.status != 'published' and self.author != user and not user.is_admin:
+        if perm == 'view' and self.has_field('status') and self.status != 'published' and \
+                self.author != user and not user.is_admin:
             return False
 
         return super().odm_auth_check_entity_permissions(perm, user)
@@ -517,7 +525,7 @@ class Content(_odm_ui.model.UIEntity):
         # Status
         if self.has_field('status'):
             status = self.status
-            status_str = self.t('content_status_' + status)
+            status_str = self.t('content_status_{}_{}'.format(self._model, status))
             label_css = badge_css = 'primary'
             if status == 'waiting':
                 label_css = 'warning'
@@ -731,7 +739,7 @@ class Content(_odm_ui.model.UIEntity):
         m_subject = _lang.t('content@content_status_change_mail_subject')
         m_body = _tpl.render('content@mail/{}/content-status-change'.format(_lang.get_current()), {
             'entity': self,
-            'status': self.t('content_status_' + self.status),
+            'status': self.t('content_status_{}_{}'.format(self._model, self.status)),
         })
         _mail.Message(self.author.login, m_subject, m_body).send()
 

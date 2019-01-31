@@ -61,7 +61,7 @@ class StatusSelect(_widget.select.Select):
                     'content@bypass_moderation.' + model):
                 statuses.remove('waiting')
 
-            kwargs['items'] = [(s, cls.t('content_status_{}'.format(s))) for s in statuses]
+            kwargs['items'] = [(s, cls.t('content_status_{}_{}'.format(model, s))) for s in statuses]
 
         super().__init__(uid, **kwargs)
 

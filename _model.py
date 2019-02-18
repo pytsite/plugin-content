@@ -216,7 +216,7 @@ class Content(_odm_ui.model.UIEntity):
 
         # Define 'set_publish_time' permission
         if mock.has_field('publish_time'):
-            perm_name = 'article@set_publish_time.' + model
+            perm_name = 'content@set_publish_time.' + model
             perm_description = cls.resolve_lang_msg_id('content_perm_set_publish_time_' + model)
             _permissions.define_permission(perm_name, perm_description, cls.odm_auth_permissions_group())
 
@@ -235,7 +235,9 @@ class Content(_odm_ui.model.UIEntity):
     def _setup_fields(self):
         """Hook
         """
-        self.define_field(_odm.field.DateTime('publish_time', default=_datetime.now()))
+        now = _datetime.now()
+
+        self.define_field(_odm.field.DateTime('publish_time', default=_datetime(now.year, now.month, now.day, 8, 0)))
         self.define_field(_odm.field.String('prev_status', default='waiting'))
         self.define_field(_odm.field.String('status', required=True, default=self.content_statuses()[0]))
         self.define_field(_odm.field.String('title', required=True))
@@ -506,7 +508,7 @@ class Content(_odm_ui.model.UIEntity):
 
         # Publish time
         if self.has_field('publish_time'):
-            browser.insert_data_field('publish_time', 'article@publish_time')
+            browser.insert_data_field('publish_time', 'content@publish_time')
 
     def odm_ui_browser_setup_finder(self, finder: _odm.SingleModelFinder, args: _routing.ControllerArgs):
         super().odm_ui_browser_setup_finder(finder, args)
@@ -639,13 +641,13 @@ class Content(_odm_ui.model.UIEntity):
             ))
 
         # Publish time
-        if self.has_field('publish_time') and c_user.has_permission('article@set_publish_time.' + self.model):
+        if self.has_field('publish_time') and c_user.has_permission('content@set_publish_time.' + self.model):
             frm.add_widget(_widget.select.DateTime(
                 uid='publish_time',
                 label=self.t('publish_time'),
-                value=_datetime.now() if self.is_new else self.publish_time,
+                value=self.publish_time,
                 h_size='col-xs-12 col-12 col-sm-4 col-md-3',
-                required=True,
+                required=self.get_field('publish_time'),
             ))
 
         # Language

@@ -4,6 +4,12 @@
 ## Changelog
 
 
+### 5.16.1 (2019-02-18)
+
+- Default value of `Content.publish_time` model set to 8:00 of the day.
+- Permission definition fixed. 
+
+
 ### 5.16 (2019-01-31)
 
 - `published` and `unpublished` entity's statuses made mandatory.

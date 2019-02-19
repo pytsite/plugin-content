@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.17.1 (2019-02-19)
+
+Content status checking fixed.
+
+
 ### 5.17 (2019-02-19)
 
 Support of `flag` plugin added.

@@ -48,7 +48,7 @@ def on_flag_toggle(flag: _flag.Flag):
     if flag.entity.has_field(f_name):
         try:
             _auth.switch_user_to_system()
-            flag.entity.f_set(f_name, _flag.count(flag.entity, flag.variant)).save()
+            flag.entity.f_set(f_name, _flag.count(flag.entity, flag.variant)).save(fast=True)
         finally:
             _auth.restore_user()
 

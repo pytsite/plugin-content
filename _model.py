@@ -29,7 +29,7 @@ _ADM_BP = _admin.base_path()
 
 
 def _process_tags(entity, inp: str, responsive_images: bool = True, images_width: int = None) -> str:
-    """Converts body tags like [img] into HTML tags.
+    """Converts body tags like [img] into HTML tags
 
     :type entity: Content
     """
@@ -38,7 +38,7 @@ def _process_tags(entity, inp: str, responsive_images: bool = True, images_width
     entity_images_count = len(entity_images)
 
     def process_img_tag(match):
-        """Converts single body [img] tag into HTML <img> tag.
+        """Converts single body [img] tag into HTML <img> tag
         """
         nonlocal responsive_images, images_width
 
@@ -110,7 +110,7 @@ def _process_tags(entity, inp: str, responsive_images: bool = True, images_width
         return r
 
     def process_vid_tag(match):
-        """Converts single body [vid] tag into video player HTML code.
+        """Converts single body [vid] tag into video player HTML code
         """
         vid_index = int(match.group(1))
         if len(entity.video_links) < vid_index:
@@ -125,7 +125,7 @@ def _process_tags(entity, inp: str, responsive_images: bool = True, images_width
 
 
 def _extract_images(entity) -> tuple:
-    """Transforms inline HTML <img> tags into [img] tags.
+    """Transforms inline HTML <img> tags into [img] tags
 
     :type entity: Base
     """
@@ -148,7 +148,7 @@ def _extract_images(entity) -> tuple:
 
 
 def _extract_video_links(entity) -> tuple:
-    """Transforms embedded video players code into [vid] tags.
+    """Transforms embedded video players code into [vid] tags
 
     :type entity: Base
     """
@@ -213,49 +213,49 @@ class Content(_odm_ui.model.UIEntity):
 
     @property
     def title(self) -> str:
-        """Title getter.
+        """Title getter
         """
         return self.f_get('title')
 
     @property
     def description(self) -> str:
-        """Description getter.
+        """Description getter
         """
         return self.f_get('description')
 
     @property
     def body(self) -> str:
-        """Body getter.
+        """Body getter
         """
         return self.f_get('body', process_tags=True)
 
     @property
     def images(self) -> _Tuple[_file.model.AbstractImage]:
-        """Images getter.
+        """Images getter
         """
         return self.f_get('images')
 
     @property
     def video_links(self) -> tuple:
-        """Video links getter.
+        """Video links getter
         """
         return self.f_get('video_links')
 
     @property
     def language(self) -> str:
-        """Language getter.
+        """Language getter
         """
         return self.f_get('language')
 
     @property
     def author(self) -> _auth.model.AbstractUser:
-        """Author getter.
+        """Author getter
         """
         return self.f_get('author')
 
     @property
     def options(self) -> _frozendict:
-        """Options getter.
+        """Options getter
         """
         return self.f_get('options')
 
@@ -333,7 +333,7 @@ class Content(_odm_ui.model.UIEntity):
         self.define_field(_odm.field.Integer('bookmarks_count'))
 
     def _setup_indexes(self):
-        """Hook.
+        """Hook
         """
         self.define_index([('_created', _odm.I_DESC)])
         self.define_index([('_modified', _odm.I_DESC)])
@@ -352,7 +352,7 @@ class Content(_odm_ui.model.UIEntity):
             self.define_index(text_index_parts)
 
     def _on_f_get(self, field_name: str, value, **kwargs):
-        """Hook.
+        """Hook
         """
         if field_name == 'body':
             if kwargs.get('process_tags'):
@@ -366,7 +366,7 @@ class Content(_odm_ui.model.UIEntity):
         return value
 
     def _on_f_set(self, field_name: str, value, **kwargs):
-        """Hook.
+        """Hook
         """
         if field_name == 'language':
             if value not in _lang.langs():
@@ -387,7 +387,7 @@ class Content(_odm_ui.model.UIEntity):
         return super()._on_f_set(field_name, value, **kwargs)
 
     def _pre_save(self, **kwargs):
-        """Hook.
+        """Hook
         """
         super()._pre_save(**kwargs)
 
@@ -433,17 +433,17 @@ class Content(_odm_ui.model.UIEntity):
         _events.fire('content@entity.{}.pre_save.'.format(self.model), entity=self)
 
     def _after_save(self, first_save: bool = False, **kwargs):
-        """Hook.
+        """Hook
         """
         # Notify content status change
-        if self.has_field('status') and self.has_field('prev_status') and self.status != self.prev_status:
+        if self.has_field('status') and self.has_field('prev_status') and self.f_is_modified('status'):
             self.content_on_status_change()
 
         _events.fire('content@entity.save', entity=self)
         _events.fire('content@entity.{}.save'.format(self.model), entity=self)
 
     def _after_delete(self, **kwargs):
-        """Hook.
+        """Hook
         """
         # Delete all attached images
         if self.has_field('images'):
@@ -878,7 +878,7 @@ class ContentWithURL(Content):
         return super()._on_f_set(field_name, value, **kwargs)
 
     def _after_save(self, first_save: bool = False, **kwargs):
-        """Hook.
+        """Hook
         """
         super()._after_save(first_save, **kwargs)
 
@@ -887,7 +887,7 @@ class ContentWithURL(Content):
             self.f_set('route_alias', self.f_get('tmp_route_alias_str')).f_rst('tmp_route_alias_str').save(fast=True)
 
     def _after_delete(self, **kwargs):
-        """Hook.
+        """Hook
         """
         super()._after_delete()
 
@@ -900,7 +900,7 @@ class ContentWithURL(Content):
                 pass
 
     def odm_ui_m_form_setup_widgets(self, frm: _form.Form):
-        """Hook.
+        """Hook
         """
         super().odm_ui_m_form_setup_widgets(frm)
 
@@ -913,7 +913,7 @@ class ContentWithURL(Content):
             ))
 
     def _alter_route_alias_str(self, orig_str: str) -> str:
-        """Alter route alias string.
+        """Alter route alias string
         """
         # Checking original string
         if not orig_str:

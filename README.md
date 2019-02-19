@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.17 (2019-02-19)
+
+Support of `flag` plugin added.
+
+
 ### 5.16.1 (2019-02-18)
 
 - Default value of `Content.publish_time` model set to 8:00 of the day.

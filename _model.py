@@ -187,88 +187,6 @@ class Content(_odm_ui.model.UIEntity):
     """Base Content Model
     """
 
-    @classmethod
-    def on_register(cls, model: str):
-        super().on_register(model)
-
-        perm_group = cls.odm_auth_permissions_group()
-        mock = _odm.dispense(model)  # type: Content
-
-        if mock.has_field('status'):
-            statuses = mock.content_statuses()
-
-            # Check for required statuses
-            for req_s in ('published', 'unpublished'):
-                if req_s not in statuses:
-                    raise ValueError("Status '{}' is not defined in model '{}'".format(req_s, model))
-
-            # Define 'bypass_moderation' permission
-            if 'waiting' in statuses:
-                perm_name = 'content@bypass_moderation.' + model
-                perm_description = cls.resolve_lang_msg_id('content_perm_bypass_moderation_' + model)
-                _permissions.define_permission(perm_name, perm_description, perm_group)
-
-        # Define 'set_localization' permission
-        if mock.has_field('localization_' + _lang.get_current()):
-            perm_name = 'content@set_localization.' + model
-            perm_description = cls.resolve_lang_msg_id('content_perm_set_localization_' + model)
-            _permissions.define_permission(perm_name, perm_description, perm_group)
-
-        # Define 'set_publish_time' permission
-        if mock.has_field('publish_time'):
-            perm_name = 'content@set_publish_time.' + model
-            perm_description = cls.resolve_lang_msg_id('content_perm_set_publish_time_' + model)
-            _permissions.define_permission(perm_name, perm_description, cls.odm_auth_permissions_group())
-
-    @classmethod
-    def odm_auth_permissions_group(cls) -> str:
-        return 'content'
-
-    @classmethod
-    def odm_auth_permissions(cls) -> _Tuple[str, ...]:
-        return 'create', 'view', 'modify', 'delete', 'view_own', 'modify_own', 'delete_own'
-
-    @classmethod
-    def content_statuses(cls) -> _List[str]:
-        return ['published', 'waiting', 'unpublished']
-
-    def _setup_fields(self):
-        """Hook
-        """
-        now = _datetime.now()
-
-        self.define_field(_odm.field.DateTime('publish_time', default=_datetime(now.year, now.month, now.day, 8, 0)))
-        self.define_field(_odm.field.String('prev_status', default='waiting'))
-        self.define_field(_odm.field.String('status', required=True, default=self.content_statuses()[0]))
-        self.define_field(_odm.field.String('title', required=True))
-        self.define_field(_odm.field.String('description'))
-        self.define_field(_odm.field.String('body', strip_html=False))
-        self.define_field(_file_storage_odm.field.Images('images'))
-        self.define_field(_odm.field.StringList('video_links', unique=True))
-        self.define_field(_odm.field.String('language', default=_lang.get_current()))
-        self.define_field(_odm.field.String('language_db', required=True))
-        self.define_field(_auth_storage_odm.field.User('author', required=True))
-        self.define_field(_odm.field.Dict('options'))
-
-    def _setup_indexes(self):
-        """Hook.
-        """
-        self.define_index([('_created', _odm.I_DESC)])
-        self.define_index([('_modified', _odm.I_DESC)])
-
-        # Ordinary indexes
-        for f in 'status', 'language', 'author', 'publish_time':
-            if self.has_field(f):
-                self.define_index([(f, _odm.I_ASC)])
-
-        # Text index
-        text_index_parts = []
-        for f in 'title', 'description', 'body':
-            if self.has_field(f):
-                text_index_parts.append((f, _odm.I_TEXT))
-        if text_index_parts:
-            self.define_index(text_index_parts)
-
     @property
     def publish_time(self) -> _datetime:
         return self.f_get('publish_time')
@@ -340,6 +258,98 @@ class Content(_odm_ui.model.UIEntity):
         """Options getter.
         """
         return self.f_get('options')
+
+    @property
+    def likes_count(self) -> int:
+        return self.f_get('likes_count')
+
+    @property
+    def bookmarks_count(self) -> int:
+        return self.f_get('bookmarks_count')
+
+    @classmethod
+    def on_register(cls, model: str):
+        super().on_register(model)
+
+        perm_group = cls.odm_auth_permissions_group()
+        mock = _odm.dispense(model)  # type: Content
+
+        if mock.has_field('status'):
+            statuses = mock.content_statuses()
+
+            # Check for required statuses
+            for req_s in ('published', 'unpublished'):
+                if req_s not in statuses:
+                    raise ValueError("Status '{}' is not defined in model '{}'".format(req_s, model))
+
+            # Define 'bypass_moderation' permission
+            if 'waiting' in statuses:
+                perm_name = 'content@bypass_moderation.' + model
+                perm_description = cls.resolve_lang_msg_id('content_perm_bypass_moderation_' + model)
+                _permissions.define_permission(perm_name, perm_description, perm_group)
+
+        # Define 'set_localization' permission
+        if mock.has_field('localization_' + _lang.get_current()):
+            perm_name = 'content@set_localization.' + model
+            perm_description = cls.resolve_lang_msg_id('content_perm_set_localization_' + model)
+            _permissions.define_permission(perm_name, perm_description, perm_group)
+
+        # Define 'set_publish_time' permission
+        if mock.has_field('publish_time'):
+            perm_name = 'content@set_publish_time.' + model
+            perm_description = cls.resolve_lang_msg_id('content_perm_set_publish_time_' + model)
+            _permissions.define_permission(perm_name, perm_description, cls.odm_auth_permissions_group())
+
+    @classmethod
+    def odm_auth_permissions_group(cls) -> str:
+        return 'content'
+
+    @classmethod
+    def odm_auth_permissions(cls) -> _Tuple[str, ...]:
+        return 'create', 'view', 'modify', 'delete', 'view_own', 'modify_own', 'delete_own'
+
+    @classmethod
+    def content_statuses(cls) -> _List[str]:
+        return ['published', 'waiting', 'unpublished']
+
+    def _setup_fields(self):
+        """Hook
+        """
+        now = _datetime.now()
+
+        self.define_field(_odm.field.DateTime('publish_time', default=_datetime(now.year, now.month, now.day, 8, 0)))
+        self.define_field(_odm.field.String('prev_status'))
+        self.define_field(_odm.field.String('status', required=True, default=self.content_statuses()[0]))
+        self.define_field(_odm.field.String('title', required=True))
+        self.define_field(_odm.field.String('description'))
+        self.define_field(_odm.field.String('body', strip_html=False))
+        self.define_field(_file_storage_odm.field.Images('images'))
+        self.define_field(_odm.field.StringList('video_links', unique=True))
+        self.define_field(_odm.field.String('language', default=_lang.get_current()))
+        self.define_field(_odm.field.String('language_db', required=True))
+        self.define_field(_auth_storage_odm.field.User('author', required=True))
+        self.define_field(_odm.field.Dict('options'))
+        self.define_field(_odm.field.Integer('likes_count'))
+        self.define_field(_odm.field.Integer('bookmarks_count'))
+
+    def _setup_indexes(self):
+        """Hook.
+        """
+        self.define_index([('_created', _odm.I_DESC)])
+        self.define_index([('_modified', _odm.I_DESC)])
+
+        # Ordinary indexes
+        for f in 'status', 'language', 'author', 'publish_time':
+            if self.has_field(f):
+                self.define_index([(f, _odm.I_ASC)])
+
+        # Text index
+        text_index_parts = []
+        for f in 'title', 'description', 'body':
+            if self.has_field(f):
+                text_index_parts.append((f, _odm.I_TEXT))
+        if text_index_parts:
+            self.define_index(text_index_parts)
 
     def _on_f_get(self, field_name: str, value, **kwargs):
         """Hook.

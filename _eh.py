@@ -8,25 +8,25 @@ from os import path as _path, makedirs as _makedirs
 from shutil import rmtree as _rmtree
 from datetime import datetime as _datetime
 from pytsite import reg as _reg, logger as _logger, tpl as _tpl, mail as _mail, lang as _lang, router as _router
-from plugins import comments as _comments, sitemap as _sitemap
+from plugins import comments as _comments, sitemap as _sitemap, flag as _flag, auth as _auth
 from . import _api, _model
 
 _sitemap_generation_works = False
 
 
-def cron_hourly():
+def on_cron_hourly():
     """pytsite.cron.hourly
     """
     _generate_feeds()
 
 
-def cron_daily():
+def on_cron_daily():
     """pytsite.cron.daily
     """
     _generate_sitemap()
 
 
-def comments_create_comment(comment: _comments.model.AbstractComment):
+def on_comments_create_comment(comment: _comments.model.AbstractComment):
     """comments.create_comment
     """
     entity = _api.find_by_url(comment.thread_uid)
@@ -38,6 +38,19 @@ def comments_create_comment(comment: _comments.model.AbstractComment):
     body = _tpl.render(tpl_name, {'comment': comment, 'entity': entity})
     m_from = '{} <{}>'.format(comment.author.first_last_name, _mail.mail_from()[1])
     _mail.Message(entity.author.login, subject, body, m_from).send()
+
+
+def on_flag_toggle(flag: _flag.Flag):
+    if not isinstance(flag.entity, _model.Content):
+        return
+
+    f_name = '{}_count'.format(_lang.english_plural(flag.variant))
+    if flag.entity.has_field(f_name):
+        try:
+            _auth.switch_user_to_system()
+            flag.entity.f_set(f_name, _flag.count(flag.entity, flag.variant)).save()
+        finally:
+            _auth.restore_user()
 
 
 def _generate_sitemap():

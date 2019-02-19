@@ -38,13 +38,15 @@ def plugin_load_console():
 
 def plugin_load_wsgi():
     from pytsite import cron, events, router
-    from plugins import http_api, settings, robots_txt, auth_ui
+    from plugins import http_api, settings, robots_txt, auth_ui, flag
     from . import _eh, _controllers, _http_api_controllers, _settings_form
 
     # Events listeners
-    cron.hourly(_eh.cron_hourly)
-    cron.daily(_eh.cron_daily)
-    events.listen('comments@create_comment', _eh.comments_create_comment)
+    cron.hourly(_eh.on_cron_hourly)
+    cron.daily(_eh.on_cron_daily)
+    events.listen('comments@create_comment', _eh.on_comments_create_comment)
+    flag.on_flag_create(_eh.on_flag_toggle)
+    flag.on_flag_delete(_eh.on_flag_toggle)
 
     # Routes
     router.handle(_controllers.Index, 'content/index/<model>', 'content@index')

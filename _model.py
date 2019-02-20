@@ -382,7 +382,7 @@ class Content(_odm_ui.model.UIEntity):
         elif field_name == 'status':
             if value not in self.content_statuses():
                 raise ValueError("'{}' is invalid content status for model '{}'".format(value, self._model))
-            self.f_set('prev_status', self.status)
+            self.f_set('prev_status', value)
 
         return super()._on_f_set(field_name, value, **kwargs)
 

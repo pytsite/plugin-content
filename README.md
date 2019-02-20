@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.17.2 (2019-02-20)
+
+Hook's value usage fixed.
+
+
 ### 5.17.1 (2019-02-19)
 
 Content status checking fixed.

@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.17.3 (2019-02-20)
+
+Status notification fixed.
+
+
 ### 5.17.2 (2019-02-20)
 
 Hook's value usage fixed.

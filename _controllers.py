@@ -125,7 +125,7 @@ class View(_routing.Controller):
             raise self.not_found()
 
         # Show warning about unpublished entities
-        if entity.has_field('status') and entity.status != 'published':
+        if entity.has_field('status') and entity.status in ('unpublished', 'waiting'):
             _router.session().add_warning_message(_lang.t('content@content_status_warning_{}'.format(entity.status)))
 
         # Update entity's comments count

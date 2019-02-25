@@ -11,6 +11,7 @@ from os import path as _path, makedirs as _makedirs
 from pytsite import util as _util, router as _router, lang as _lang, logger as _logger, reg as _reg
 from plugins import odm as _odm, route_alias as _route_alias, feed as _feed, admin as _admin, widget as _widget
 from . import _model
+from ._constants import CONTENT_STATUS_PUBLISHED
 
 _ContentModelClass = _Type[_model.Content]
 
@@ -102,7 +103,7 @@ def find(model: str, **kwargs) -> _odm.SingleModelFinder:
     """
     check_publish_time = kwargs.get('check_publish_time', True)
     language = kwargs.get('language', _lang.get_current())
-    status = kwargs.get('status', 'published')
+    status = kwargs.get('status', CONTENT_STATUS_PUBLISHED)
 
     if not is_model_registered(model):
         raise KeyError("Model '{}' is not registered as content model.".format(model))

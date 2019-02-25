@@ -14,6 +14,7 @@ from plugins import auth as _auth, ckeditor as _ckeditor, route_alias as _route_
     auth_storage_odm as _auth_storage_odm, file_storage_odm as _file_storage_odm, permissions as _permissions, \
     odm_ui as _odm_ui, odm as _odm, file as _file, form as _form, widget as _widget, file_ui as _file_ui, \
     admin as _admin
+from ._constants import CONTENT_STATUS_UNPUBLISHED, CONTENT_STATUS_WAITING, CONTENT_STATUS_PUBLISHED
 
 _body_img_tag_re = _re.compile('\[img:(\d+)([^\]]*)\]')
 _body_vid_tag_re = _re.compile('\[vid:(\d+)\]')
@@ -274,19 +275,11 @@ class Content(_odm_ui.model.UIEntity):
         perm_group = cls.odm_auth_permissions_group()
         mock = _odm.dispense(model)  # type: Content
 
-        if mock.has_field('status'):
-            statuses = mock.content_statuses()
-
-            # Check for required statuses
-            for req_s in ('published', 'unpublished'):
-                if req_s not in statuses:
-                    raise ValueError("Status '{}' is not defined in model '{}'".format(req_s, model))
-
-            # Define 'bypass_moderation' permission
-            if 'waiting' in statuses:
-                perm_name = 'content@bypass_moderation.' + model
-                perm_description = cls.resolve_lang_msg_id('content_perm_bypass_moderation_' + model)
-                _permissions.define_permission(perm_name, perm_description, perm_group)
+        # Define 'bypass_moderation' permission
+        if mock.has_field('status') and CONTENT_STATUS_WAITING in cls.content_statuses():
+            perm_name = 'content@bypass_moderation.' + model
+            perm_description = cls.resolve_lang_msg_id('content_perm_bypass_moderation_' + model)
+            _permissions.define_permission(perm_name, perm_description, perm_group)
 
         # Define 'set_localization' permission
         if mock.has_field('localization_' + _lang.get_current()):
@@ -310,7 +303,7 @@ class Content(_odm_ui.model.UIEntity):
 
     @classmethod
     def content_statuses(cls) -> _List[str]:
-        return ['published', 'waiting', 'unpublished']
+        return [CONTENT_STATUS_PUBLISHED, CONTENT_STATUS_WAITING, CONTENT_STATUS_UNPUBLISHED]
 
     def _setup_fields(self):
         """Hook
@@ -396,9 +389,10 @@ class Content(_odm_ui.model.UIEntity):
         # Content must be reviewed by moderator
         if self.has_field('status'):
             sts = self.content_statuses()
-            if 'waiting' in sts and 'published' in sts and self.status == 'published' \
+            if CONTENT_STATUS_WAITING in sts and CONTENT_STATUS_PUBLISHED in sts \
+                    and self.status == CONTENT_STATUS_PUBLISHED \
                     and not c_user.has_permission('content@bypass_moderation.' + self.model):
-                self.f_set('status', 'waiting')
+                self.f_set('status', CONTENT_STATUS_WAITING)
 
         # Language is required
         if not self.language or not self.f_get('language_db'):
@@ -465,7 +459,7 @@ class Content(_odm_ui.model.UIEntity):
         if not user:
             user = _auth.get_current_user()
 
-        if perm == 'view' and self.has_field('status') and self.status != 'published' and \
+        if perm == 'view' and self.has_field('status') and self.status != CONTENT_STATUS_PUBLISHED and \
                 self.author != user and not user.is_admin:
             return False
 
@@ -539,9 +533,9 @@ class Content(_odm_ui.model.UIEntity):
             status = self.status
             status_str = self.t('content_status_{}_{}'.format(self._model, status))
             label_css = badge_css = 'primary'
-            if status == 'waiting':
+            if status == CONTENT_STATUS_WAITING:
                 label_css = 'warning'
-            elif status == 'unpublished':
+            elif status == CONTENT_STATUS_UNPUBLISHED:
                 label_css = 'default'
                 badge_css = 'secondary'
             status = str(_html.Span(status_str, css='label label-{} badge badge-{}'.format(label_css, badge_css)))
@@ -731,7 +725,7 @@ class Content(_odm_ui.model.UIEntity):
     def _content_notify_admins_waiting_status(self):
         """Notify administrators about waiting content
         """
-        if _auth.get_current_user().is_admin or self.status != 'waiting':
+        if _auth.get_current_user().is_admin or self.status != CONTENT_STATUS_WAITING:
             return
 
         for u in _auth.get_admin_users():

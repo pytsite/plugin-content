@@ -7,7 +7,7 @@ __license__ = 'MIT'
 from pytsite import routing as _routing, mail as _mail, lang as _lang, tpl as _tpl
 from plugins import auth as _auth, odm as _odm, query as _query
 from . import _api
-
+from ._constants import CONTENT_STATUS_WAITING
 
 class PatchViewsCount(_routing.Controller):
     """Increase content entity views counter by one
@@ -41,7 +41,7 @@ class PostAbuse(_routing.Controller):
         try:
             entity = _api.dispense(model, self.arg('uid'))
             _auth.switch_user_to_system()
-            entity.f_set('status', 'waiting').save()
+            entity.f_set('status', CONTENT_STATUS_WAITING).save()
         except _odm.error.EntityNotFound:
             raise self.not_found()
         finally:

@@ -4,6 +4,12 @@
 ## Changelog
 
 
+### 5.18 (2019-02-25)
+
+- Status constants added.
+- Statuses checking fixed.
+
+
 ### 5.17.3 (2019-02-20)
 
 Status notification fixed.

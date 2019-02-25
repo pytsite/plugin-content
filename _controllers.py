@@ -10,6 +10,7 @@ from pytsite import router as _router, metatag as _metatag, lang as _lang, routi
 from plugins import auth as _auth, odm as _odm, taxonomy as _taxonomy, comments as _comments, odm_ui as _odm_ui, \
     hreflang as _hreflang, widget as _widget
 from . import _model
+from ._constants import CONTENT_STATUS_UNPUBLISHED, CONTENT_STATUS_WAITING
 
 
 class Index(_routing.Controller):
@@ -125,7 +126,7 @@ class View(_routing.Controller):
             raise self.not_found()
 
         # Show warning about unpublished entities
-        if entity.has_field('status') and entity.status in ('unpublished', 'waiting'):
+        if entity.has_field('status') and entity.status in (CONTENT_STATUS_UNPUBLISHED, CONTENT_STATUS_WAITING):
             _router.session().add_warning_message(_lang.t('content@content_status_warning_{}'.format(entity.status)))
 
         # Update entity's comments count

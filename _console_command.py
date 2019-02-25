@@ -10,6 +10,7 @@ from random import shuffle as _shuffle, randint as _randint
 from pytsite import console as _console, lang as _lang, events as _events
 from plugins import file as _file, auth as _auth, query as _query
 from . import _api
+from ._constants import CONTENT_STATUS_PUBLISHED
 
 _TEXT_CLEANUP_RE = _re.compile('[,:;?\-.]')
 _SPACES_CLEANUP_RE = _re.compile('\s{2,}')
@@ -119,7 +120,7 @@ class Generate(_console.Command):
 
             # Status
             if entity.has_field('status'):
-                entity.f_set('status', 'published')
+                entity.f_set('status', CONTENT_STATUS_PUBLISHED)
 
             _events.fire('content@generate', entity=entity)
 

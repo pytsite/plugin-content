@@ -223,10 +223,6 @@ def generate_rss(model: str, filename: str, lng: str = '*',
             for link_url in entity.video_links:
                 m_group.add_widget(_feed.rss.media.Player(url=link_url))
 
-        # Comments count
-        if entity.has_field('comments_count'):
-            item.append_child(_feed.rss.slash.Comments(entity.comments_count))
-
         # Body
         if entity.has_field('body'):
             item.append_child(_feed.rss.yandex.FullText(entity.f_get('body', process_tags=False, remove_tags=True)))

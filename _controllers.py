@@ -129,15 +129,6 @@ class View(_routing.Controller):
         if entity.has_field('status') and entity.status in (CONTENT_STATUS_UNPUBLISHED, CONTENT_STATUS_WAITING):
             _router.session().add_warning_message(_lang.t('content@content_status_warning_{}'.format(entity.status)))
 
-        # Update entity's comments count
-        if entity.has_field('route_alias') and entity.has_field('comments_count') and entity.f_get('route_alias'):
-            try:
-                _auth.switch_user_to_system()
-                entity.f_set('comments_count', _comments.get_all_comments_count(entity.route_alias.alias))
-                entity.save(fast=True)
-            finally:
-                _auth.restore_user()
-
         # Meta title
         if entity.has_field('title'):
             title = entity.title

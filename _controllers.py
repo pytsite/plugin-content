@@ -6,9 +6,9 @@ __license__ = 'MIT'
 
 from datetime import datetime as _datetime
 from pytsite import router as _router, metatag as _metatag, lang as _lang, routing as _routing, tpl as _tpl, \
-    errors as _errors
-from plugins import auth as _auth, odm as _odm, taxonomy as _taxonomy, comments as _comments, odm_ui as _odm_ui, \
-    hreflang as _hreflang, widget as _widget
+    errors as _errors, events as _events
+from plugins import auth as _auth, odm as _odm, taxonomy as _taxonomy, odm_ui as _odm_ui, hreflang as _hreflang, \
+    widget as _widget
 from . import _model
 from ._constants import CONTENT_STATUS_UNPUBLISHED, CONTENT_STATUS_WAITING
 
@@ -100,7 +100,7 @@ class View(_routing.Controller):
         model = self.arg('model')
         entity = _api.find(model, status='*', check_publish_time=False) \
             .eq('_id', self.arg('eid')) \
-            .first() # type: _model.ContentWithURL
+            .first()  # type: _model.ContentWithURL
 
         # Check entity existence
         if not entity:
@@ -181,6 +181,9 @@ class View(_routing.Controller):
             'entity': entity,
             'breadcrumb': breadcrumb,
         })
+
+        # Notify listeners
+        _events.fire('content@view', entity=entity)
 
         try:
             # Call a controller provided by application

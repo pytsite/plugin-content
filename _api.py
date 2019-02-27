@@ -8,7 +8,7 @@ from typing import Callable as _Callable, Union as _Union, Tuple as _Tuple, Dict
 from datetime import datetime as _datetime
 from urllib import parse as _urllib_parse
 from os import path as _path, makedirs as _makedirs
-from pytsite import util as _util, router as _router, lang as _lang, logger as _logger, reg as _reg
+from pytsite import util as _util, router as _router, lang as _lang, logger as _logger, reg as _reg, events as _events
 from plugins import odm as _odm, route_alias as _route_alias, feed as _feed, admin as _admin, widget as _widget
 from . import _model
 from ._constants import CONTENT_STATUS_PUBLISHED
@@ -255,3 +255,9 @@ def paginate(finder: _odm.SingleModelFinder, per_page: int = 10, css: str = '') 
         'entities': entities,
         'pager': pager,
     }
+
+
+def on_content_view(handler: _Callable[[_model.Content], None], priority: int = 0):
+    """Shortcut
+    """
+    _events.listen('content@view', handler, priority)

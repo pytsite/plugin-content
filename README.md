@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.19 (2019-02-27)
+
+- New event `content@view` added.
+
+
 ### 5.18.1 (2019-02-27)
 
 Cleanup.

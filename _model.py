@@ -312,15 +312,15 @@ class Content(_odm_ui.model.UIEntity):
 
         self.define_field(_odm.field.DateTime('publish_time', default=_datetime(now.year, now.month, now.day, 8, 0)))
         self.define_field(_odm.field.String('prev_status'))
-        self.define_field(_odm.field.String('status', required=True, default=self.content_statuses()[0]))
-        self.define_field(_odm.field.String('title', required=True))
+        self.define_field(_odm.field.String('status', is_required=True, default=self.content_statuses()[0]))
+        self.define_field(_odm.field.String('title', is_required=True))
         self.define_field(_odm.field.String('description'))
         self.define_field(_odm.field.String('body', strip_html=False))
         self.define_field(_file_storage_odm.field.Images('images'))
-        self.define_field(_odm.field.StringList('video_links', unique=True))
+        self.define_field(_odm.field.UniqueStringList('video_links'))
         self.define_field(_odm.field.String('language', default=_lang.get_current()))
-        self.define_field(_odm.field.String('language_db', required=True))
-        self.define_field(_auth_storage_odm.field.User('author', required=True))
+        self.define_field(_odm.field.String('language_db', is_required=True))
+        self.define_field(_auth_storage_odm.field.User('author', is_required=True))
         self.define_field(_odm.field.Dict('options'))
         self.define_field(_odm.field.Integer('likes_count'))
         self.define_field(_odm.field.Integer('bookmarks_count'))
@@ -379,10 +379,10 @@ class Content(_odm_ui.model.UIEntity):
 
         return super()._on_f_set(field_name, value, **kwargs)
 
-    def _pre_save(self, **kwargs):
+    def _on_pre_save(self, **kwargs):
         """Hook
         """
-        super()._pre_save(**kwargs)
+        super()._on_pre_save(**kwargs)
 
         c_user = _auth.get_current_user()
 
@@ -399,7 +399,7 @@ class Content(_odm_ui.model.UIEntity):
             self.f_set('language', _lang.get_current())
 
         # Author is required
-        if self.has_field('author') and self.get_field('author').required and not self.author:
+        if self.has_field('author') and self.get_field('author').is_required and not self.author:
             if not c_user.is_anonymous:
                 self.f_set('author', c_user)
             else:
@@ -426,7 +426,7 @@ class Content(_odm_ui.model.UIEntity):
         _events.fire('content@entity.pre_save', entity=self)
         _events.fire('content@entity.{}.pre_save.'.format(self.model), entity=self)
 
-    def _after_save(self, first_save: bool = False, **kwargs):
+    def _on_after_save(self, first_save: bool = False, **kwargs):
         """Hook
         """
         # Notify content status change
@@ -436,7 +436,7 @@ class Content(_odm_ui.model.UIEntity):
         _events.fire('content@entity.save', entity=self)
         _events.fire('content@entity.{}.save'.format(self.model), entity=self)
 
-    def _after_delete(self, **kwargs):
+    def _on_after_delete(self, **kwargs):
         """Hook
         """
         # Delete all attached images
@@ -580,7 +580,7 @@ class Content(_odm_ui.model.UIEntity):
             frm.add_widget(_widget.input.Text(
                 uid='title',
                 label=self.t('title'),
-                required=f.required,
+                required=f.is_required,
                 min_length=f.min_length,
                 max_length=f.max_length,
                 value=self.title,
@@ -592,7 +592,7 @@ class Content(_odm_ui.model.UIEntity):
             frm.add_widget(_widget.input.Text(
                 uid='description',
                 label=self.t('description'),
-                required=self.get_field('description').required,
+                required=self.get_field('description').is_required,
                 min_length=f.min_length,
                 max_length=f.max_length,
                 value=self.description,
@@ -607,7 +607,7 @@ class Content(_odm_ui.model.UIEntity):
                 max_file_size=_reg.get('content.max_image_size', 5),
                 max_files=_reg.get('content.max_images', 200),
             ))
-            if self.get_field('images').required:
+            if self.get_field('images').is_required:
                 frm.add_rule('images', _validation.rule.NonEmpty())
 
         # Video links
@@ -628,12 +628,12 @@ class Content(_odm_ui.model.UIEntity):
                 label=self.t('body'),
                 value=self.f_get('body', process_tags=False),
             ))
-            if self.get_field('body').required:
+            if self.get_field('body').is_required:
                 frm.add_rule('body', _validation.rule.NonEmpty())
 
         # Status
         if self.has_field('status'):
-            status_required = self.get_field('status').required
+            status_required = self.get_field('status').is_required
             frm.add_widget(_content_widget.StatusSelect(
                 uid='status',
                 model=self._model,
@@ -871,19 +871,19 @@ class ContentWithURL(Content):
 
         return super()._on_f_set(field_name, value, **kwargs)
 
-    def _after_save(self, first_save: bool = False, **kwargs):
+    def _on_after_save(self, first_save: bool = False, **kwargs):
         """Hook
         """
-        super()._after_save(first_save, **kwargs)
+        super()._on_after_save(first_save, **kwargs)
 
         # Auto-generate a route alias
         if self.has_field('route_alias') and not self.route_alias:
             self.f_set('route_alias', self.f_get('tmp_route_alias_str')).f_rst('tmp_route_alias_str').save(fast=True)
 
-    def _after_delete(self, **kwargs):
+    def _on_after_delete(self, **kwargs):
         """Hook
         """
-        super()._after_delete()
+        super()._on_after_delete()
 
         # Delete linked route alias
         if self.has_field('route_alias') and self.route_alias:

@@ -257,7 +257,7 @@ def paginate(finder: _odm.SingleModelFinder, per_page: int = 10, css: str = '') 
     }
 
 
-def on_content_view(handler: _Callable[[_model.Content], None], priority: int = 0):
+def on_content_view(handler: _Callable[[_model.ContentWithURL], None], priority: int = 0):
     """Shortcut
     """
     _events.listen('content@view', handler, priority)

@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.20 (2019-03-04)
+
+Support of `odm-6.0`.
+
+
 ### 5.19 (2019-02-27)
 
 - New event `content@view` added.

@@ -39,19 +39,19 @@ class Index(_routing.Controller):
         term = None
         if term_field_name and f.mock.has_field(term_field_name):
             term_field = f.mock.get_field(term_field_name)  # type: _odm.field.Ref
-            term_model = term_field.model
-            if term_alias and term_model != '*':
-                term = _taxonomy.find(term_model).eq('alias', term_alias).first()
-                if term:
-                    self.args['term'] = term
-                    if isinstance(f.mock.fields[term_field_name], _odm.field.Ref):
-                        f.eq(term_field_name, term)
-                    elif isinstance(f.mock.fields[term_field_name], _odm.field.RefsList):
-                        f.inc(term_field_name, term)
-                    _metatag.t_set('title', term.title)
-                    breadcrumb.append_item(term.title)
-                else:
-                    raise self.not_found()
+            if term_alias and term_field.model:
+                for term_model in term_field.model:
+                    term = _taxonomy.find(term_model).eq('alias', term_alias).first()
+                    if term:
+                        self.args['term'] = term
+                        if isinstance(f.mock.fields[term_field_name], _odm.field.Ref):
+                            f.eq(term_field_name, term)
+                        elif isinstance(f.mock.fields[term_field_name], _odm.field.RefsList):
+                            f.inc(term_field_name, term)
+                        _metatag.t_set('title', term.title)
+                        breadcrumb.append_item(term.title)
+                    else:
+                        raise self.not_found()
             else:
                 raise self.not_found()
 

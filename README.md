@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 5.21.1 (2019-04-01)
+
+Permissions checking issue fixed.
+
+
 ### 5.21 (2019-03-21)
 
 Support of `odm-6.2`.

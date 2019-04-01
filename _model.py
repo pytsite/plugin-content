@@ -459,7 +459,8 @@ class Content(_odm_ui.model.UIEntity):
         if not user:
             user = _auth.get_current_user()
 
-        if perm == 'view' and self.has_field('status') and self.status != CONTENT_STATUS_PUBLISHED and \
+        if perm == 'view' and self.has_field('status') and \
+                self.status in (CONTENT_STATUS_UNPUBLISHED, CONTENT_STATUS_WAITING) and \
                 self.author != user and not user.is_admin:
             return False
 
@@ -617,7 +618,6 @@ class Content(_odm_ui.model.UIEntity):
                 label=self.t('video'),
                 add_btn_label=self.t('add_link'),
                 value=self.video_links,
-                unique=True,
             ))
             frm.add_rule('video_links', _validation.rule.VideoHostingUrl())
 

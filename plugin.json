@@ -1,6 +1,6 @@
 {
   "name": "content",
-  "version": "5.21.1",
+  "version": "6.0",
   "description": {
     "en": "Content",
     "ru": "Контент",
@@ -33,7 +33,7 @@
       "odm": "^6.2",
       "odm_auth": "^3.0",
       "odm_http_api": "^5.0",
-      "odm_ui": "^7.0",
+      "odm_ui": "^7.4",
       "permissions": "^1.0",
       "query": "^1.0",
       "robots_txt": "^1.0",

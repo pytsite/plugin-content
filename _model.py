@@ -5,7 +5,7 @@ __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
 import re as _re
-from typing import Tuple as _Tuple, Optional as _Optional, List as _List, Union as _Union, Iterable as _Iterable
+from typing import Tuple as _Tuple, List as _List, Union as _Union, Iterable as _Iterable
 from frozendict import frozendict as _frozendict
 from datetime import datetime as _datetime
 from pytsite import validation as _validation, html as _html, lang as _lang, events as _events, util as _util, \
@@ -25,8 +25,6 @@ _html_video_youtube_re = _re.compile(
 _html_video_facebook_re = _re.compile(
     '<iframe.*?src=["\']?(?:https?:)?//www\.facebook\.com/plugins/video\.php\?href=([^"\']+)["\']?.+?</iframe>'
 )
-
-_ADM_BP = _admin.base_path()
 
 
 def _process_tags(entity, inp: str, responsive_images: bool = True, images_width: int = None) -> str:
@@ -444,17 +442,6 @@ class Content(_odm_ui.model.UIEntity):
             for img in self.images:
                 img.delete()
 
-    @classmethod
-    def _get_rule(cls, rule_type: str) -> _Optional[str]:
-        path = _router.current_path()
-
-        ref = _router.request().referrer
-        ref_path = _router.url(ref, add_lang_prefix=False, as_list=True)[2] if ref else ''
-
-        if not (path.startswith(_ADM_BP) or ref_path.startswith(_ADM_BP)) and \
-                (_router.has_rule('content_' + rule_type) or _tpl.tpl_exists('content/' + rule_type)):
-            return 'content@' + rule_type
-
     def odm_auth_check_entity_permissions(self, perm: _Union[str, _Iterable[str]], user: _auth.AbstractUser = None):
         if not user:
             user = _auth.get_current_user()
@@ -465,24 +452,6 @@ class Content(_odm_ui.model.UIEntity):
             return False
 
         return super().odm_auth_check_entity_permissions(perm, user)
-
-    @classmethod
-    def odm_ui_browse_rule(cls) -> str:
-        """Hook
-        """
-        return cls._get_rule('browse') or super().odm_ui_browse_rule()
-
-    @classmethod
-    def odm_ui_m_form_rule(cls) -> str:
-        """Hook
-        """
-        return cls._get_rule('modify') or super().odm_ui_m_form_rule()
-
-    @classmethod
-    def odm_ui_d_form_rule(cls) -> str:
-        """Hook
-        """
-        return cls._get_rule('delete') or super().odm_ui_d_form_rule()
 
     def odm_ui_browser_setup(self, browser: _odm_ui.Browser):
         """Hook

@@ -6,9 +6,8 @@ __license__ = 'MIT'
 
 from datetime import datetime as _datetime
 from pytsite import router as _router, metatag as _metatag, lang as _lang, routing as _routing, tpl as _tpl, \
-    errors as _errors, events as _events
-from plugins import auth as _auth, odm as _odm, taxonomy as _taxonomy, odm_ui as _odm_ui, hreflang as _hreflang, \
-    widget as _widget
+    events as _events
+from plugins import auth as _auth, odm as _odm, taxonomy as _taxonomy, hreflang as _hreflang, widget as _widget
 from . import _model
 from ._constants import CONTENT_STATUS_UNPUBLISHED, CONTENT_STATUS_WAITING
 
@@ -192,61 +191,3 @@ class View(_routing.Controller):
         except _routing.error.RuleNotFound:
             # Render a template provided by application
             return _tpl.render('content/view', self.args)
-
-
-class Browse(_routing.Controller):
-    """Get entities browser
-    """
-
-    def exec(self) -> str:
-        self.args['browser'] = _odm_ui.get_browser(self.arg('model'))
-
-        try:
-            # Call a controller provided by application
-            return _router.call('content_browse', self.args)
-
-        except _routing.error.RuleNotFound:
-            # Render a template provided by application
-            return _tpl.render('content/browse', self.args)
-
-
-class Modify(_routing.Controller):
-    """Get content entity create/modify form
-    """
-
-    def exec(self) -> str:
-        try:
-            form = _odm_ui.get_m_form(self.arg('model'), self.arg('eid'), hide_title=True)
-            self.args['form'] = form
-
-            _metatag.t_set('title', form.title)
-
-            try:
-                # Call a controller provided by application
-                return _router.call('content_modify', self.args)
-
-            except _routing.error.RuleNotFound:
-                # Render a template provided by application
-                return _tpl.render('content/modify', self.args)
-
-        except _errors.NotFound:
-            raise self.not_found()
-
-
-class Delete(_routing.Controller):
-    """Get content entities delete form
-    """
-
-    def exec(self) -> str:
-        form = _odm_ui.get_d_form(self.arg('model'), self.arg('eids', self.arg('ids', [])))
-        self.args['form'] = form
-
-        _metatag.t_set('title', form.title)
-
-        try:
-            # Call a controller provided by application
-            return _router.call('content_delete', self.args)
-
-        except _routing.error.RuleNotFound:
-            # Render a template provided by application
-            return _tpl.render('content/delete', self.args)

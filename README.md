@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 6.0 (2019-04-10)
+
+Support of `odm_ui-7.14`.
+
+
 ### 5.21.1 (2019-04-01)
 
 Permissions checking issue fixed.

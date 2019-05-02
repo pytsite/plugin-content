@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 6.1 (2019-05-02)
+
+Support of `hreflang-1.3`.
+
+
 ### 6.0 (2019-04-10)
 
 Support of `odm_ui-7.14`.

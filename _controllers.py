@@ -173,7 +173,9 @@ class View(_routing.Controller):
         for lng in _lang.langs(False):
             f_name = 'localization_' + lng
             if entity.has_field(f_name) and entity.f_get(f_name):
-                _hreflang.add(lng, entity.f_get(f_name).url)
+                _hreflang.put(lng, entity.f_get(f_name).url)
+            else:
+                _hreflang.remove(lng)
 
         # Update args
         self.args.update({

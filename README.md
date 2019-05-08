@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 6.2 (2019-05-08)
+
+Support of `comments-3.0`.
+
+
 ### 6.1 (2019-05-02)
 
 Support of `hreflang-1.3`.

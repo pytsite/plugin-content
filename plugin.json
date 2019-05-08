@@ -1,6 +1,6 @@
 {
   "name": "content",
-  "version": "6.1",
+  "version": "6.2",
   "description": {
     "en": "Content",
     "ru": "Контент",
@@ -21,7 +21,7 @@
       "auth_storage_odm": "^4.0",
       "auth_ui": "^4.0",
       "ckeditor": "^2.0",
-      "comments": "^2.0",
+      "comments": "^3.0",
       "feed": "^2.0",
       "file": "^1.0",
       "file_storage_odm": "^2.0",

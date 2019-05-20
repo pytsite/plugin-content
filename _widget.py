@@ -7,7 +7,7 @@ __license__ = 'MIT'
 from pytsite import lang as _lang
 from plugins import widget as _widget, odm_ui as _odm_ui, auth as _auth
 from . import _api
-from ._constants import CONTENT_STATUS_WAITING
+from ._constants import CONTENT_STATUS_PUBLISHED
 
 
 class ModelSelect(_widget.select.Select):
@@ -55,12 +55,14 @@ class StatusSelect(_widget.select.Select):
         if not model:
             raise ValueError('Model is not specified')
 
-        if not kwargs.get('items'):
+        if 'items' not in kwargs:
             cls = _api.get_model_class(model)
             statuses = cls.content_statuses()
-            if CONTENT_STATUS_WAITING in statuses and not _auth.get_current_user().has_permission(
-                    'content@bypass_moderation.' + model):
-                statuses.remove(CONTENT_STATUS_WAITING)
+            if not _auth.get_current_user().has_permission('content@bypass_moderation.' + model):
+                try:
+                    statuses.remove(CONTENT_STATUS_PUBLISHED)
+                except ValueError:
+                    pass
 
             kwargs['items'] = [(s, cls.t('content_status_{}_{}'.format(model, s))) for s in statuses]
 

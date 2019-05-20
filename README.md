@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 6.2.1 (2019-05-20)
+
+`widget.StatusSelect` fixed.
+
+
 ### 6.2 (2019-05-08)
 
 Support of `comments-3.0`.

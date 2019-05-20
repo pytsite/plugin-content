@@ -602,15 +602,13 @@ class Content(_odm_ui.model.UIEntity):
 
         # Status
         if self.has_field('status'):
-            status_required = self.get_field('status').is_required
             frm.add_widget(_content_widget.StatusSelect(
                 uid='status',
                 model=self._model,
                 label=self.t('status'),
                 value=self.status,
                 h_size='col-xs-12 col-12 col-sm-4 col-md-3',
-                required=status_required,
-                append_none_item=not status_required,
+                required=self.get_field('status').is_required,
             ))
 
         # Publish time

@@ -50,10 +50,9 @@ class StatusSelect(_widget.select.Select):
     """Content Status Select
     """
 
-    def __init__(self, uid: str, **kwargs):
-        model = kwargs.get('model')
-        if not model:
-            raise ValueError('Model is not specified')
+    def __init__(self, uid: str, model: str, **kwargs):
+        kwargs.setdefault('label', _lang.t('content@status'))
+        kwargs.setdefault('h_size', 'col-xs-12 col-12 col-sm-4 col-md-3')
 
         if 'items' not in kwargs:
             cls = _api.get_model_class(model)

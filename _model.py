@@ -372,7 +372,7 @@ class Content(_odm_ui.model.UIEntity):
 
         elif field_name == 'status':
             if value not in self.content_statuses():
-                raise ValueError("'{}' is invalid content status for model '{}'".format(value, self._model))
+                raise ValueError("'{}' is invalid content status for model '{}'".format(value, self.model))
             self.f_set('prev_status', value)
 
         return super()._on_f_set(field_name, value, **kwargs)
@@ -501,7 +501,7 @@ class Content(_odm_ui.model.UIEntity):
         # Status
         if self.has_field('status'):
             status = self.status
-            status_str = self.t('content_status_{}_{}'.format(self._model, status))
+            status_str = self.t('content_status_{}_{}'.format(self.model, status))
             label_css = badge_css = 'primary'
             if status == CONTENT_STATUS_WAITING:
                 label_css = 'warning'
@@ -604,11 +604,9 @@ class Content(_odm_ui.model.UIEntity):
         if self.has_field('status'):
             frm.add_widget(_content_widget.StatusSelect(
                 uid='status',
-                model=self._model,
-                label=self.t('status'),
-                value=self.status,
-                h_size='col-xs-12 col-12 col-sm-4 col-md-3',
+                model=self.model,
                 required=self.get_field('status').is_required,
+                value=self.status,
             ))
 
         # Publish time
@@ -712,7 +710,7 @@ class Content(_odm_ui.model.UIEntity):
         m_subject = _lang.t('content@content_status_change_mail_subject')
         m_body = _tpl.render('content@mail/{}/content-status-change'.format(_lang.get_current()), {
             'entity': self,
-            'status': self.t('content_status_{}_{}'.format(self._model, self.status)),
+            'status': self.t('content_status_{}_{}'.format(self.model, self.status)),
         })
         _mail.Message(self.author.login, m_subject, m_body).send()
 

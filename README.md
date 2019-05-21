@@ -4,6 +4,13 @@
 ## Changelog
 
 
+### 6.3 (2019-05-21)
+
+Changes in `widget.StatusSelect.__init__()`:
+- required `model` arg added;
+- `label` and `h_size` args got default values.
+
+
 ### 6.2.1 (2019-05-20)
 
 `widget.StatusSelect` fixed.

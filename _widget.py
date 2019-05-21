@@ -56,11 +56,12 @@ class StatusSelect(_widget.select.Select):
         :type entity: plugins.content.model.Content
         """
         status_field = entity.get_field(kwargs.get('status_field_name', 'status'))
+        statuses = entity.content_status_select_items()
 
         kwargs.setdefault('label', _lang.t('content@status'))
         kwargs.setdefault('h_size', 'col-xs-12 col-12 col-sm-4 col-md-3')
         kwargs.setdefault('required', status_field.is_required)
-        kwargs.setdefault('items', entity.content_status_select_items())
+        kwargs.setdefault('items', [(s, entity.t('content_status_{}_{}'.format(entity.model, s))) for s in statuses])
         kwargs.setdefault('hidden', len(kwargs.get('items')) <= 1)
         kwargs.setdefault('value', status_field.get_val())
 

@@ -4,6 +4,12 @@
 ## Changelog
 
 
+### 6.5 (2019-05-21)
+
+Return value of the `model.Content.content_status_select_items()` 
+changed.
+
+
 ### 6.4 (2019-05-21)
 
 - New hook `model.Content.content_status_select_items()` added.

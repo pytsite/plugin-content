@@ -311,7 +311,7 @@ class Content(_odm_ui.model.UIEntity):
         """
         return [CONTENT_STATUS_PUBLISHED, CONTENT_STATUS_WAITING, CONTENT_STATUS_UNPUBLISHED]
 
-    def content_status_select_items(self) -> _List[_Tuple[str, str]]:
+    def content_status_select_items(self) -> _List[str]:
         """Hook
         """
         statuses = self.content_statuses()
@@ -324,7 +324,7 @@ class Content(_odm_ui.model.UIEntity):
             except ValueError:
                 pass
 
-        return [(s, self.t('content_status_{}_{}'.format(self.model, s))) for s in statuses]
+        return statuses
 
     def _setup_fields(self):
         """Hook

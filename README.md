@@ -4,6 +4,12 @@
 ## Changelog
 
 
+### 6.4 (2019-05-21)
+
+- New hook `model.Content.content_status_select_items()` added.
+- `widget.StatusSelect` refactored.
+
+
 ### 6.3 (2019-05-21)
 
 Changes in `widget.StatusSelect.__init__()`:

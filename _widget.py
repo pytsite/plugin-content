@@ -50,20 +50,19 @@ class StatusSelect(_widget.select.Select):
     """Content Status Select
     """
 
-    def __init__(self, uid: str, model: str, **kwargs):
+    def __init__(self, uid: str, entity, **kwargs):
+        """Init
+
+        :type entity: plugins.content.model.Content
+        """
+        status_field = entity.get_field(kwargs.get('status_field_name', 'status'))
+
         kwargs.setdefault('label', _lang.t('content@status'))
         kwargs.setdefault('h_size', 'col-xs-12 col-12 col-sm-4 col-md-3')
-
-        if 'items' not in kwargs:
-            cls = _api.get_model_class(model)
-            statuses = cls.content_statuses()
-            if not _auth.get_current_user().has_permission('content@bypass_moderation.' + model):
-                try:
-                    statuses.remove(CONTENT_STATUS_PUBLISHED)
-                except ValueError:
-                    pass
-
-            kwargs['items'] = [(s, cls.t('content_status_{}_{}'.format(model, s))) for s in statuses]
+        kwargs.setdefault('required', status_field.is_required)
+        kwargs.setdefault('items', entity.content_status_select_items())
+        kwargs.setdefault('hidden', len(kwargs.get('items')) <= 1)
+        kwargs.setdefault('value', status_field.get_val())
 
         super().__init__(uid, **kwargs)
 

@@ -268,6 +268,8 @@ class Content(_odm_ui.model.UIEntity):
 
     @classmethod
     def on_register(cls, model: str):
+        """Hook
+        """
         super().on_register(model)
 
         perm_group = cls.odm_auth_permissions_group()
@@ -293,15 +295,36 @@ class Content(_odm_ui.model.UIEntity):
 
     @classmethod
     def odm_auth_permissions_group(cls) -> str:
+        """Hook
+        """
         return 'content'
 
     @classmethod
     def odm_auth_permissions(cls) -> _Tuple[str, ...]:
+        """Hook
+        """
         return 'create', 'view', 'modify', 'delete', 'view_own', 'modify_own', 'delete_own'
 
     @classmethod
     def content_statuses(cls) -> _List[str]:
+        """Hook
+        """
         return [CONTENT_STATUS_PUBLISHED, CONTENT_STATUS_WAITING, CONTENT_STATUS_UNPUBLISHED]
+
+    def content_status_select_items(self) -> _List[_Tuple[str, str]]:
+        """Hook
+        """
+        statuses = self.content_statuses()
+        c_user = _auth.get_current_user()
+        bm_perm = 'content@bypass_moderation.' + self.model
+
+        if _permissions.is_permission_defined(bm_perm) and not c_user.has_permission(bm_perm):
+            try:
+                statuses.remove(CONTENT_STATUS_PUBLISHED)
+            except ValueError:
+                pass
+
+        return [(s, self.t('content_status_{}_{}'.format(self.model, s))) for s in statuses]
 
     def _setup_fields(self):
         """Hook
@@ -604,9 +627,7 @@ class Content(_odm_ui.model.UIEntity):
         if self.has_field('status'):
             frm.add_widget(_content_widget.StatusSelect(
                 uid='status',
-                model=self.model,
-                required=self.get_field('status').is_required,
-                value=self.status,
+                entity=self,
             ))
 
         # Publish time

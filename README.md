@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 6.6.1 (2019-05-22)
+
+Bug fixed in `model.Content.prev_status` field processing.
+
+
 ### 6.6 (2019-05-22)
 
 Added automatic update of entity publish time.

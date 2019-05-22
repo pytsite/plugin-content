@@ -332,7 +332,7 @@ class Content(_odm_ui.model.UIEntity):
         now = _datetime.now()
 
         self.define_field(_odm.field.DateTime('publish_time', default=_datetime(now.year, now.month, now.day, 8, 0)))
-        self.define_field(_odm.field.String('prev_status'))
+        self.define_field(_odm.field.String('prev_status', is_required=True, default=self.content_statuses()[0]))
         self.define_field(_odm.field.String('status', is_required=True, default=self.content_statuses()[0]))
         self.define_field(_odm.field.String('title', is_required=True))
         self.define_field(_odm.field.String('description'))
@@ -396,7 +396,7 @@ class Content(_odm_ui.model.UIEntity):
         elif field_name == 'status':
             if value not in self.content_statuses():
                 raise ValueError("'{}' is invalid content status for model '{}'".format(value, self.model))
-            self.f_set('prev_status', value)
+            self.f_set('prev_status', self.f_get('status'))
 
         return super()._on_f_set(field_name, value, **kwargs)
 
@@ -451,7 +451,7 @@ class Content(_odm_ui.model.UIEntity):
         """Hook
         """
         # Notify content status change
-        if self.has_field('status') and self.has_field('prev_status') and self.f_is_modified('status'):
+        if self.has_field('status') and self.has_field('prev_status') and self.status != self.prev_status:
             self.content_on_status_change()
 
         _events.fire('content@entity.save', entity=self)

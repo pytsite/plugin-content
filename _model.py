@@ -738,6 +738,13 @@ class Content(_odm_ui.model.UIEntity):
     def content_on_status_change(self):
         """Hook
         """
+        # Update publish time if entity is being published
+        now = _datetime.now()
+        if self.prev_status == CONTENT_STATUS_UNPUBLISHED and \
+                self.status in (CONTENT_STATUS_WAITING, CONTENT_STATUS_PUBLISHED) and \
+                self.publish_time < now:
+            self.f_set('publish_time', now).save(fast=True)
+
         if _reg.get('content.waiting_status_admin_notification', True):
             self._content_notify_admins_waiting_status()
 

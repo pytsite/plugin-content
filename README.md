@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 6.6 (2019-05-22)
+
+Added automatic update of entity publish time.
+
+
 ### 6.5 (2019-05-21)
 
 Return value of the `model.Content.content_status_select_items()` 

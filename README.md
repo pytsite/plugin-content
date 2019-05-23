@@ -4,6 +4,12 @@
 ## Changelog
 
 
+### 6.6.2 (2019-05-23)
+
+`model.Content.odm_auth_check_entity_permissions()` functionality moved
+to `View` controller.
+
+
 ### 6.6.1 (2019-05-22)
 
 Bug fixed in `model.Content.prev_status` field processing.

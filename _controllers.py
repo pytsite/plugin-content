@@ -96,6 +96,8 @@ class View(_routing.Controller):
     def exec(self):
         from . import _api
 
+        c_user = _auth.get_current_user()
+
         model = self.arg('model')
         entity = _api.find(model, status='*', check_publish_time=False) \
             .eq('_id', self.arg('eid')) \
@@ -105,28 +107,26 @@ class View(_routing.Controller):
         if not entity:
             raise self.not_found()
 
-        # Check if the user can view entities of this model
-        if not entity.odm_auth_check_entity_permissions('view'):
-            raise self.forbidden()
+        # Check permissions
+        if not entity.odm_auth_check_entity_permissions(['view', 'modify']):
+            raise self.not_found()
+
+        # Show non-published entities only to users who can edit them
+        if (entity.has_field('publish_time') and entity.publish_time > _datetime.now()) or \
+                (entity.has_field('status') and entity.status in (CONTENT_STATUS_UNPUBLISHED, CONTENT_STATUS_WAITING)):
+            if not entity.odm_auth_check_entity_permissions('modify'):
+                raise self.not_found()
+
+        # Show warnings about unpublished entities
+        if entity.has_field('publish_time') and entity.publish_time > _datetime.now():
+            _router.session().add_warning_message(_lang.t('content@content_warning_future_publish_time'))
+        if entity.has_field('status') and entity.status in (CONTENT_STATUS_UNPUBLISHED, CONTENT_STATUS_WAITING):
+            _router.session().add_warning_message(_lang.t('content@content_status_warning_{}'.format(entity.status)))
 
         # Breadcrumb
         breadcrumb = _widget.select.Breadcrumb('content-index-breadcrumb')
         breadcrumb.append_item(_lang.t('content@home_page'), _router.base_url())
         entity.content_breadcrumb(breadcrumb)
-
-        # Show non-published entities only to users who can edit them
-        if entity.has_field('publish_time') and entity.f_get('publish_time') > _datetime.now():
-            if not entity.odm_auth_check_entity_permissions('modify'):
-                raise self.not_found()
-            _router.session().add_warning_message(_lang.t('content@content_warning_future_publish_time'))
-
-        # Check permissions
-        if not entity.odm_auth_check_entity_permissions(['view', 'modify']):
-            raise self.not_found()
-
-        # Show warning about unpublished entities
-        if entity.has_field('status') and entity.status in (CONTENT_STATUS_UNPUBLISHED, CONTENT_STATUS_WAITING):
-            _router.session().add_warning_message(_lang.t('content@content_status_warning_{}'.format(entity.status)))
 
         # Meta title
         if entity.has_field('title'):

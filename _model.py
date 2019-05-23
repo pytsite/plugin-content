@@ -465,17 +465,6 @@ class Content(_odm_ui.model.UIEntity):
             for img in self.images:
                 img.delete()
 
-    def odm_auth_check_entity_permissions(self, perm: _Union[str, _Iterable[str]], user: _auth.AbstractUser = None):
-        if not user:
-            user = _auth.get_current_user()
-
-        if perm == 'view' and self.has_field('status') and \
-                self.status in (CONTENT_STATUS_UNPUBLISHED, CONTENT_STATUS_WAITING) and \
-                self.author != user and not user.is_admin:
-            return False
-
-        return super().odm_auth_check_entity_permissions(perm, user)
-
     def odm_ui_browser_setup(self, browser: _odm_ui.Browser):
         """Hook
         """

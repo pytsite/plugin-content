@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 6.6.3 (2019-05-24)
+
+Permission checking logic fixed.
+
+
 ### 6.6.2 (2019-05-23)
 
 `model.Content.odm_auth_check_entity_permissions()` functionality moved

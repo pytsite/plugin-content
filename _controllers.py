@@ -111,10 +111,10 @@ class View(_routing.Controller):
         if not entity.odm_auth_check_entity_permissions(['view', 'modify']):
             raise self.not_found()
 
-        # Show non-published entities only to users who can edit them
+        # Show non-published entities only to users who can edit or delete them
         if (entity.has_field('publish_time') and entity.publish_time > _datetime.now()) or \
                 (entity.has_field('status') and entity.status in (CONTENT_STATUS_UNPUBLISHED, CONTENT_STATUS_WAITING)):
-            if not entity.odm_auth_check_entity_permissions('modify'):
+            if not entity.odm_auth_check_entity_permissions(['modify', 'delete']):
                 raise self.not_found()
 
         # Show warnings about unpublished entities

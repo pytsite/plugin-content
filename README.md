@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 6.6.4 (2019-05-24)
+
+Permission checking logic fixed.
+
+
 ### 6.6.3 (2019-05-24)
 
 Permission checking logic fixed.

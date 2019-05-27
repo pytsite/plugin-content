@@ -471,10 +471,12 @@ class Content(_odm_ui.model.UIEntity):
         """
         user = user or _auth.get_current_user()
 
-        # Waiting content cannot be modified by author until it's waiting for moderation
-        if perm == 'modify' and \
-                self.status == CONTENT_STATUS_WAITING and \
-                not self.odm_auth_check_model_permissions(self.model, perm, user):
+        # Content should not be modified by author until it's waiting for moderation
+        if perm == 'modify' \
+                and self.status == CONTENT_STATUS_WAITING \
+                and not self.f_is_modified('status') \
+                and not user.has_permission('content@bypass_moderation.' + self.model) \
+                and not self.odm_auth_check_model_permissions(self.model, perm, user):
             return False
 
         return super().odm_auth_check_entity_permissions(perm, user)

@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 6.6.6 (2019-05-28)
+
+CSS class of content status badge fixed in ODM UI browser row. 
+
+
 ### 6.6.5 (2019-05-27)
 
 Permission checking logic fixed.

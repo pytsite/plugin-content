@@ -532,7 +532,7 @@ class Content(_odm_ui.model.UIEntity):
             status_str = self.t('content_status_{}_{}'.format(self.model, status))
             label_css = badge_css = 'primary'
             if status == CONTENT_STATUS_WAITING:
-                label_css = 'warning'
+                label_css = badge_css = 'warning'
             elif status == CONTENT_STATUS_UNPUBLISHED:
                 label_css = 'default'
                 badge_css = 'secondary'

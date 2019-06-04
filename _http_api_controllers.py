@@ -4,12 +4,13 @@ __author__ = 'Oleksandr Shepetko'
 __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
-from pytsite import routing as _routing, mail as _mail, lang as _lang, tpl as _tpl
-from plugins import auth as _auth, odm as _odm, query as _query
+from pytsite import routing, mail, lang, tpl
+from plugins import auth, odm, query
+from plugins.odm_auth import PERM_MODIFY, PERM_DELETE
 from . import _api
-from ._constants import CONTENT_STATUS_WAITING
 
-class PatchViewsCount(_routing.Controller):
+
+class PatchViewsCount(routing.Controller):
     """Increase content entity views counter by one
     """
 
@@ -17,22 +18,22 @@ class PatchViewsCount(_routing.Controller):
         entity = _api.dispense(self.arg('model'), self.arg('uid'))
         if entity and entity.has_field('views_count'):
             try:
-                _auth.switch_user_to_system()
+                auth.switch_user_to_system()
                 entity.f_inc('views_count').save(fast=True)
             finally:
-                _auth.restore_user()
+                auth.restore_user()
 
             return entity.f_get('views_count')
 
         return 0
 
 
-class PostAbuse(_routing.Controller):
+class PostAbuse(routing.Controller):
     """Report Abuse
     """
 
     def exec(self):
-        reporter = _auth.get_current_user()
+        reporter = auth.get_current_user()
         if reporter.is_anonymous:
             raise self.forbidden()
 
@@ -40,21 +41,16 @@ class PostAbuse(_routing.Controller):
 
         try:
             entity = _api.dispense(model, self.arg('uid'))
-            _auth.switch_user_to_system()
-            entity.f_set('status', CONTENT_STATUS_WAITING).save()
-        except _odm.error.EntityNotFound:
+        except odm.error.EntityNotFound:
             raise self.not_found()
-        finally:
-            _auth.restore_user()
 
-        tpl_name = 'content@mail/{}/abuse'.format(_lang.get_current())
-        subject = _lang.t('content@mail_subject_abuse')
-        for recipient in _auth.find_users(_query.Query(_query.Eq('status', 'active'))):
-            perms = ('odm_auth@modify.{}'.format(model), 'odm_auth@delete.{}'.format(model))
-            if not recipient.has_permission(perms):
+        tpl_name = 'content@mail/{}/abuse'.format(lang.get_current())
+        subject = lang.t('content@mail_subject_abuse')
+        for recipient in auth.find_users(query.Query(query.Eq('status', 'active'))):
+            if not entity.odm_auth_check_entity_permissions([PERM_MODIFY, PERM_DELETE], recipient):
                 continue
 
-            body = _tpl.render(tpl_name, {'reporter': reporter, 'recipient': recipient, 'entity': entity})
-            _mail.Message(entity.author.login, subject, body).send()
+            body = tpl.render(tpl_name, {'reporter': reporter, 'recipient': recipient, 'entity': entity})
+            mail.Message(entity.author.login, subject, body).send()
 
-        return {'message': _lang.t('content@abuse_receipt_confirm')}
+        return {'message': lang.t('content@abuse_receipt_confirm')}

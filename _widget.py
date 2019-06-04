@@ -4,25 +4,24 @@ __author__ = 'Oleksandr Shepetko'
 __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
-from pytsite import lang as _lang
-from plugins import widget as _widget, odm_ui as _odm_ui, auth as _auth
+from pytsite import lang
+from plugins import widget, odm_ui
 from . import _api
-from ._constants import CONTENT_STATUS_PUBLISHED
 
 
-class ModelSelect(_widget.select.Select):
+class ModelSelect(widget.select.Select):
     """Content Model Select
     """
 
     def __init__(self, uid: str, **kwargs):
         items = []
         for k, v in _api.get_models().items():
-            items.append((k, _lang.t(v[1])))
+            items.append((k, lang.t(v[1])))
 
         super().__init__(uid, items=sorted(items, key=lambda x: x[1]), **kwargs)
 
 
-class ModelCheckboxes(_widget.select.Checkboxes):
+class ModelCheckboxes(widget.select.Checkboxes):
     """Content Model Checkboxes
     """
 
@@ -32,7 +31,7 @@ class ModelCheckboxes(_widget.select.Checkboxes):
 
         items = []
         for model, info in _api.get_models().items():
-            items.append((model, _lang.t(info[1])))
+            items.append((model, lang.t(info[1])))
 
         items = sorted(items, key=lambda x: x[1])
 
@@ -46,7 +45,7 @@ class ModelCheckboxes(_widget.select.Checkboxes):
         super().__init__(uid, items=items, **kwargs)
 
 
-class StatusSelect(_widget.select.Select):
+class StatusSelect(widget.select.Select):
     """Content Status Select
     """
 
@@ -58,7 +57,7 @@ class StatusSelect(_widget.select.Select):
         status_field = entity.get_field(kwargs.get('status_field_name', 'status'))
         statuses = entity.content_status_select_items()
 
-        kwargs.setdefault('label', _lang.t('content@status'))
+        kwargs.setdefault('label', lang.t('content@status'))
         kwargs.setdefault('h_size', 'col-xs-12 col-12 col-sm-4 col-md-3')
         kwargs.setdefault('required', status_field.is_required)
         kwargs.setdefault('items', [(s, entity.t('content_status_{}_{}'.format(entity.model, s))) for s in statuses])
@@ -68,7 +67,7 @@ class StatusSelect(_widget.select.Select):
         super().__init__(uid, **kwargs)
 
 
-class EntitySelect(_odm_ui.widget.EntitySelect):
+class EntitySelect(odm_ui.widget.EntitySelect):
     def __init__(self, uid: str, **kwargs):
         kwargs.setdefault('model', list(_api.get_models().keys()))
         kwargs.setdefault('sort_by', 'title')

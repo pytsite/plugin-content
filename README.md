@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 6.7 (2019-06-02)
+
+Support of `odm_auth-4.0`.
+
+
 ### 6.6.6 (2019-05-28)
 
 CSS class of content status badge fixed in ODM UI browser row. 

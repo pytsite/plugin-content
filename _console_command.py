@@ -4,19 +4,19 @@ __author__ = 'Oleksandr Shepetko'
 __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
-import requests as _requests
-import re as _re
-from random import shuffle as _shuffle, randint as _randint
-from pytsite import console as _console, lang as _lang, events as _events
-from plugins import file as _file, auth as _auth, query as _query
+import requests
+import re
+from random import shuffle, randint
+from pytsite import console, lang, events
+from plugins import file, auth, query
 from . import _api
 from ._constants import CONTENT_STATUS_PUBLISHED
 
-_TEXT_CLEANUP_RE = _re.compile('[,:;?\-.]')
-_SPACES_CLEANUP_RE = _re.compile('\s{2,}')
+_TEXT_CLEANUP_RE = re.compile('[,:;?\-.]')
+_SPACES_CLEANUP_RE = re.compile('\s{2,}')
 
 
-class Generate(_console.Command):
+class Generate(console.Command):
     lorem_txt_url = 'https://baconipsum.com/api'
     lorem_txt_args = {'type': 'meat-and-filler', 'format': 'html', 'paras': 3}
     lorem_img_url = 'https://picsum.photos/1200/760?image={}'
@@ -24,16 +24,16 @@ class Generate(_console.Command):
     def __init__(self):
         super().__init__()
 
-        self.define_option(_console.option.Bool('short'))
-        self.define_option(_console.option.Bool('no-html'))
-        self.define_option(_console.option.Bool('no-tags'))
-        self.define_option(_console.option.Bool('no-sections'))
-        self.define_option(_console.option.Str('author'))
-        self.define_option(_console.option.Str('lang', default=_lang.get_current()))
-        self.define_option(_console.option.PositiveInt('num', default=10))
-        self.define_option(_console.option.PositiveInt('title-len', default=7))
-        self.define_option(_console.option.PositiveInt('description-len', default=28))
-        self.define_option(_console.option.PositiveInt('images', default=1))
+        self.define_option(console.option.Bool('short'))
+        self.define_option(console.option.Bool('no-html'))
+        self.define_option(console.option.Bool('no-tags'))
+        self.define_option(console.option.Bool('no-sections'))
+        self.define_option(console.option.Str('author'))
+        self.define_option(console.option.Str('lang', default=lang.get_current()))
+        self.define_option(console.option.PositiveInt('num', default=10))
+        self.define_option(console.option.PositiveInt('title-len', default=7))
+        self.define_option(console.option.PositiveInt('description-len', default=28))
+        self.define_option(console.option.PositiveInt('images', default=1))
 
     @property
     def name(self) -> str:
@@ -54,7 +54,7 @@ class Generate(_console.Command):
 
         # Checking if the content model registered
         if not _api.is_model_registered(model):
-            raise _console.error.CommandExecutionError("'{}' is not a registered content model".format(model))
+            raise console.error.CommandExecutionError("'{}' is not a registered content model".format(model))
 
         author_login = self.opt('author')
         num = self.opt('num')
@@ -71,7 +71,7 @@ class Generate(_console.Command):
         if short:
             self.lorem_txt_args['paras'] = 1
 
-        users = list(_auth.find_users(_query.Query(_query.Eq('status', 'active')), limit=10))
+        users = list(auth.find_users(query.Query(query.Eq('status', 'active')), limit=10))
 
         # Generate content entities
         for m in range(0, num):
@@ -80,13 +80,13 @@ class Generate(_console.Command):
             # Author
             if entity.has_field('author'):
                 if author_login:
-                    author = _auth.get_user(author_login)
+                    author = auth.get_user(author_login)
                     if not author:
-                        raise _console.error.CommandExecutionError("'{}' is not a registered user".format(author_login))
+                        raise console.error.CommandExecutionError("'{}' is not a registered user".format(author_login))
                 else:
                     if not users:
-                        raise _console.error.CommandExecutionError(_lang.t('content@no_users_found'))
-                    rand = _randint(0, len(users) - 1)
+                        raise console.error.CommandExecutionError(lang.t('content@no_users_found'))
+                    rand = randint(0, len(users) - 1)
                     author = users[rand:rand + 1][0]
 
                 entity.f_set('author', author.uid)
@@ -103,7 +103,7 @@ class Generate(_console.Command):
             if entity.has_field('body'):
                 body = []
                 for n in range(1, (images_num or 1) + 1):
-                    body.append(_requests.get(self.lorem_txt_url, self.lorem_txt_args).content.decode('utf-8'))
+                    body.append(requests.get(self.lorem_txt_url, self.lorem_txt_args).content.decode('utf-8'))
                     if not no_html and n > 1:
                         body.append('\n<p>[img:{}]</p>\n'.format(n))
 
@@ -112,7 +112,7 @@ class Generate(_console.Command):
             # Images
             if entity.has_field('images') and images_num:
                 for n in range(0, images_num):
-                    entity.f_add('images', _file.create(self.lorem_img_url.format(_randint(0, 1000))))
+                    entity.f_add('images', file.create(self.lorem_img_url.format(randint(0, 1000))))
 
             # Language
             if entity.has_field('language'):
@@ -122,18 +122,18 @@ class Generate(_console.Command):
             if entity.has_field('status'):
                 entity.f_set('status', CONTENT_STATUS_PUBLISHED)
 
-            _events.fire('content@generate', entity=entity)
+            events.fire('content@generate', entity=entity)
 
             entity.save()
 
-            _console.print_info(_lang.t('content@new_content_created', {'model': entity.model, 'title': entity.title}))
+            console.print_info(lang.t('content@new_content_created', {'model': entity.model, 'title': entity.title}))
 
     def _generate_title(self, max_words: int = 7) -> str:
         lorem_txt_args = {'type': 'meat-and-filler', 'format': 'text', 'paras': 1}
-        title = str(_requests.get(self.lorem_txt_url, lorem_txt_args).content.decode('utf-8')).strip()
+        title = str(requests.get(self.lorem_txt_url, lorem_txt_args).content.decode('utf-8')).strip()
 
         title = _SPACES_CLEANUP_RE.sub(' ', _TEXT_CLEANUP_RE.sub('', title)).split(' ')
-        _shuffle(title)
+        shuffle(title)
         title[0] = title[0].title()
         title = ' '.join(title[0:max_words])
 

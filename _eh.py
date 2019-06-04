@@ -4,11 +4,11 @@ __author__ = 'Oleksandr Shepetko'
 __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
-from os import path as _path, makedirs as _makedirs
-from shutil import rmtree as _rmtree
-from datetime import datetime as _datetime
-from pytsite import reg as _reg, logger as _logger, tpl as _tpl, mail as _mail, lang as _lang, router as _router
-from plugins import comments as _comments, sitemap as _sitemap, flag as _flag, auth as _auth
+from os import path, makedirs
+from shutil import rmtree
+from datetime import datetime
+from pytsite import reg, logger, tpl, mail, lang, router
+from plugins import comments, sitemap, flag, auth
 from . import _api, _model
 
 _sitemap_generation_works = False
@@ -26,31 +26,31 @@ def on_cron_daily():
     _generate_sitemap()
 
 
-def on_comments_create_comment(comment: _comments.model.AbstractComment):
+def on_comments_create_comment(comment: comments.model.AbstractComment):
     """comments.create_comment
     """
     entity = _api.find_by_url(comment.thread_uid)
     if comment.is_reply or not entity or comment.author == entity.author:
         return
 
-    tpl_name = 'content@mail/{}/comment'.format(_lang.get_current())
-    subject = _lang.t('content@mail_subject_new_comment')
-    body = _tpl.render(tpl_name, {'comment': comment, 'entity': entity})
-    m_from = '{} <{}>'.format(comment.author.first_last_name, _mail.mail_from()[1])
-    _mail.Message(entity.author.login, subject, body, m_from).send()
+    tpl_name = 'content@mail/{}/comment'.format(lang.get_current())
+    subject = lang.t('content@mail_subject_new_comment')
+    body = tpl.render(tpl_name, {'comment': comment, 'entity': entity})
+    m_from = '{} <{}>'.format(comment.author.first_last_name, mail.mail_from()[1])
+    mail.Message(entity.author.login, subject, body, m_from).send()
 
 
-def on_flag_toggle(flag: _flag.Flag):
-    if not isinstance(flag.entity, _model.Content):
+def on_flag_toggle(flg: flag.Flag):
+    if not isinstance(flg.entity, _model.Content):
         return
 
-    f_name = '{}_count'.format(_lang.english_plural(flag.variant))
-    if flag.entity.has_field(f_name):
+    f_name = '{}_count'.format(lang.english_plural(flg.variant))
+    if flg.entity.has_field(f_name):
         try:
-            _auth.switch_user_to_system()
-            flag.entity.f_set(f_name, _flag.count(flag.entity, flag.variant)).save(fast=True)
+            auth.switch_user_to_system()
+            flg.entity.f_set(f_name, flag.count(flg.entity, flg.variant)).save(fast=True)
         finally:
-            _auth.restore_user()
+            auth.restore_user()
 
 
 def _generate_sitemap():
@@ -62,56 +62,56 @@ def _generate_sitemap():
         raise RuntimeError('Sitemap generation is still in progress')
 
     _sitemap_generation_works = True
-    _logger.info('Sitemap generation start.')
+    logger.info('Sitemap generation start.')
 
-    output_dir = _path.join(_reg.get('paths.static'), 'sitemap')
-    if _path.exists(output_dir):
-        _rmtree(output_dir)
-    _makedirs(output_dir, 0o755, True)
+    output_dir = path.join(reg.get('paths.static'), 'sitemap')
+    if path.exists(output_dir):
+        rmtree(output_dir)
+    makedirs(output_dir, 0o755, True)
 
-    sitemap_index = _sitemap.Index()
+    sitemap_index = sitemap.Index()
     links_per_file = 50000
     loop_count = 1
     loop_links = 1
-    sitemap = _sitemap.Sitemap()
-    sitemap.add_url(_router.base_url(), _datetime.now(), 'always', 1)
-    for lang in _lang.langs():
-        for model in _reg.get('content.sitemap_models', ()):
-            _logger.info("Sitemap generation started for model '{}', language '{}'".
-                         format(model, _lang.lang_title(lang)))
+    sm = sitemap.Sitemap()
+    sm.add_url(router.base_url(), datetime.now(), 'always', 1)
+    for lng in lang.langs():
+        for model in reg.get('content.sitemap_models', ()):
+            logger.info("Sitemap generation started for model '{}', language '{}'".
+                        format(model, lang.lang_title(lng)))
 
-            for entity in _api.find(model, language=lang):  # type: _model.ContentWithURL
-                sitemap.add_url(entity.url, entity.publish_time)
+            for entity in _api.find(model, language=lng):  # type: _model.ContentWithURL
+                sm.add_url(entity.url, entity.publish_time)
                 loop_links += 1
 
                 # Flush sitemap
                 if loop_links >= links_per_file:
                     loop_count += 1
                     loop_links = 0
-                    sitemap_path = sitemap.write(_path.join(output_dir, 'data-%02d.xml' % loop_count), True)
-                    _logger.info("'{}' successfully written with {} links".format(sitemap_path, loop_links))
-                    sitemap_index.add_url(_router.url('/sitemap/{}'.format(_path.basename(sitemap_path))))
-                    del sitemap
-                    sitemap = _sitemap.Sitemap()
+                    sitemap_path = sm.write(path.join(output_dir, 'data-%02d.xml' % loop_count), True)
+                    logger.info("'{}' successfully written with {} links".format(sitemap_path, loop_links))
+                    sitemap_index.add_url(router.url('/sitemap/{}'.format(path.basename(sitemap_path))))
+                    del sm
+                    sm = sitemap.Sitemap()
 
     # If non-flushed sitemap exist
-    if len(sitemap):
-        sitemap_path = sitemap.write(_path.join(output_dir, 'data-%02d.xml' % loop_count), True)
-        _logger.info("'{}' successfully written with {} links.".format(sitemap_path, loop_links))
-        sitemap_index.add_url(_router.url('/sitemap/{}'.format(_path.basename(sitemap_path))))
+    if len(sm):
+        sitemap_path = sm.write(path.join(output_dir, 'data-%02d.xml' % loop_count), True)
+        logger.info("'{}' successfully written with {} links.".format(sitemap_path, loop_links))
+        sitemap_index.add_url(router.url('/sitemap/{}'.format(path.basename(sitemap_path))))
 
     if len(sitemap_index):
-        sitemap_index_path = sitemap_index.write(_path.join(output_dir, 'index.xml'))
-        _logger.info("'{}' successfully written.".format(sitemap_index_path))
+        sitemap_index_path = sitemap_index.write(path.join(output_dir, 'index.xml'))
+        logger.info("'{}' successfully written.".format(sitemap_index_path))
 
-    _logger.info('Sitemap generation stop.')
+    logger.info('Sitemap generation stop.')
     _sitemap_generation_works = False
 
 
 def _generate_feeds():
     # For each language we have separate feed
-    for lng in _lang.langs():
+    for lng in lang.langs():
         # Generate RSS feed for each model
-        for model in _reg.get('content.rss_models', ()):
+        for model in reg.get('content.rss_models', ()):
             filename = 'rss-{}'.format(model)
-            _api.generate_rss(model, filename, lng, length=_reg.get('content.feed_length', 20))
+            _api.generate_rss(model, filename, lng, length=reg.get('content.feed_length', 20))

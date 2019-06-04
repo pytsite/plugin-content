@@ -299,10 +299,7 @@ class Content(odm_ui.model.UIEntity):
         """Hook
         """
         statuses = self.content_statuses()
-        c_user = auth.get_current_user()
-        bm_perm = 'content@bypass_moderation.' + self.model
-
-        if permissions.is_permission_defined(bm_perm) and not c_user.has_permission(bm_perm):
+        if not self.odm_auth_check_entity_permissions(CONTENT_PERM_BYPASS_MODERATION):
             try:
                 statuses.remove(CONTENT_STATUS_PUBLISHED)
             except ValueError:
@@ -394,7 +391,7 @@ class Content(odm_ui.model.UIEntity):
             sts = self.content_statuses()
             if CONTENT_STATUS_WAITING in sts and CONTENT_STATUS_PUBLISHED in sts \
                     and self.status == CONTENT_STATUS_PUBLISHED \
-                    and not c_user.has_permission('content@bypass_moderation.' + self.model):
+                    and not self.odm_auth_check_entity_permissions(CONTENT_PERM_BYPASS_MODERATION):
                 self.f_set('status', CONTENT_STATUS_WAITING)
 
         # Language is required
@@ -456,7 +453,7 @@ class Content(odm_ui.model.UIEntity):
         if perm == 'modify' \
                 and self.status == CONTENT_STATUS_WAITING \
                 and not self.f_is_modified('status') \
-                and not user.has_permission('content@bypass_moderation.' + self.model) \
+                and not self.odm_auth_check_model_permissions(self.model, CONTENT_PERM_BYPASS_MODERATION, user) \
                 and not self.odm_auth_check_model_permissions(self.model, perm, user):
             return False
 
@@ -486,7 +483,7 @@ class Content(odm_ui.model.UIEntity):
             browser.insert_data_field('images', 'content@images')
 
         # Author (visible only if current user has permission to modify any entity)
-        if self.has_field('author') and c_user.has_permission('odm_auth@modify.{}'.format(browser.model)):
+        if self.has_field('author') and self.odm_auth_check_model_permissions(self.model, PERM_MODIFY):
             browser.insert_data_field('author', 'content@author')
 
         # Publish time
@@ -529,8 +526,7 @@ class Content(odm_ui.model.UIEntity):
             r['images'] = images_count
 
         # Author
-        u = auth.get_current_user()
-        if self.has_field('author') and u.has_permission('odm_auth@modify.{}'.format(self.model)):
+        if self.has_field('author') and self.odm_auth_check_model_permissions(self.model, PERM_MODIFY):
             r['author'] = self.author.first_last_name if self.author else '&nbsp;'
 
         # Publish time
@@ -617,7 +613,7 @@ class Content(odm_ui.model.UIEntity):
             ))
 
         # Publish time
-        if self.has_field('publish_time') and c_user.has_permission('content@set_publish_time.' + self.model):
+        if self.has_field('publish_time') and self.odm_auth_check_entity_permissions(CONTENT_PERM_SET_PUBLISH_TIME):
             frm.add_widget(widget.select.DateTime(
                 uid='publish_time',
                 label=self.t('publish_time'),
@@ -637,9 +633,8 @@ class Content(odm_ui.model.UIEntity):
         ))
 
         # Localizations
-        localization_perm = 'content@set_localization.' + self.model
-        if permissions.is_permission_defined(localization_perm) and c_user.has_permission(localization_perm) and \
-                self.has_field('localization_' + lng):
+        if self.has_field('localization_' + lng) and \
+                self.odm_auth_check_entity_permissions(CONTENT_PERM_SET_LOCALIZATION):
             for i, l in enumerate(lang.langs(False)):
                 frm.add_widget(_content_widget.EntitySelect(
                     uid='localization_' + l,
@@ -676,7 +671,7 @@ class Content(odm_ui.model.UIEntity):
     def odm_ui_widget_select_search_entities_is_visible(self, args: dict) -> bool:
         """Hook
         """
-        return self.odm_auth_check_entity_permissions('view')
+        return self.odm_auth_check_entity_permissions(CONTENT_PERM_VIEW)
 
     def odm_ui_widget_select_search_entities_title(self, args: dict) -> str:
         """Hook

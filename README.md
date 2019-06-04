@@ -4,7 +4,12 @@
 ## Changelog
 
 
-### 6.7 (2019-06-02)
+### 6.7.1 (2019-06-04)
+
+Permissions checking fixed.
+
+
+### 6.7 (2019-06-04)
 
 Support of `odm_auth-4.0`.
 

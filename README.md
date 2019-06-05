@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 6.8.2 (2019-06-05)
+
+Unnecessary exception removed from `find()`.
+
+
 ### 6.8.1 (2019-06-05)
 
 Default value of `status` kwarg of `find()` fixed. 

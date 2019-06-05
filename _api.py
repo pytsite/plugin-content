@@ -130,9 +130,6 @@ def find(model: str, **kwargs) -> odm.SingleModelFinder:
         elif not isinstance(status, (list, tuple)):
             raise TypeError(f"'status' must be a string, list or tuple, not {type(status)}")
 
-        if status not in mock.content_statuses():
-            raise ValueError("'{}' is invalid content status for model '{}'".format(status, model))
-
         f.inc('status', status)
 
     return f

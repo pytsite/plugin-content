@@ -103,7 +103,7 @@ def find(model: str, **kwargs) -> odm.SingleModelFinder:
     """
     check_publish_time = kwargs.get('check_publish_time', True)
     language = kwargs.get('language', lang.get_current())
-    status = kwargs.get('status', CONTENT_STATUS_PUBLISHED)
+    status = kwargs.get('status', [CONTENT_STATUS_PUBLISHED])
 
     if not is_model_registered(model):
         raise KeyError(f"Model '{model}' is not registered as content model")

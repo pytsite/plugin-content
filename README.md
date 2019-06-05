@@ -4,6 +4,12 @@
 ## Changelog
 
 
+### 6.8 (2019-06-05)
+
+`status` kwarg of `find()` API function now can be a also a list or 
+tuple of strings.
+
+
 ### 6.7.1 (2019-06-04)
 
 Permissions checking fixed.

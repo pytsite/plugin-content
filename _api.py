@@ -13,18 +13,18 @@ from plugins import odm, route_alias, feed, admin, widget
 from . import _model
 from ._constants import CONTENT_STATUS_PUBLISHED
 
-_ContentModelClass = Type[_model.Content]
+ContentModelClass = Type[_model.Content]
 
-_models = {}  # type: Dict[str, Tuple[_ContentModelClass, str]]
+_models = {}  # type: Dict[str, Tuple[ContentModelClass, str]]
 
 
-def register_model(model: str, cls: Union[str, _ContentModelClass], title: str, menu_weight: int = 0,
+def register_model(model: str, cls: Union[str, ContentModelClass], title: str, menu_weight: int = 0,
                    menu_icon: str = 'fa fa-file-text-o', menu_sid: str = 'content', replace: bool = False):
     """Register content model
     """
     # Resolve class
     if isinstance(cls, str):
-        cls = util.get_module_attr(cls)  # type: _ContentModelClass
+        cls = util.get_module_attr(cls)  # type: ContentModelClass
 
     if not issubclass(cls, _model.Content):
         raise TypeError('Subclass of {} expected, got {}'.format(_model.Content, type(cls)))
@@ -60,13 +60,13 @@ def is_model_registered(model: str) -> bool:
     return model in _models
 
 
-def get_models() -> Dict[str, Tuple[_ContentModelClass, str]]:
+def get_models() -> Dict[str, Tuple[ContentModelClass, str]]:
     """Get registered content models
     """
     return _models.copy()
 
 
-def get_model(model: str) -> Tuple[_ContentModelClass, str]:
+def get_model(model: str) -> Tuple[ContentModelClass, str]:
     """Get model information
     """
     if not is_model_registered(model):
@@ -75,7 +75,7 @@ def get_model(model: str) -> Tuple[_ContentModelClass, str]:
     return _models[model]
 
 
-def get_model_class(model: str) -> _ContentModelClass:
+def get_model_class(model: str) -> ContentModelClass:
     """Get class of the content model
     """
     return get_model(model)[0]
@@ -106,7 +106,7 @@ def find(model: str, **kwargs) -> odm.SingleModelFinder:
     status = kwargs.get('status', CONTENT_STATUS_PUBLISHED)
 
     if not is_model_registered(model):
-        raise KeyError("Model '{}' is not registered as content model.".format(model))
+        raise KeyError(f"Model '{model}' is not registered as content model")
 
     f = odm.find(model)
     mock = f.mock  # type: _model.Content
@@ -125,10 +125,15 @@ def find(model: str, **kwargs) -> odm.SingleModelFinder:
 
     # Status
     if status != '*' and mock.has_field('status'):
+        if isinstance(status, str):
+            status = [status]
+        elif not isinstance(status, (list, tuple)):
+            raise TypeError(f"'status' must be a string, list or tuple, not {type(status)}")
+
         if status not in mock.content_statuses():
             raise ValueError("'{}' is invalid content status for model '{}'".format(status, model))
 
-        f.eq('status', status)
+        f.inc('status', status)
 
     return f
 

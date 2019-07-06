@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 6.9 (2019-07-06)
+
+`CONTENT_PERM_*` constants exposed to the public API.
+
+
 ### 6.8.2 (2019-06-05)
 
 Unnecessary exception removed from `find()`.

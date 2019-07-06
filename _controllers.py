@@ -9,7 +9,7 @@ from pytsite import router, metatag, lang, routing, tpl, events
 from plugins import auth, odm, taxonomy, hreflang, widget
 from plugins.odm_auth import PERM_MODIFY, PERM_DELETE
 from . import _model
-from ._constants import CONTENT_PERM_VIEW, CONTENT_PERM_VIEW_OWN, CONTENT_STATUS_UNPUBLISHED, CONTENT_STATUS_WAITING
+from ._constants import CONTENT_PERM_VIEW, CONTENT_STATUS_UNPUBLISHED, CONTENT_STATUS_WAITING
 
 
 class Index(routing.Controller):

@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 6.10 (2019-07-12)
+
+Support of `pytsite-9.0`.
+
+
 ### 6.9 (2019-07-06)
 
 `CONTENT_PERM_*` constants exposed to the public API.

@@ -13,6 +13,9 @@ from ._api import register_model, get_models, find, get_model, get_model_title, 
     generate_rss, find_by_url, paginate, on_content_view
 from ._model import Content, ContentWithURL
 
+# Locally needed imports
+from semaver import Version as _Version
+
 
 def plugin_load():
     from pytsite import router
@@ -63,10 +66,7 @@ def plugin_load_wsgi():
     robots_txt.sitemap('/sitemap/index.xml')
 
 
-from pytsite import semver
-
-
-def plugin_update(v_from: semver.Version):
+def plugin_update(v_from: _Version):
     if v_from < '4.20':
         from pytsite import mongodb
 

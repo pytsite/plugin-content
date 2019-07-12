@@ -4,11 +4,12 @@ __author__ = 'Oleksandr Shepetko'
 __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
-import re as _re
+import re
+import htmler
 from typing import Tuple, List, Union
 from frozendict import frozendict
 from datetime import datetime
-from pytsite import validation, html, lang, events, util, mail, tpl, reg, router, errors, routing
+from pytsite import validation, lang, events, util, mail, tpl, reg, router, errors, routing
 from plugins import auth, ckeditor, route_alias, auth_ui, auth_storage_odm, file_storage_odm, odm_ui, odm, file, form, \
     widget, file_ui
 from plugins.odm_auth import PERM_CREATE, PERM_MODIFY, PERM_DELETE, PERM_MODIFY_OWN, PERM_DELETE_OWN
@@ -16,14 +17,14 @@ from ._constants import CONTENT_PERM_VIEW, CONTENT_PERM_VIEW_OWN, CONTENT_PERM_B
     CONTENT_PERM_SET_PUBLISH_TIME, CONTENT_PERM_SET_LOCALIZATION, CONTENT_STATUS_UNPUBLISHED, CONTENT_STATUS_WAITING, \
     CONTENT_STATUS_PUBLISHED
 
-_body_img_tag_re = _re.compile('\[img:(\d+)([^\]]*)\]')
-_body_vid_tag_re = _re.compile('\[vid:(\d+)\]')
-_html_img_tag_re = _re.compile('<img.*?src\s*=["\']([^"\']+)["\'][^>]*>')
-_html_video_youtube_re = _re.compile(
-    '<iframe.*?src=["\']?(?:https?:)?//www\.youtube\.com/embed/([a-zA-Z0-9_-]{11})[^"\']*["\']?.+?</iframe>'
+_body_img_tag_re = re.compile('\\[img:(\\d+)([^\\]]*)\\]')
+_body_vid_tag_re = re.compile('\\[vid:(\\d+)\\]')
+_html_img_tag_re = re.compile('<img.*?src\\s*=["\']([^"\']+)["\'][^>]*>')
+_html_video_youtube_re = re.compile(
+    '<iframe.*?src=["\']?(?:https?:)?//www\\.youtube\\.com/embed/([a-zA-Z0-9_-]{11})[^"\']*["\']?.+?</iframe>'
 )
-_html_video_facebook_re = _re.compile(
-    '<iframe.*?src=["\']?(?:https?:)?//www\.facebook\.com/plugins/video\.php\?href=([^"\']+)["\']?.+?</iframe>'
+_html_video_facebook_re = re.compile(
+    '<iframe.*?src=["\']?(?:https?:)?//www\\.facebook\\.com/plugins/video\\.php\\?href=([^"\']+)["\']?.+?</iframe>'
 )
 
 
@@ -100,7 +101,7 @@ def _process_tags(entity, inp: str, responsive_images: bool = True, images_width
 
         # Link to original file
         if link_orig:
-            link = html.A(r, href=img.url, target=link_target, title=util.escape_html(alt))
+            link = htmler.A(r, href=img.url, target=link_target, title=util.escape_html(alt))
             if link_class:
                 link.set_attr('css', util.escape_html(link_class))
 
@@ -163,7 +164,7 @@ def _extract_video_links(entity) -> tuple:
         if 'youtube' in match.group(0):
             vid_links.append('https://youtu.be/' + match.group(1))
         elif 'facebook' in match.group(0):
-            link = _re.sub('&.+$', '', util.url_unquote(match.group(1)))
+            link = re.sub('&.+$', '', util.url_unquote(match.group(1)))
             vid_links.append(link)
 
         return '[vid:{}]'.format(vid_index)
@@ -462,7 +463,6 @@ class Content(odm_ui.model.UIEntity):
     def odm_ui_browser_setup(self, browser: odm_ui.Browser):
         """Hook
         """
-        c_user = auth.get_current_user()
         browser.default_sort_field = '_modified'
 
         # Sort field
@@ -502,7 +502,7 @@ class Content(odm_ui.model.UIEntity):
 
         # Title
         if self.has_field('title'):
-            r['title'] = (str(html.A(self.title, href=self.url)) if self.url else self.title)
+            r['title'] = (str(htmler.A(self.title, href=self.url)) if self.url else self.title)
 
         # Status
         if self.has_field('status'):
@@ -514,7 +514,7 @@ class Content(odm_ui.model.UIEntity):
             elif status == CONTENT_STATUS_UNPUBLISHED:
                 label_css = 'default'
                 badge_css = 'secondary'
-            status = str(html.Span(status_str, css='label label-{} badge badge-{}'.format(label_css, badge_css)))
+            status = str(htmler.Span(status_str, css='label label-{} badge badge-{}'.format(label_css, badge_css)))
             r['status'] = status
 
         # Images
@@ -547,7 +547,6 @@ class Content(odm_ui.model.UIEntity):
         """Hook
         """
         from . import widget as _content_widget
-        c_user = auth.get_current_user()
 
         # Title
         if self.has_field('title'):

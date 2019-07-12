@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 6.10.1 (2019-07-12)
+
+`plugin.json` fix.
+
+
 ### 6.10 (2019-07-12)
 
 Support of `pytsite-9.0`.

@@ -452,6 +452,7 @@ class Content(odm_ui.model.UIEntity):
 
         # Content should not be modified by author until it's waiting for moderation
         if perm == 'modify' \
+                and self.has_field('status') \
                 and self.status == CONTENT_STATUS_WAITING \
                 and not self.f_is_modified('status') \
                 and not self.odm_auth_check_model_permissions(self.model, CONTENT_PERM_BYPASS_MODERATION, user) \

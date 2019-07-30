@@ -4,6 +4,12 @@
 ## Changelog
 
 
+### 6.10.2 (2019-07-30)
+
+Checking `status` field existence in `odm_auth_check_entity_permissions()`
+hook fixed.
+
+
 ### 6.10.1 (2019-07-12)
 
 `plugin.json` fix.

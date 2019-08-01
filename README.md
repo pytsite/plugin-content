@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 7.0.1 (2019-08-01)
+
+Requirements fixed.
+
+
 ### 7.0 (2019-08-01)
 
 - New API functions added: `get_previous_entity()` and `get_next_entity()`.

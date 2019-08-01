@@ -1,6 +1,6 @@
 {
   "name": "content",
-  "version": "6.10.2",
+  "version": "7.0",
   "description": {
     "en": "Content",
     "ru": "Контент",
@@ -15,7 +15,8 @@
   "requires": {
     "pytsite": ">=9.0",
     "packages": {
-      "htmler": ">=0.1"
+      "dicmer": "^0.1",
+      "htmler": "^0.1"
     },
     "plugins": {
       "admin": "^2.0",
@@ -43,6 +44,7 @@
       "route_alias": "^1.0",
       "settings": "^2.0",
       "sitemap": "^1.0",
+      "tag": "^4.4",
       "taxonomy": "^5.0",
       "widget": "^4.0"
     }

@@ -20,7 +20,7 @@ from semaver import Version as _Version
 def plugin_load():
     from pytsite import router
     from plugins import permissions, admin
-    from . import _eh, _controllers
+    from . import _controllers
 
     # Permissions group
     permissions.define_group('content', 'content@content')
@@ -47,6 +47,7 @@ def plugin_load_wsgi():
     # Events listeners
     cron.hourly(_eh.on_cron_hourly)
     cron.daily(_eh.on_cron_daily)
+    on_content_view(_eh.on_content_view)
     events.listen('comments@create_comment', _eh.on_comments_create_comment)
     flag.on_flag_create(_eh.on_flag_toggle)
     flag.on_flag_delete(_eh.on_flag_toggle)

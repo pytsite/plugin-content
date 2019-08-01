@@ -9,7 +9,8 @@ from shutil import rmtree
 from datetime import datetime
 from pytsite import reg, logger, tpl, mail, lang, router
 from plugins import comments, sitemap, flag, auth
-from . import _api, _model
+from . import _api
+from ._model import Content, ContentWithURL
 
 _sitemap_generation_works = False
 
@@ -24,6 +25,18 @@ def on_cron_daily():
     """pytsite.cron.daily
     """
     _generate_sitemap()
+
+
+def on_content_view(entity: ContentWithURL):
+    if entity.has_field('comments_count') and entity.has_field('route_alias') and entity.route_alias:
+        # Update entity's comments count
+        try:
+            auth.switch_user_to_system()
+            cnt = comments.get_all_comments_count(entity.route_alias.alias)
+            entity.f_set('comments_count', cnt).save(fast=True)
+            return cnt
+        finally:
+            auth.restore_user()
 
 
 def on_comments_create_comment(comment: comments.model.AbstractComment):
@@ -41,7 +54,7 @@ def on_comments_create_comment(comment: comments.model.AbstractComment):
 
 
 def on_flag_toggle(flg: flag.Flag):
-    if not isinstance(flg.entity, _model.Content):
+    if not isinstance(flg.entity, Content):
         return
 
     f_name = '{}_count'.format(lang.english_plural(flg.variant))
@@ -80,7 +93,7 @@ def _generate_sitemap():
             logger.info("Sitemap generation started for model '{}', language '{}'".
                         format(model, lang.lang_title(lng)))
 
-            for entity in _api.find(model, language=lng):  # type: _model.ContentWithURL
+            for entity in _api.find(model, language=lng):  # type: ContentWithURL
                 sm.add_url(entity.url, entity.publish_time)
                 loop_links += 1
 

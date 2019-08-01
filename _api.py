@@ -4,16 +4,16 @@ __author__ = 'Oleksandr Shepetko'
 __email__ = 'a@shepetko.com'
 __license__ = 'MIT'
 
-from typing import Callable, Union, Tuple, Dict, Type
+from typing import Callable, Union, Tuple, Dict, Type, Optional
 from datetime import datetime
 from urllib import parse as _urllib_parse
 from os import path, makedirs
 from pytsite import util, router, lang, logger, reg, events
 from plugins import odm, route_alias, feed, admin, widget
-from . import _model
+from ._model import Content, ContentWithURL
 from ._constants import CONTENT_STATUS_PUBLISHED
 
-ContentModelClass = Type[_model.Content]
+ContentModelClass = Type[Content]
 
 _models = {}  # type: Dict[str, Tuple[ContentModelClass, str]]
 
@@ -26,8 +26,8 @@ def register_model(model: str, cls: Union[str, ContentModelClass], title: str, m
     if isinstance(cls, str):
         cls = util.get_module_attr(cls)  # type: ContentModelClass
 
-    if not issubclass(cls, _model.Content):
-        raise TypeError('Subclass of {} expected, got {}'.format(_model.Content, type(cls)))
+    if not issubclass(cls, Content):
+        raise TypeError('Subclass of {} expected, got {}'.format(Content, type(cls)))
 
     if not replace and is_model_registered(model):
         raise KeyError("Content model '{}' is already registered".format(model))
@@ -87,12 +87,12 @@ def get_model_title(model: str) -> str:
     return lang.t(get_model(model)[1])
 
 
-def dispense(model: str, eid: str = None) -> _model.Content:
-    """Dispense content entity
+def dispense(model: str, eid: str = None) -> Content:
+    """Dispense a content entity
     """
     e = odm.dispense(model, eid)
 
-    if not isinstance(e, _model.Content):
+    if not isinstance(e, Content):
         raise TypeError("Model '{}' is not registered as a content model".format(model))
 
     return e
@@ -109,7 +109,7 @@ def find(model: str, **kwargs) -> odm.SingleModelFinder:
         raise KeyError(f"Model '{model}' is not registered as content model")
 
     f = odm.find(model)
-    mock = f.mock  # type: _model.Content
+    mock = f.mock  # type: Content
 
     # Publish time
     if mock.has_field('publish_time'):
@@ -135,7 +135,7 @@ def find(model: str, **kwargs) -> odm.SingleModelFinder:
     return f
 
 
-def find_by_url(url: str) -> _model.Content:
+def find_by_url(url: str) -> Content:
     """Find an entity by an URL
     """
     parsed_url = _urllib_parse.urlsplit(url, allow_fragments=False)
@@ -151,9 +151,40 @@ def find_by_url(url: str) -> _model.Content:
         pass
 
 
+def _get_adjacent_entity(entity: Content, same_author: bool, sort_order: int, **kwargs) -> Optional[Content]:
+    """Get content entity adjacent to `entity` by publish date
+    """
+    if not isinstance(entity, Content):
+        raise TypeError('{} is not an instance of {}'.format(entity.__class__, Content))
+
+    f = find(entity.model, **kwargs).sort([('publish_time', sort_order)])
+
+    if sort_order == odm.I_ASC:
+        f.gt('publish_time', entity.publish_time)
+    else:
+        f.lt('publish_time', entity.publish_time)
+
+    if same_author:
+        f.eq('author', entity.author)
+
+    return f.first()
+
+
+def get_previous_entity(entity: Content, same_author: bool = False, **kwargs) -> Optional[Content]:
+    """Get previous adjacent content entity
+    """
+    return _get_adjacent_entity(entity, same_author, odm.I_DESC, **kwargs)
+
+
+def get_next_entity(entity: Content, same_author: bool = False, **kwargs) -> Optional[Content]:
+    """Get next adjacent content entity
+    """
+    return _get_adjacent_entity(entity, same_author, odm.I_ASC, **kwargs)
+
+
 def generate_rss(model: str, filename: str, lng: str = '*',
                  finder_setup: Callable[[odm.SingleModelFinder], None] = None,
-                 item_setup: Callable[[feed.xml.Serializable, _model.Content], None] = None, length: int = 20):
+                 item_setup: Callable[[feed.xml.Serializable, Content], None] = None, length: int = 20):
     """Generate RSS feeds
     """
     # Setup finder
@@ -259,7 +290,7 @@ def paginate(finder: odm.SingleModelFinder, per_page: int = 10, css: str = '') -
     }
 
 
-def on_content_view(handler: Callable[[_model.ContentWithURL], None], priority: int = 0):
+def on_content_view(handler: Callable[[ContentWithURL], None], priority: int = 0):
     """Shortcut
     """
     events.listen('content@view', handler, priority)

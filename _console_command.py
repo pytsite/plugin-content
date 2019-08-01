@@ -12,8 +12,8 @@ from plugins import file, auth, query
 from . import _api
 from ._constants import CONTENT_STATUS_PUBLISHED
 
-_TEXT_CLEANUP_RE = re.compile('[,:;?\-.]')
-_SPACES_CLEANUP_RE = re.compile('\s{2,}')
+_TEXT_CLEANUP_RE = re.compile('[,:;?\\-.]')
+_SPACES_CLEANUP_RE = re.compile('\\s{2,}')
 
 
 class Generate(console.Command):

@@ -9,9 +9,10 @@ import htmler
 from typing import Tuple, List, Union
 from frozendict import frozendict
 from datetime import datetime
+from dicmer import dict_merge
 from pytsite import validation, lang, events, util, mail, tpl, reg, router, errors, routing
 from plugins import auth, ckeditor, route_alias, auth_ui, auth_storage_odm, file_storage_odm, odm_ui, odm, file, form, \
-    widget, file_ui
+    widget, file_ui, tag, taxonomy, comments
 from plugins.odm_auth import PERM_CREATE, PERM_MODIFY, PERM_DELETE, PERM_MODIFY_OWN, PERM_DELETE_OWN
 from ._constants import CONTENT_PERM_VIEW, CONTENT_PERM_VIEW_OWN, CONTENT_PERM_BYPASS_MODERATION, \
     CONTENT_PERM_SET_PUBLISH_TIME, CONTENT_PERM_SET_LOCALIZATION, CONTENT_STATUS_UNPUBLISHED, CONTENT_STATUS_WAITING, \
@@ -186,30 +187,45 @@ def _remove_tags(s: str) -> str:
 class Content(odm_ui.model.UIEntity):
     """Base Content Model
     """
+    _deprecated_methods = dict_merge(odm_ui.model.UIEntity._deprecated_methods, {
+        '_alter_route_alias_str': 'content_alter_route_alias_str',
+    })
 
     @property
     def publish_time(self) -> datetime:
+        """Publish time getter
+        """
         return self.f_get('publish_time')
 
     @property
     def publish_date_time_pretty(self) -> str:
+        """Publish time getter
+        """
         return self.f_get('publish_time', fmt='pretty_date_time')
 
     @property
     def publish_date_pretty(self) -> str:
+        """Publish time getter
+        """
         return self.f_get('publish_time', fmt='pretty_date')
 
     @property
     def publish_time_ago(self) -> str:
+        """Publish time getter
+        """
         return self.f_get('publish_time', fmt='ago')
 
     @property
-    def prev_status(self) -> str:
-        return self.f_get('prev_status')
+    def author(self) -> auth.AbstractUser:
+        """Author getter
+        """
+        return self.f_get('author')
 
     @property
-    def status(self) -> str:
-        return self.f_get('status')
+    def language(self) -> str:
+        """Language getter
+        """
+        return self.f_get('language')
 
     @property
     def title(self) -> str:
@@ -236,22 +252,58 @@ class Content(odm_ui.model.UIEntity):
         return self.f_get('images')
 
     @property
+    def tags(self) -> Tuple[tag.model.Tag]:
+        """Tags getter
+        """
+        return self.f_get('tags', sort_by='weight', sort_reverse=True)
+
+    @property
+    def ext_links(self) -> Tuple[str]:
+        """External links getter
+        """
+        return self.f_get('ext_links')
+
+    @property
     def video_links(self) -> tuple:
         """Video links getter
         """
         return self.f_get('video_links')
 
     @property
-    def language(self) -> str:
-        """Language getter
+    def views_count(self) -> int:
+        """Views counter getter
         """
-        return self.f_get('language')
+        return self.f_get('views_count')
 
     @property
-    def author(self) -> auth.model.AbstractUser:
-        """Author getter
+    def comments_count(self) -> int:
+        """Comments counter getter
         """
-        return self.f_get('author')
+        return self.f_get('comments_count')
+
+    @property
+    def likes_count(self) -> int:
+        """Likes counter getter
+        """
+        return self.f_get('likes_count')
+
+    @property
+    def bookmarks_count(self) -> int:
+        """Bookmarks counter getter
+        """
+        return self.f_get('bookmarks_count')
+
+    @property
+    def status(self) -> str:
+        """Status getter
+        """
+        return self.f_get('status')
+
+    @property
+    def prev_status(self) -> str:
+        """Previous status getter
+        """
+        return self.f_get('prev_status')
 
     @property
     def options(self) -> frozendict:
@@ -259,72 +311,75 @@ class Content(odm_ui.model.UIEntity):
         """
         return self.f_get('options')
 
-    @property
-    def likes_count(self) -> int:
-        return self.f_get('likes_count')
-
-    @property
-    def bookmarks_count(self) -> int:
-        return self.f_get('bookmarks_count')
-
-    @classmethod
-    def odm_auth_permissions_group(cls) -> str:
+    def _setup_fields(self, **kwargs):
         """Hook
         """
-        return 'content'
+        skip = kwargs.get('skip', [])
 
-    def odm_auth_permissions(self) -> List[str]:
-        """Hook
-        """
-        r = [PERM_CREATE, CONTENT_PERM_VIEW, PERM_MODIFY, PERM_DELETE,
-             CONTENT_PERM_VIEW_OWN, PERM_MODIFY_OWN, PERM_DELETE_OWN]
-
-        if self.has_field('status') and CONTENT_STATUS_WAITING in self.content_statuses():
-            r.append(CONTENT_PERM_BYPASS_MODERATION)
-
-        if self.has_field('localization_' + lang.get_current()):
-            r.append(CONTENT_PERM_SET_LOCALIZATION)
-
-        if self.has_field('publish_time'):
-            r.append(CONTENT_PERM_SET_PUBLISH_TIME)
-
-        return r
-
-    @classmethod
-    def content_statuses(cls) -> List[str]:
-        """Hook
-        """
-        return [CONTENT_STATUS_PUBLISHED, CONTENT_STATUS_WAITING, CONTENT_STATUS_UNPUBLISHED]
-
-    def content_status_select_items(self) -> List[str]:
-        """Hook
-        """
-        statuses = self.content_statuses()
-        if not self.odm_auth_check_entity_permissions(CONTENT_PERM_BYPASS_MODERATION):
-            try:
-                statuses.remove(CONTENT_STATUS_PUBLISHED)
-            except ValueError:
-                pass
-
-        return statuses
-
-    def _setup_fields(self):
-        """Hook
-        """
+        # Publish time
         self.define_field(odm.field.DateTime('publish_time', default=datetime.now()))
-        self.define_field(odm.field.String('prev_status', is_required=True, default=self.content_statuses()[0]))
-        self.define_field(odm.field.String('status', is_required=True, default=self.content_statuses()[0]))
-        self.define_field(odm.field.String('title', is_required=True))
-        self.define_field(odm.field.String('description'))
-        self.define_field(odm.field.String('body', strip_html=False))
-        self.define_field(file_storage_odm.field.Images('images'))
-        self.define_field(odm.field.UniqueStringList('video_links'))
+
+        # Author
+        self.define_field(auth_storage_odm.field.User('author', is_required=True))
+
+        # Localizations
         self.define_field(odm.field.String('language', default=lang.get_current()))
         self.define_field(odm.field.String('language_db', is_required=True))
-        self.define_field(auth_storage_odm.field.User('author', is_required=True))
-        self.define_field(odm.field.Dict('options'))
-        self.define_field(odm.field.Integer('likes_count'))
-        self.define_field(odm.field.Integer('bookmarks_count'))
+        for lng in lang.langs():
+            self.define_field(odm.field.Ref('localization_' + lng, model=self.model))
+
+        # Title
+        if 'title' not in skip:
+            self.define_field(odm.field.String('title', is_required=True))
+
+        # Description
+        if 'description' not in skip:
+            self.define_field(odm.field.String('description'))
+
+        # Body
+        if 'body' not in skip:
+            self.define_field(odm.field.String('body', is_required=True, strip_html=False))
+
+        # Images
+        if 'images' not in skip:
+            self.define_field(file_storage_odm.field.Images('images'))
+
+        # Tags
+        if 'tags' not in skip:
+            self.define_field(tag.field.Tags('tags'))
+
+        # External links
+        if 'ext_links' not in skip:
+            self.define_field(odm.field.UniqueStringList('ext_links'))
+
+        # Video links
+        if 'video_links' not in skip:
+            self.define_field(odm.field.UniqueStringList('video_links'))
+
+        # Views counter
+        if 'views_count' not in skip:
+            self.define_field(odm.field.Integer('views_count'))
+
+        # Comments counter
+        if 'comments_count' not in skip:
+            self.define_field(odm.field.Integer('comments_count'))
+
+        # Likes counter
+        if 'likes_count' not in skip:
+            self.define_field(odm.field.Integer('likes_count'))
+
+        # Bookmarks count
+        if 'bookmarks_count' not in skip:
+            self.define_field(odm.field.Integer('bookmarks_count'))
+
+        # Status
+        if 'status' not in skip:
+            self.define_field(odm.field.String('prev_status', is_required=True, default=self.content_statuses()[0]))
+            self.define_field(odm.field.String('status', is_required=True, default=self.content_statuses()[0]))
+
+        # Options
+        if 'options' not in skip:
+            self.define_field(odm.field.Dict('options'))
 
     def _setup_indexes(self):
         """Hook
@@ -333,7 +388,7 @@ class Content(odm_ui.model.UIEntity):
         self.define_index([('_modified', odm.I_DESC)])
 
         # Ordinary indexes
-        for f in 'status', 'language', 'author', 'publish_time':
+        for f in 'status', 'language', 'author', 'publish_time', 'views_count', 'comments_count':
             if self.has_field(f):
                 self.define_index([(f, odm.I_ASC)])
 
@@ -356,6 +411,9 @@ class Content(odm_ui.model.UIEntity):
                 value = _remove_tags(value)
 
             return value
+
+        elif field_name == 'tags' and kwargs.get('as_string'):
+            return ','.join([t.title for t in self.f_get('tags')])
 
         return value
 
@@ -430,6 +488,43 @@ class Content(odm_ui.model.UIEntity):
     def _on_after_save(self, first_save: bool = False, **kwargs):
         """Hook
         """
+        from . import _api
+
+        # Recalculate tags weights
+        if first_save and self.has_field('tags'):
+            for t in self.tags:
+                weight = 0
+                for model in _api.get_models().keys():
+                    try:
+                        weight += _api.find(model, language=self.language).inc('tags', [t]).count()
+                    except odm.error.FieldNotDefined:
+                        pass
+
+                try:
+                    auth.switch_user_to_system()
+                    t.f_set('weight', weight).save(fast=True)
+                finally:
+                    auth.restore_user()
+
+        # Update localization entities references
+        # For each language except current one
+        for lng in lang.langs(False):
+            # Get localization ref for lng
+            localization = self.f_get('localization_' + lng)
+
+            # If localization is set
+            if isinstance(localization, Content):
+                # If localized entity hasn't reference to this entity, set it
+                if localization.f_get('localization_' + self.language) != self:
+                    localization.f_set('localization_' + self.language, self).save()
+
+            # If localization is not set
+            elif localization is None:
+                # Clear references from localized entities
+                f = _api.find(self.model, language=lng).eq('localization_' + self.language, self)
+                for referenced in f.get():
+                    referenced.f_set('localization_' + self.language, None).save()
+
         # Notify content status change
         if self.has_field('status') and self.has_field('prev_status') and self.status != self.prev_status:
             self.content_on_status_change()
@@ -444,6 +539,29 @@ class Content(odm_ui.model.UIEntity):
         if self.has_field('images'):
             for img in self.images:
                 img.delete()
+
+    @classmethod
+    def odm_auth_permissions_group(cls) -> str:
+        """Hook
+        """
+        return 'content'
+
+    def odm_auth_permissions(self) -> List[str]:
+        """Hook
+        """
+        r = [PERM_CREATE, CONTENT_PERM_VIEW, PERM_MODIFY, PERM_DELETE,
+             CONTENT_PERM_VIEW_OWN, PERM_MODIFY_OWN, PERM_DELETE_OWN]
+
+        if self.has_field('status') and CONTENT_STATUS_WAITING in self.content_statuses():
+            r.append(CONTENT_PERM_BYPASS_MODERATION)
+
+        if self.has_field('localization_' + lang.get_current()):
+            r.append(CONTENT_PERM_SET_LOCALIZATION)
+
+        if self.has_field('publish_time'):
+            r.append(CONTENT_PERM_SET_PUBLISH_TIME)
+
+        return r
 
     def odm_auth_check_entity_permissions(self, perm: Union[str, List[str]], user: auth.AbstractUser = None) -> bool:
         """Hook
@@ -605,6 +723,29 @@ class Content(odm_ui.model.UIEntity):
             if self.get_field('body').is_required:
                 frm.add_rule('body', validation.rule.NonEmpty())
 
+        # Tags
+        if self.has_field('tags'):
+            frm.add_widget(taxonomy.widget.TokensInput(
+                uid='tags',
+                weight=250,
+                model='tag',
+                label=self.t('tags'),
+                value=self.tags,
+                required=self.get_field('tags').is_required,
+            ))
+
+        # External links
+        if self.has_field('ext_links'):
+            frm.add_widget(widget.input.StringList(
+                uid='ext_links',
+                weight=550,
+                label=self.t('external_links'),
+                add_btn_label=self.t('add_link'),
+                value=self.ext_links,
+                required=self.get_field('ext_links').is_required,
+            ))
+            frm.add_rule('ext_links', validation.rule.Url())
+
         # Status
         if self.has_field('status'):
             frm.add_widget(_content_widget.StatusSelect(
@@ -689,6 +830,24 @@ class Content(odm_ui.model.UIEntity):
             else:
                 finder.text(query, lang.get_current())
 
+    @classmethod
+    def content_statuses(cls) -> List[str]:
+        """Hook
+        """
+        return [CONTENT_STATUS_PUBLISHED, CONTENT_STATUS_WAITING, CONTENT_STATUS_UNPUBLISHED]
+
+    def content_status_select_items(self) -> List[str]:
+        """Hook
+        """
+        statuses = self.content_statuses()
+        if not self.odm_auth_check_entity_permissions(CONTENT_PERM_BYPASS_MODERATION):
+            try:
+                statuses.remove(CONTENT_STATUS_PUBLISHED)
+            except ValueError:
+                pass
+
+        return statuses
+
     def _content_notify_admins_waiting_status(self):
         """Notify administrators about waiting content
         """
@@ -733,29 +892,47 @@ class Content(odm_ui.model.UIEntity):
             self._content_notify_author_status_change()
 
     def as_jsonable(self, **kwargs) -> dict:
+        """Get JSONable representation of the entity
+        """
         r = super().as_jsonable()
 
-        if self.has_field('status'):
-            r['status'] = self.status
+        # Publish time
+        if self.has_field('publish_time'):
+            r['publish_time'] = {
+                'w3c': util.w3c_datetime_str(self.publish_time),
+                'pretty_date': self.publish_date_pretty,
+                'pretty_date_time': self.publish_date_time_pretty,
+                'ago': self.publish_time_ago,
+            }
 
-        if self.has_field('title'):
-            r['title'] = self.title
+        # Author
+        if self.has_field('author') and self.author.is_public:
+            r['author'] = self.author.as_jsonable()
 
-        if self.has_field('description'):
-            r['description'] = self.description
-
-        if self.has_field('video_links'):
-            r['video_links'] = self.video_links
-
-        if self.has_field('body'):
-            r['body'] = self.body
-
-        if self.has_field('options'):
-            r['options'] = dict(self.options)
-
+        # Language
         if self.has_field('language'):
             r['language'] = self.language
 
+        # Localizations
+        for lng in lang.langs():
+            if self.has_field('localization_' + lng):
+                ref = self.f_get('localization_' + lng)
+                if ref:
+                    r['localization_' + lng] = ref.as_jsonable(**kwargs)
+
+        # Title
+        if self.has_field('title'):
+            r['title'] = self.title
+
+        # Description
+        if self.has_field('description'):
+            r['description'] = self.description
+
+        # Body
+        if self.has_field('body'):
+            r['body'] = self.body
+
+        # Images
         if self.has_field('images'):
             thumb_w = kwargs.get('images_thumb_width', 500)
             thumb_h = kwargs.get('images_thumb_height', 500)
@@ -769,63 +946,76 @@ class Content(odm_ui.model.UIEntity):
             if self.images:
                 r['thumbnail'] = self.images[0].get_url(width=thumb_w, height=thumb_h)
 
-        if self.has_field('author') and self.author.is_public:
-            r['author'] = self.author.as_jsonable()
+        # Tags
+        if self.has_field('tags'):
+            r['tags'] = [t.as_jsonable() for t in self.tags]
 
-        if self.has_field('publish_time'):
-            r['publish_time'] = {
-                'w3c': util.w3c_datetime_str(self.publish_time),
-                'pretty_date': self.publish_date_pretty,
-                'pretty_date_time': self.publish_date_time_pretty,
-                'ago': self.publish_time_ago,
-            }
+        # External links
+        if self.has_field('ext_links'):
+            r['ext_links'] = self.ext_links
+
+        # Video links
+        if self.has_field('video_links'):
+            r['video_links'] = self.video_links
+
+        # Views counter
+        if self.has_field('views_count'):
+            r['views_count'] = self.views_count
+
+        # Comments counter
+        if self.has_field('comments_count'):
+            r['comments_count'] = self.comments_count
+
+        # Likes counter
+        if self.has_field('likes_count'):
+            r['likes_count'] = self.likes_count
+
+        # Bookmarks counter
+        if self.has_field('bookmarks_count'):
+            r['bookmarks_count'] = self.bookmarks_count
+
+        # Status
+        if self.has_field('status'):
+            r['status'] = self.status
+
+        # Options
+        if self.has_field('options'):
+            r['options'] = dict(self.options)
 
         return r
 
 
 class ContentWithURL(Content):
-    def _setup_fields(self):
-        super()._setup_fields()
+    """Content with URL model
+    """
+
+    @property
+    def route_alias(self) -> route_alias.model.RouteAlias:
+        """Route alias getter
+        """
+        return self.f_get('route_alias')
+
+    def _setup_fields(self, **kwargs):
+        """Hook
+        """
+        super()._setup_fields(**kwargs)
 
         self.define_field(odm.field.String('tmp_route_alias_str'))
         self.define_field(odm.field.Ref('route_alias', model='route_alias'))
 
     def _setup_indexes(self):
-        super()._setup_indexes()
-
-        if self.has_field('route_alias'):
-            self.define_index([('route_alias', odm.I_ASC)])
-
-    @property
-    def route_alias(self) -> route_alias.model.RouteAlias:
-        return self.f_get('route_alias')
-
-    @classmethod
-    def odm_ui_view_rule(cls) -> str:
-        return 'content@view'
-
-    def odm_ui_view_url(self, args: dict = None, **kwargs) -> str:
-        target_path = router.url(super().odm_ui_view_url(args, **kwargs), add_lang_prefix=False, as_list=True)[2]
-
-        try:
-            target_path = route_alias.get_by_target(target_path, self.language).alias
-        except route_alias.error.RouteAliasNotFound:
-            pass
-
-        return router.url(target_path, lang=self.language)
-
-    def content_breadcrumb(self, breadcrumb: widget.select.Breadcrumb):
         """Hook
         """
-        if self.has_field('title'):
-            breadcrumb.append_item(self.title)
+        super()._setup_indexes()
+
+        self.define_index([('route_alias', odm.I_ASC)])
 
     def _on_f_set(self, field_name: str, value, **kwargs):
         """Hook
         """
         if field_name == 'route_alias' and isinstance(value, str):
             # Delegate string generation to dedicated hook
-            route_alias_str = self._alter_route_alias_str(value.strip())
+            route_alias_str = self.content_alter_route_alias_str(value.strip())
 
             # Entity doesn't have attached route alias reference
             if not self.route_alias:
@@ -851,7 +1041,7 @@ class ContentWithURL(Content):
         super()._on_after_save(first_save, **kwargs)
 
         # Auto-generate a route alias
-        if self.has_field('route_alias') and not self.route_alias:
+        if not self.route_alias:
             self.f_set('route_alias', self.f_get('tmp_route_alias_str')).f_rst('tmp_route_alias_str').save(fast=True)
 
     def _on_after_delete(self, **kwargs):
@@ -859,13 +1049,39 @@ class ContentWithURL(Content):
         """
         super()._on_after_delete()
 
+        # Delete comments
+        try:
+            auth.switch_user_to_system()
+            comments.delete_thread(self.route_alias.alias)
+        except (NotImplementedError, comments.error.NoDriversRegistered):
+            pass
+        finally:
+            auth.restore_user()
+
         # Delete linked route alias
-        if self.has_field('route_alias') and self.route_alias:
-            try:
-                self.route_alias.delete()
-            except odm.error.EntityDeleted:
-                # Entity was deleted by another instance
-                pass
+        try:
+            self.route_alias.delete()
+        except odm.error.EntityDeleted:
+            # Entity was deleted by another instance
+            pass
+
+    @classmethod
+    def odm_ui_view_rule(cls) -> str:
+        """Hook
+        """
+        return 'content@view'
+
+    def odm_ui_view_url(self, args: dict = None, **kwargs) -> str:
+        """Hook
+        """
+        target_path = router.url(super().odm_ui_view_url(args, **kwargs), add_lang_prefix=False, as_list=True)[2]
+
+        try:
+            target_path = route_alias.get_by_target(target_path, self.language).alias
+        except route_alias.error.RouteAliasNotFound:
+            pass
+
+        return router.url(target_path, lang=self.language)
 
     def odm_ui_m_form_setup_widgets(self, frm: form.Form):
         """Hook
@@ -880,8 +1096,14 @@ class ContentWithURL(Content):
                 value=self.route_alias.alias if self.route_alias else '',
             ))
 
-    def _alter_route_alias_str(self, orig_str: str) -> str:
-        """Alter route alias string
+    def content_breadcrumb(self, breadcrumb: widget.select.Breadcrumb):
+        """Hook
+        """
+        if self.has_field('title'):
+            breadcrumb.append_item(self.title)
+
+    def content_alter_route_alias_str(self, orig_str: str) -> str:
+        """Hook
         """
         # Checking original string
         if not orig_str:
@@ -895,6 +1117,8 @@ class ContentWithURL(Content):
         return orig_str
 
     def as_jsonable(self, **kwargs):
+        """Get JSONable representation of the entity
+        """
         r = super().as_jsonable(**kwargs)
 
         r['url'] = self.url

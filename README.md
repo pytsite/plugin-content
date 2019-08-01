@@ -4,6 +4,14 @@
 ## Changelog
 
 
+### 7.0 (2019-08-01)
+
+- New API functions added: `get_previous_entity()` and `get_next_entity()`.
+- Almost all fields moved from `article`'s plugin model.
+- `ContentWithURL._alter_route_alias_str()` method renamed to 
+  `content_alter_route_alias_str()`.
+
+
 ### 6.10.2 (2019-07-30)
 
 Checking `status` field existence in `odm_auth_check_entity_permissions()`

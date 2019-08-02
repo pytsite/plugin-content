@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 7.0.2 (2019-08-02)
+
+Return value error of `Content.odm_ui_mass_action_entity_description()` fixed.
+
+
 ### 7.0.1 (2019-08-01)
 
 Requirements fixed.

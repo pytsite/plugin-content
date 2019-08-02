@@ -798,7 +798,7 @@ class Content(odm_ui.model.UIEntity):
     def odm_ui_mass_action_entity_description(self) -> str:
         """Hook
         """
-        return self.title
+        return self.title if self.has_field('title') else super().odm_ui_mass_action_entity_description()
 
     def odm_ui_widget_select_search_entities(self, f: odm.MultiModelFinder, args: dict):
         """Hook

@@ -12,7 +12,7 @@ from datetime import datetime
 from dicmer import dict_merge
 from pytsite import validation, lang, events, util, mail, tpl, reg, router, errors, routing
 from plugins import auth, ckeditor, route_alias, auth_ui, auth_storage_odm, file_storage_odm, odm_ui, odm, file, form, \
-    widget, file_ui, tag, taxonomy, comments
+    widget, file_ui, tag, taxonomy, comments, flag
 from plugins.odm_auth import PERM_CREATE, PERM_MODIFY, PERM_DELETE, PERM_MODIFY_OWN, PERM_DELETE_OWN
 from ._constants import CONTENT_PERM_VIEW, CONTENT_PERM_VIEW_OWN, CONTENT_PERM_BYPASS_MODERATION, \
     CONTENT_PERM_SET_PUBLISH_TIME, CONTENT_PERM_SET_LOCALIZATION, CONTENT_STATUS_UNPUBLISHED, CONTENT_STATUS_WAITING, \
@@ -531,6 +531,18 @@ class Content(odm_ui.model.UIEntity):
 
         events.fire('content@entity.save', entity=self)
         events.fire('content@entity.{}.save'.format(self.model), entity=self)
+
+    def _on_pre_delete(self, **kwargs):
+        """Hook
+        """
+        super()._on_pre_delete(**kwargs)
+
+        # Delete linkes, bookmarks, etc
+        try:
+            auth.switch_user_to_system()
+            flag.delete_all(self)
+        finally:
+            auth.restore_user()
 
     def _on_after_delete(self, **kwargs):
         """Hook

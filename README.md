@@ -4,6 +4,11 @@
 ## Changelog
 
 
+### 7.0.4 (2019-08-12)
+
+Bug in `model.Content.content_status_select_items()` fixed.
+
+
 ### 7.0.3 (2019-08-06)
 
 Entity related flags deletion fixed. 

@@ -852,11 +852,10 @@ class Content(odm_ui.model.UIEntity):
         """Hook
         """
         statuses = self.content_statuses()
-        if not self.odm_auth_check_entity_permissions(CONTENT_PERM_BYPASS_MODERATION):
-            try:
-                statuses.remove(CONTENT_STATUS_PUBLISHED)
-            except ValueError:
-                pass
+        if not self.odm_auth_check_entity_permissions(CONTENT_PERM_BYPASS_MODERATION) \
+                and CONTENT_STATUS_WAITING in statuses \
+                and CONTENT_STATUS_PUBLISHED in statuses:
+            statuses.remove(CONTENT_STATUS_PUBLISHED)
 
         return statuses
 
